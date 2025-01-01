@@ -66,7 +66,7 @@ public class NewRobotContainer extends RobotContainer {
   private AutoRoutines m_autoRoutines;
   private AutoSelector m_autoSelector;
   private int m_analogSelectorIndex;
-  private boolean m_bDemoMode;
+  //private boolean m_bDemoMode;
 
   /* Demo/Normal */
   private int m_subwooferShotRpm = 0;
@@ -93,23 +93,20 @@ public class NewRobotContainer extends RobotContainer {
 
     System.out.println("Analog Selector Index: " + m_analogSelectorIndex);
 
-    if(m_analogSelectorIndex == 0)
+    if(Config.demoEnabled)
     {
-      //Demo mode
+      //Demo mode: 
+      //difference between demo and normal modes: 
+      //subwoofer shooter RPM and teleop swerve speeds are different
       m_subwooferShotRpm = Config.ShooterRPM.DEMO_SUBWOOFERSHOT;
       m_subwooferShotRpmTrigger = Config.ShooterRPM.DEMO_SUBWOOFERSHOT_TRIGGER;
-
       TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO);
-
-      m_bDemoMode = true;
     }
     else
     {
       //Normal competition mode
       m_subwooferShotRpm = Config.ShooterRPM.NORMAL_SUBWOOFERSHOT;
       m_subwooferShotRpmTrigger = Config.ShooterRPM.NORMAL_SUBWOOFERSHOT_TRIGGER;
-
-      m_bDemoMode = false;
     }
 
     configureButtonBindings();
@@ -137,7 +134,7 @@ public class NewRobotContainer extends RobotContainer {
     // Core Swerve Buttons
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
-    if ( m_bDemoMode == true )
+    if ( Config.demoEnabled )
     {
         driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)))
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)));
@@ -195,16 +192,12 @@ public class NewRobotContainer extends RobotContainer {
       .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
       .onFalse(Commands.runOnce(() -> intake.stop()));
   
-    
-    // Simple shooter and intake
-    // Intake note with leftTrigger
-    
+       
     //operator.leftTrigger(0.3).whileTrue(
     operator.leftBumper()
       .whileTrue(CombinedCommands.armIntake())
       .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
       .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
-
 
     //right trigger for shooter with speaker RPM
     operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
@@ -218,51 +211,6 @@ public class NewRobotContainer extends RobotContainer {
       ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
       m_subwooferShotRpm, 
       m_subwooferShotRpmTrigger));
-
-    /**
-     * Testing button bindings
-     */
-    // SwerveModuleState[] moduleStatesForwards = {
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-    // };
-    // testJoystick.a().whileTrue(Commands.run(
-    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
-    // ));
-
-    // SwerveModuleState[] moduleStatesSideways = {
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
-    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
-    // };
-    // testJoystick.a().whileTrue(Commands.run(
-    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
-    // ));
-    // Let testJoystick control swerve. Note disables driver joystick swerve. Never commit this line.
-    // s_Swerve.setDefaultCommand(new TeleopSwerve(testJoystick));
-    // testJoystick.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d()));
-    // testJoystick.b().onTrue(SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(3,3,new Rotation2d(0))));
-    // testJoystick.a().whileTrue(PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.FAR_SPEAKER_RED, driver))
-    //           .onFalse(Commands.runOnce(()->{},SwerveSubsystem.getInstance()));
-
-    // testJoystick.x() //Drives the note into the shooter
-    //   .whileTrue(Commands.runOnce(()-> intake.setMode(shooter.isReadyToShoot() ? IntakeModes.SHOOT : IntakeModes.STOP_INTAKE)))
-    //   .whileFalse(Commands.runOnce(()->intake.setMode(IntakeModes.STOP_INTAKE)));  
-    
-    // testJoystick.leftBumper().whileTrue(
-    //       new MakeIntakeMotorSpin(9.0,0));
-    
-    // testJoystick.start().onTrue( new SetArm(armAngleDeg));
-    // testJoystick.back().whileTrue(new Shooter_PID_Tuner(shooterTargetRPM));
-    // testJoystick.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1, () -> shooterTargetRPM.getAsDouble(), 50)); 
-
-    // testJoystick.rightTrigger().whileTrue(new Shooter_PID_Tuner(()->shooterTargetRPM.getAsDouble()));
- 
-    // testJoystick.a().onTrue(PhotonSubsystem.getInstance().getResetCommand(4));
-    // testJoystick.b().onTrue(SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(3, 3, Rotation2d.fromDegrees(0))));
   }
 
   /**
