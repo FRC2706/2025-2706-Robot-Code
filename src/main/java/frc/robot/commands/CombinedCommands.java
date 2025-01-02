@@ -28,7 +28,6 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.BlingSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterStateMachine.ShooterModes;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -231,67 +230,6 @@ public class CombinedCommands {
     }
 
     /**
-     * Score in the amp or speaker using vision and the given parameters.
-     * Uses state based programming for the intake and shooter.
-     * Handles arm, intake, shooter, swerve, and vision. 
-     *
-     * @param driverJoystick A CommandXboxController
-     * @param preparingTimeoutSeconds Safety timeout for the robot to move to the correct position, ready the arm and ready the intake
-     * @param scoringTimeoutSeconds Safety timeout for scoring after the robot is prepared
-     * @param armAngle Arm angle in degrees to use
-     * @param bluePosition PhotonPosition for the blue alliance
-     * @param redPosition PhotonPosition for the red alliance
-     */
-    public static Command visionScoreTeleopStateful(
-            CommandXboxController driverJoystick, 
-            double preparingTimeoutSeconds,
-            double scoringTimeoutSeconds, 
-            double armAngleDeg, 
-            PhotonPositions bluePosition, 
-            PhotonPositions redPosition) {
-         
-        // Swerve requirement command
-        Command idleSwerve = Commands.idle(SwerveSubsystem.getInstance()).withName("IdlingSwerveStateful");
-
-        // Prepare the robot to score
-        Command driveToPositionAndPrepare = Commands.parallel(
-            new SetArm(()->armAngleDeg),
-            new WaitCommand(0.1).andThen(ShooterSubsystem.getInstance().speedUpForSpeakerCommand()),
-            Commands.sequence(
-                new SelectByAllianceCommand(
-                    PhotonSubsystem.getInstance().getAprilTagCommand(bluePosition, driverJoystick, false), 
-                    PhotonSubsystem.getInstance().getAprilTagCommand(redPosition, driverJoystick, false)),
-                new ScheduleCommand(idleSwerve) // Hog the swerve subsystem to prevent the teleop command from running
-            ) 
-        ); 
-
-        // Score the note
-        Command scoreNote = Commands.parallel(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().stopMotors()),
-            IntakeSubsystem.getInstance().shootNoteCommand(),
-            new SetArm(()->armAngleDeg) // Continue to hold arm in the correct position
-        ).withTimeout(scoringTimeoutSeconds);
-
-        // Rumble command
-        Command rumble = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 0.3, false);
-
-        // Sequence preparing then scoring
-        return Commands.sequence( 
-            forcefulTimeoutCommand(
-                preparingTimeoutSeconds,
-                driveToPositionAndPrepare
-            ),
-            scoreNote,
-            Commands.runOnce(() -> ShooterSubsystem.getInstance().setMode(ShooterModes.STOP_SHOOTER)) 
-        ).finallyDo(() -> {
-            rumble.schedule(); // Rumble the joystick to notify the driver
-            idleSwerve.cancel(); // Ensure the teleop command is not blocked
-        });
-    }
-
-
-
-    /**
      * Score in amp with vision using simple intake/shooter
      * @param driver joystick
      */
@@ -366,39 +304,6 @@ public class CombinedCommands {
         );
     }
 
-    /**
-     * Score in amp with vision using stateful intake/shooter
-     * 
-     * @param driver joystick
-     */
-    public static Command statefulAmpScoreWithVision(CommandXboxController driver) {
-        return CombinedCommands.visionScoreTeleopStateful(
-            driver, 
-            25, 
-            4, 
-            ArmSetPoints.AMP.angleDeg,
-            PhotonPositions.AMP_BLUE,
-            PhotonPositions.AMP_RED
-        );
-    }
-
-    /**
-     * Score in speaker with vision using stateful intake/shooter
-     * 
-     * @param driver joystick
-     * @param bluePosition PhotonPosition for the blue alliance
-     * @param redPosition PhotonPosition for the red alliance
-     */
-    public static Command statefulSpeakerScoreWithVision(CommandXboxController driver, ArmSetPoints armAngle, PhotonPositions bluePosition, PhotonPositions redPosition) {
-        return CombinedCommands.visionScoreTeleopStateful(
-            driver, 
-            25, 
-            4, 
-            armAngle.angleDeg,
-            bluePosition,
-            redPosition
-        );
-    }
      /*Bling command to indicate that a note is loaded in intake*/
     public static Command strobeToSolidBlingCommand() {
         return

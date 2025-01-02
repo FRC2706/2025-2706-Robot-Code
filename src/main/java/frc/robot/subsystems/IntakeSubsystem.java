@@ -7,10 +7,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import static frc.robot.subsystems.IntakeStateMachine.IntakeModes.*;
-import static frc.robot.subsystems.IntakeStateMachine.IntakeStates.*;
-import static frc.robot.subsystems.ShooterStateMachine.States.SPEAKER_LAUNCH_READY;
-
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.filter.Debouncer;
@@ -24,14 +20,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Config;
-import frc.robot.subsystems.IntakeStateMachine.IntakeModes;
-import frc.robot.subsystems.IntakeStateMachine.IntakeStates;
 
 /** Add your docs here. */
 public class IntakeSubsystem extends SubsystemBase{
     private CANSparkMax m_intake;
-    private boolean stateFulControl = true;
-    private IntakeStateMachine intakeStates = new IntakeStateMachine();
 
     private DigitalInput frontSensor;//  -> 0 
     private DigitalInput centerSensor;// -> 1
@@ -123,92 +115,11 @@ public class IntakeSubsystem extends SubsystemBase{
         m_intake.setVoltage(voltage);
     }
 
-    public void setMode(IntakeModes mode){
-        if(!stateFulControl){
-            intakeStates.setMode(mode);
-            return;
-        }
-        
-        if(mode.equals(INTAKE) && getCurrentState().equals(NOTE_IN_POS_IDLE)){
-            intakeStates.setMode(STOP_INTAKE);
-        }else if(mode.equals(SHOOT) && getCurrentState().equals(INTAKING)){
-            intakeStates.setMode(STOP_INTAKE);
-        }else{  
-            intakeStates.setMode(mode);
-        }
-    }
-
-    public void allowAutoMovement(){
-        setVoltage(intakeStates.getDesiredVoltage());
-    }
-
-    public IntakeStates getCurrentState(){
-        return intakeStates.getCurrentState();
-    }
-
     public void stop(){
         m_intake.stopMotor();
     }
 
-    public boolean isNoteIn(){
-        return getCurrentState().equals(NOTE_IN_POS_IDLE);
-    }
-
-    public void setStateMachineOff(){
-        stateFulControl = false;
-    }
-
-    public void setStateMachineOn(){
-        stateFulControl = true;
-    }
-
     /*---------------------------Commands---------------------------*/
-
-    /**
-     * This allows the Intake's state machine to have effect on the beheavior of the intake
-     * This should be called every run loop cycle, set it as the default command 
-     * @return Default Intake Command
-     */
-    public Command defaultIntakeCommand(){
-        return Commands.sequence(
-            runOnce(()->setMode(STOP_INTAKE)),
-             run(()->allowAutoMovement()));
-    }
-
-    /**
-     * Sets the mode of the Intake's state machine to "SHOOT" mode when scheduled,
-     * it ends when non of the sensors detect a game piece(when the state is "SHOOTED")
-     * @return Shoot Note Command
-     */
-    public Command shootNoteCommand(){
-        return Commands.deadline(
-            Commands.waitUntil(()->getCurrentState().equals(SHOOTED)), 
-            Commands.runOnce(()->setMode(SHOOT)));
-    }
-
-    /**
-     * Sets the mode of the Intake's state machine to "INTAKE" mode when scheduled
-     * If is interrupted it sets the mode to "STOP_INTAKE"
-     *  <-This is for TeleOp Only->
-     * @return Intake Command
-     */
-    public Command intakeNoteCommand(){
-        return Commands.startEnd(
-            ()->setMode(INTAKE), ()->setMode(STOP_INTAKE)
-        );
-    }
-
-    /**
-     * Sets the mode of the Intake's state machine to "RELEASE" mode when scheduled
-     * If is interrupted it sets the mode to "STOP_INTAKE"
-     * <-This is for TeleOp Only->
-     * @return Release Command
-     */
-    public Command releaseNoteCommand(){
-        return Commands.startEnd(
-            ()->setMode(RELEASE), ()->setMode(STOP_INTAKE)
-        );
-    }
 
     @Override
     public void periodic() {
@@ -217,18 +128,10 @@ public class IntakeSubsystem extends SubsystemBase{
         backSensorResult = backSensorDebouncer.calculate(!backSensor.get());
         backSensorLongResult = backSensorLongDebouncer.calculate(!backSensor.get());
 
-        if(stateFulControl){
-            intakeStates.updateSensors(
-                ()->{return backSensorResult;}, 
-                ()->{return frontSensorResult;}, 
-                ()->{return centerSensorResult;});
-            intakeStates.updateStates();
-        }
-
         frontSensorPub.accept(frontSensorResult);
         centerSensorPub.accept(centerSensorResult);
         backSensorPub.accept(backSensorResult);
         backSensorLongPub.accept(backSensorLongResult);
-        statesPub.accept(stateFulControl?getCurrentState().toString(): "No State Machine");
+
     }
 }

@@ -8,7 +8,7 @@ Explain what you did:
 
 ## Issue ticket (add number)
 
-> https://github.com/FRC2706/2024-2706-Robot-Code/issues/...
+> https://github.com/FRC2706/2025-2706-Robot-Code/issues/...
 
 ## Checklist before requesting a review
 - [ ] I have performed a self-review of my code.

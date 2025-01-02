@@ -28,12 +28,9 @@ import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;
 import frc.robot.commands.SetArm;
 import frc.robot.commands.Shooter_PID_Tuner;
-import frc.robot.subsystems.IntakeStateMachine.IntakeModes;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.IntakeStateMachine.IntakeModes;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterStateMachine.ShooterModes;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -74,21 +71,7 @@ public class AutoRoutines extends SubsystemBase {
         ));
 
         NamedCommands.registerCommand("IntakeControlFalse", new IntakeControl(false));
-
-        NamedCommands.registerCommand("SetModeIntake", 
-            Commands.runOnce(() -> IntakeSubsystem.getInstance().setMode(IntakeModes.INTAKE)));
-
-        NamedCommands.registerCommand("ShootNoteStateful", 
-        Commands.sequence(
-            Commands.runOnce(() -> {System.out.println("STEP1");}),
-            ShooterSubsystem.getInstance().speedUpForSpeakerCommand(),
-            Commands.runOnce(() -> {System.out.println("STEP2");}),
-            IntakeSubsystem.getInstance().shootNoteCommand(),
-            Commands.runOnce(() -> {System.out.println("STEP3");}),
-            Commands.runOnce(()->ShooterSubsystem.getInstance().setMode(ShooterModes.STOP_SHOOTER))          
-        ));
-
-        
+      
         NamedCommands.registerCommand("simpleShooter", CombinedCommands.simpleShootNoteSpeaker(0.4));
         
         NamedCommands.registerCommand("MakeShooterSpin", new Shooter_PID_Tuner(() -> Config.ShooterConstants.subwooferRPM));

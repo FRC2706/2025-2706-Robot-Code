@@ -38,10 +38,8 @@ import frc.robot.commands.Shooter_PID_Tuner;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
-import frc.robot.subsystems.IntakeStateMachine.IntakeModes;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterStateMachine.ShooterModes;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -81,12 +79,6 @@ public class ContainerForTesting extends RobotContainer {
     /*  Setup default commands */
     m_swerveDefaultCommand = new TeleopSwerve(driver);
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
-    if (!Config.disableStateBasedProgramming) {
-      intake.setDefaultCommand(intake.defaultIntakeCommand());
-      shooter.setDefaultCommand(shooter.defaultShooterCommand(()-> intake.isNoteIn()));
-    } else {
-      // shooter.setDefaultCommand(new Shooter_PID_Tuner(() -> 0));
-    }
 
     configureButtonBindings();
 
@@ -143,6 +135,51 @@ public class ContainerForTesting extends RobotContainer {
                   .onFalse(Commands.run(()->shooter.setVoltage(0)));
       operator.rightBumper().onTrue(new MakeIntakeMotorSpin(9.0, 0)).onFalse(new MakeIntakeMotorSpin(0.0, 0));
       operator.leftBumper().onTrue(new MakeIntakeMotorSpin(-4.0, 0)).onFalse(new MakeIntakeMotorSpin(0.0, 0));
+
+    /**
+     * Testing button bindings
+     */
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // testJoystick.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // testJoystick.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+    // Let testJoystick control swerve. Note disables driver joystick swerve. Never commit this line.
+    // s_Swerve.setDefaultCommand(new TeleopSwerve(testJoystick));
+    // testJoystick.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d()));
+    // testJoystick.b().onTrue(SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(3,3,new Rotation2d(0))));
+    // testJoystick.a().whileTrue(PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.FAR_SPEAKER_RED, driver))
+    //           .onFalse(Commands.runOnce(()->{},SwerveSubsystem.getInstance()));
+
+    // testJoystick.x() //Drives the note into the shooter
+    //   .whileTrue(Commands.runOnce(()-> intake.setMode(shooter.isReadyToShoot() ? IntakeModes.SHOOT : IntakeModes.STOP_INTAKE)))
+    //   .whileFalse(Commands.runOnce(()->intake.setMode(IntakeModes.STOP_INTAKE)));  
+    
+    // testJoystick.leftBumper().whileTrue(
+    //       new MakeIntakeMotorSpin(9.0,0));
+    
+    // testJoystick.start().onTrue( new SetArm(armAngleDeg));
+    // testJoystick.back().whileTrue(new Shooter_PID_Tuner(shooterTargetRPM));
+    // testJoystick.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1, () -> shooterTargetRPM.getAsDouble(), 50)); 
+
+    // testJoystick.rightTrigger().whileTrue(new Shooter_PID_Tuner(()->shooterTargetRPM.getAsDouble()));
+ 
+    // testJoystick.a().onTrue(PhotonSubsystem.getInstance().getResetCommand(4));
+    // testJoystick.b().onTrue(SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(3, 3, Rotation2d.fromDegrees(0))));
     }
 
   /**
