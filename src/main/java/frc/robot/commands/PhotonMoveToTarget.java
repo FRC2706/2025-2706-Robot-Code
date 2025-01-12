@@ -69,10 +69,17 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void execute() {
     Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
-    Rotation2d rotationSetPoint = PhotonSubsystem.getInstance().getTargetRotation();
+    Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
+    //@todo: 
+    //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
+
+    //convert to Robot
+    Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
+        
     if (centerTarget){
       SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), rotationSetPoint));
     }else{
+      //absolute heading
       SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), desiredHeading));
     }
   }
