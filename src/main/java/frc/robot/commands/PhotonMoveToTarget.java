@@ -73,7 +73,8 @@ public class PhotonMoveToTarget extends Command {
     //@todo: 
     //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
 
-    //convert to Robot
+    //convert to Robot: facing to AprilTag
+    //@todo: add offset to this heading
     Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
         
     if (centerTarget){
