@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import java.util.function.BooleanSupplier;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
@@ -60,8 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         System.out.println("[Init] Creating Shooter");
-        m_motor = new CANSparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
-        m_motor.restoreFactoryDefaults();
+        m_motor = new SparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
 
         m_motor.setCANTimeout(500);//Units in miliseconds
         m_motor.setIdleMode(IdleMode.kBrake);
