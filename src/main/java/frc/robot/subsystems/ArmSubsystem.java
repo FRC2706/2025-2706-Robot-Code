@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 
@@ -33,6 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
   private final SparkMax m_arm; // bottom SparkMax motor controller
+  private SparkMaxConfig m_arm_config;
 
   // network table entry
   private final String m_tuningTable = "Arm/ArmTuning";
@@ -75,6 +77,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private ArmSubsystem() {
     m_arm = new SparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
+    m_arm_config = new SparkMaxConfig();
     configureSpark("Arm restore factory defaults", () -> (m_arm.restoreFactoryDefaults()));
     configureSpark("arm set CANTimeout", () -> m_arm.setCANTimeout(Config.CANTIMEOUT_MS));
     configureSpark("Arm set current limits", () -> m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT));
