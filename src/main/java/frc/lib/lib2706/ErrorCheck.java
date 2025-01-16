@@ -3,9 +3,12 @@ package frc.lib.lib2706;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.ErrorCode;
-import com.revrobotics.CANSparkBase;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.REVLibError;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
 
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class ErrorCheck {
@@ -97,15 +100,18 @@ public class ErrorCheck {
      * @param sparkmaxs The sparkmaxs to run burn flash on.
      * @return true for success, false for failure.
      */
-    public static boolean sparkBurnFlash(String sparkmaxNames, CANSparkBase... sparkmaxs) {
+    public static boolean sparkBurnFlash(String sparkmaxNames, SparkBase... sparkmaxs) {
         try {
             Thread.sleep(200);
         } catch (Exception e) {}
 
         boolean allOk = true;
-        for (CANSparkBase sparkmax : sparkmaxs) {
+
+        SparkMaxConfig blankConfig = (SparkMaxConfig) new SparkMaxConfig();
+
+        for (SparkBase sparkmax : sparkmaxs) {
             // Burn flash and record error
-            REVLibError error = sparkmax.burnFlash();
+            REVLibError error = sparkmax.configure(blankConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
             if (error != REVLibError.kOk) {
                 allOk = false;
