@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class ErrorTrackingSubsystem extends SubsystemBase {
 
-    ArrayList<CANSparkMax> motors = new ArrayList<>();
+    ArrayList<SparkMax> motors = new ArrayList<>();
     ArrayList<StringPublisher> motorPublishers = new ArrayList<>();
     ArrayList<GenericEntry> statusTabEntries = new ArrayList<>();
     ArrayList<GenericEntry> errorsTabEntries = new ArrayList<>();
@@ -32,9 +32,9 @@ public class ErrorTrackingSubsystem extends SubsystemBase {
     }
     /** Creates a new ErrorTrackingSubsystem. */
     public ErrorTrackingSubsystem() {
-        errorPublish = NetworkTableInstance.getDefault().getTable("CANSparkMax/Errors"); // Errors will be sent to NetworkTables
-        statusTab = Shuffleboard.getTab("CANSparkMax Status"); // Status will be displayed as a boolean variable (whether the spark max is ok)
-        errorsTab = Shuffleboard.getTab("CANSparkMax Errors");
+        errorPublish = NetworkTableInstance.getDefault().getTable("SparkMax/Errors"); // Errors will be sent to NetworkTables
+        statusTab = Shuffleboard.getTab("SparkMax Status"); // Status will be displayed as a boolean variable (whether the spark max is ok)
+        errorsTab = Shuffleboard.getTab("SparkMax Errors");
     }
 
     public ShuffleboardTab getStatusTab() {
@@ -63,10 +63,10 @@ public class ErrorTrackingSubsystem extends SubsystemBase {
     }
 
     /**
-     * Function to register a new CANSparkMax to track errors from.
-     * @param motor A CANSparkMax object (the motor).
+     * Function to register a new SparkMax to track errors from.
+     * @param motor A SparkMax object (the motor).
      */
-    public void register(CANSparkMax motor) {
+    public void register(SparkMax motor) {
         statusTabEntries.add(statusTab
                 .add(Integer.toString(motor.getDeviceId()), false)
                 .withPosition(( (motors.size() % 9)), motors.size() / 9)
@@ -92,7 +92,7 @@ public class ErrorTrackingSubsystem extends SubsystemBase {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 12; i++) {
             if (((1 << i) & (int) faults) != 0) {
-                builder.append(CANSparkMax.FaultID.fromId(i).toString());
+                builder.append(SparkMax.FaultID.fromId(i).toString());
                 builder.append(" ");
             }
         }

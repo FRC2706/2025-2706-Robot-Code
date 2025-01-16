@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ClimberSubsystem extends SubsystemBase {
 
   //Instance Variables
-  private CANSparkMax m_climber;
+  private SparkMax m_climber;
   private RelativeEncoder m_encoder;
   //private double targetRPM = CLIMBER_RPM.getValue();
   public double kMaxOutput = 1;
@@ -39,7 +39,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private void initializeSubsystem() 
   {
-    m_climber = new CANSparkMax(Config.Climber_CANID.CLIMBER, MotorType.kBrushless);
+    m_climber = new SparkMax(Config.Climber_CANID.CLIMBER, MotorType.kBrushless);
 
     if ( m_climber != null )
     {      

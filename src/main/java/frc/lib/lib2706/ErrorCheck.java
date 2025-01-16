@@ -27,7 +27,7 @@ public class ErrorCheck {
         if (error == REVLibError.kOk) {
             return true;
         }
-        String msg = "[MergeError] - CANSparkMax error. MergeMessage:" + message;
+        String msg = "[MergeError] - SparkMax error. MergeMessage:" + message;
         msg += " Spark error code: " + error.toString() + " \nSee stack trace below.";
 
         DriverStation.reportError(
@@ -75,7 +75,7 @@ public class ErrorCheck {
             }
         }
 
-        String msg = "[MergeError] - CANSparkMax failed to configure setting. MergeMessage:" + message;
+        String msg = "[MergeError] - SparkMax failed to configure setting. MergeMessage:" + message;
         msg += " Spark error code: " + err.toString() + " \nSee stack trace below.";
 
         DriverStation.reportError(
@@ -116,7 +116,7 @@ public class ErrorCheck {
             if (error != REVLibError.kOk) {
                 allOk = false;
                 
-                String msg = "[MergeError] - CANSparkMax failed to burn flash on sparkmax(s): " + sparkmaxNames;
+                String msg = "[MergeError] - SparkMax failed to burn flash on sparkmax(s): " + sparkmaxNames;
                 msg += " Spark error code: " + error.toString() + " \nSee stack trace below.";
 
                 DriverStation.reportError(

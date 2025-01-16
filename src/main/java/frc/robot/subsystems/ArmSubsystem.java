@@ -3,15 +3,15 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -32,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
   private static ArmSubsystem instance = null; // static object that contains all movement controls
 
   private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
-  private final CANSparkMax m_arm; // bottom SparkMax motor controller
+  private final SparkMax m_arm; // bottom SparkMax motor controller
 
   // network table entry
   private final String m_tuningTable = "Arm/ArmTuning";
@@ -57,7 +57,7 @@ public class ArmSubsystem extends SubsystemBase {
   //spark absolute encoder
   private SparkAbsoluteEncoder m_absEncoder;  
   //embedded relative encoder
-  private SparkPIDController m_pidControllerArm;    
+  private SparkClosedLoopController m_pidControllerArm;    
 
   private final TrapezoidProfile.Constraints m_constraints = 
     new TrapezoidProfile.Constraints(Config.ArmConfig.MAX_VEL, Config.ArmConfig.MAX_ACCEL);
@@ -74,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   private ArmSubsystem() {
-    m_arm = new CANSparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
+    m_arm = new SparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
     configureSpark("Arm restore factory defaults", () -> (m_arm.restoreFactoryDefaults()));
     configureSpark("arm set CANTimeout", () -> m_arm.setCANTimeout(Config.CANTIMEOUT_MS));
     configureSpark("Arm set current limits", () -> m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT));
@@ -98,7 +98,7 @@ public class ArmSubsystem extends SubsystemBase {
     configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
     configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
 
-    m_absEncoder = m_arm.getAbsoluteEncoder(Type.kDutyCycle);
+    m_absEncoder = m_arm.getAbsoluteEncoder();
     configureSpark("Absolute encoder set inerted", () -> m_absEncoder.setInverted(Config.ArmConfig.INVERT_ENCODER));
     configureSpark("Absolute encoder set position conersation factor",
         () -> m_absEncoder.setPositionConversionFactor(Config.ArmConfig.armPositionConversionFactor));

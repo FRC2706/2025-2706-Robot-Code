@@ -12,7 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  * call reset() when they first start running the controller to avoid unwanted behavior.
  * 
  * This is a modified version of the {@link edu.wpi.first.math.controller.ProfiledPIDController} from WPILib to export the PIDController to
- * an external device like the CANSparkMax or other motor controllers.
+ * an external device like the SparkMax or other motor controllers.
  */
 public class ProfiledExternalPIDController {
   // The period (in seconds) of the loop that calls the controller

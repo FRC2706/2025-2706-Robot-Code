@@ -1,10 +1,10 @@
 package frc.lib.lib3512.util;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.CANSparkLowLevel;
 
 /** Sets motor usage for a Spark Max motor controller */
-public class CANSparkMaxUtil {
+public class SparkMaxUtil {
   public enum Usage {
     kAll,
     kPositionOnly,
@@ -21,12 +21,12 @@ public class CANSparkMaxUtil {
    * for a description of the status frames.
    *
    * @param motor The motor to adjust the status frame periods on.
-   * @param usage The status frame feedack to enable. kAll is the default when a CANSparkMax is
+   * @param usage The status frame feedack to enable. kAll is the default when a SparkMax is
    *     constructed.
    * @param enableFollowing Whether to enable motor following.
    */
-  public static void setCANSparkMaxBusUsage(
-      CANSparkMax motor, Usage usage, boolean enableFollowing) {
+  public static void setSparkMaxBusUsage(
+      SparkMax motor, Usage usage, boolean enableFollowing) {
     if (enableFollowing) {
       motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus0, 10);
     } else {
@@ -61,10 +61,10 @@ public class CANSparkMaxUtil {
    * for a description of the status frames.
    *
    * @param motor The motor to adjust the status frame periods on.
-   * @param usage The status frame feedack to enable. kAll is the default when a CANSparkMax is
+   * @param usage The status frame feedack to enable. kAll is the default when a SparkMax is
    *     constructed.
    */
-  public static void setCANSparkMaxBusUsage(CANSparkMax motor, Usage usage) {
-    setCANSparkMaxBusUsage(motor, usage, false);
+  public static void setSparkMaxBusUsage(SparkMax motor, Usage usage) {
+    setSparkMaxBusUsage(motor, usage, false);
   }
 }

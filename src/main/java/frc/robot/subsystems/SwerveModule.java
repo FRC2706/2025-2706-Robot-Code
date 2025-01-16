@@ -3,13 +3,13 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix.sensors.CANCoder; // This will be deprecated, we should migrate to Phoenix 6
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -24,8 +24,8 @@ import edu.wpi.first.networktables.PubSubOption;
 import frc.lib.lib3512.config.SwerveModuleConstants;
 import frc.lib.lib3512.util.CANCoderUtil;
 import frc.lib.lib3512.util.CANCoderUtil.CCUsage;
-import frc.lib.lib3512.util.CANSparkMaxUtil;
-import frc.lib.lib3512.util.CANSparkMaxUtil.Usage;
+import frc.lib.lib3512.util.SparkMaxUtil;
+import frc.lib.lib3512.util.SparkMaxUtil.Usage;
 import frc.robot.Config;
 import frc.robot.Robot;
 
@@ -46,15 +46,15 @@ public class SwerveModule {
   private Rotation2d lastAngle;
   private Rotation2d angleOffset;
 
-  private CANSparkMax angleMotor;
-  private CANSparkMax driveMotor;
+  private SparkMax angleMotor;
+  private SparkMax driveMotor;
 
   private RelativeEncoder driveEncoder;
   private RelativeEncoder integratedAngleEncoder;
   private CANCoder angleEncoder;
 
-  private final SparkPIDController driveController;
-  private final SparkPIDController angleController;
+  private final SparkClosedLoopController driveController;
+  private final SparkClosedLoopController angleController;
 
   private boolean synchronizeEncoderQueued = false;
 
@@ -77,13 +77,13 @@ public class SwerveModule {
     configAngleEncoder();
 
     /* Angle Motor Config */
-    angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
+    angleMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
     integratedAngleEncoder = angleMotor.getEncoder();
     angleController = angleMotor.getPIDController();
     configAngleMotor();
 
     /* Drive Motor Config */
-    driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
+    driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
     driveEncoder = driveMotor.getEncoder();
     driveController = driveMotor.getPIDController();
     configDriveMotor();
@@ -147,7 +147,7 @@ public class SwerveModule {
   private void configAngleMotor() {
     configureSpark("Angle restore factory defaults", () -> angleMotor.restoreFactoryDefaults());
     configureSpark("Angle set can timeout", () -> angleMotor.setCANTimeout(Config.CANTIMEOUT_MS));
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(angleMotor, Usage.kAll);
+    SparkMaxUtil.setSparkMaxBusUsage(angleMotor, Usage.kAll);
     configureSpark("Angle smart current limit", () -> angleMotor.setSmartCurrentLimit(Config.Swerve.angleContinuousCurrentLimit));
     angleMotor.setInverted(Config.Swerve.angleInvert);
     configureSpark("Angle idle mode", () -> angleMotor.setIdleMode(Config.Swerve.angleNeutralMode));
@@ -167,7 +167,7 @@ public class SwerveModule {
   private void configDriveMotor() {
     configureSpark("Drive factory defaults", () -> driveMotor.restoreFactoryDefaults());
     configureSpark("Drive set can timeout", () -> driveMotor.setCANTimeout(Config.CANTIMEOUT_MS));
-    CANSparkMaxUtil.setCANSparkMaxBusUsage(driveMotor, Usage.kAll);
+    SparkMaxUtil.setSparkMaxBusUsage(driveMotor, Usage.kAll);
     configureSpark("Drive smart current limit", () -> driveMotor.setSmartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit));
     driveMotor.setInverted(Config.Swerve.driveInvert);
     configureSpark("Drive idle mode", () -> driveMotor.setIdleMode(Config.Swerve.driveNeutralMode));
