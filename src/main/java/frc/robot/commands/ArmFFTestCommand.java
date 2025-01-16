@@ -9,11 +9,11 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ArmFFTestCommand extends CommandBase {
+public class ArmFFTestCommand extends Command {
   private CommandXboxController m_joystick;
   private double m_maxExtraVolts;
   private boolean m_enableBot;
