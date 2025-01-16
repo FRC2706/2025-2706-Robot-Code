@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,6 +18,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   //Instance Variables
   private SparkMax m_climber;
+  private SparkMaxConfig m_climber_config;
   private RelativeEncoder m_encoder;
   //private double targetRPM = CLIMBER_RPM.getValue();
   public double kMaxOutput = 1;
@@ -40,36 +43,24 @@ public class ClimberSubsystem extends SubsystemBase {
   private void initializeSubsystem() 
   {
     m_climber = new SparkMax(Config.Climber_CANID.CLIMBER, MotorType.kBrushless);
+    m_climber_config = new SparkMaxConfig();
 
     if ( m_climber != null )
     {      
       m_bGoodSensors = true;
-  
-      // Factory Default to prevent unexpected behaviour
-      m_climber.restoreFactoryDefaults();
-      m_climber.setInverted(false);
+
+      m_climber_config.inverted(false);
 
       //Set maximum current
-      m_climber.setSmartCurrentLimit(40);
+      m_climber_config.smartCurrentLimit(40);
+
+      m_climber.configure(m_climber_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
       
       ErrorTrackingSubsystem.getInstance().register(m_climber);
 
     }
-      // Must be the last thing in the constructor
-      burnFlash();
   }
-      
-  /**
-   * Save the configurations from flash to EEPROM.
-   */
-  private void burnFlash() {
-    try {
-      Thread.sleep(200);
-    } 
-    catch (Exception e) {}
 
-    m_climber.burnFlash();
-  }
 
     public boolean isAvailable() 
     {
