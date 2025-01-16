@@ -1,14 +1,18 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -25,9 +29,11 @@ import frc.lib.lib2706.TunableNumber;
 import frc.robot.Config;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private CANSparkMax m_motor;
-    private CANSparkMax m_motor2;
-    private SparkPIDController m_pidController;
+    private SparkMax m_motor;
+    private SparkMaxConfig m_motor_config;
+    private SparkMax m_motor2;
+    private SparkMaxConfig m_motor2_config;
+    private SparkClosedLoopController m_pidController;
     private RelativeEncoder m_encoder;
     private boolean closedLoopControl = false;
     private boolean stateFulControl = false;
@@ -62,21 +68,25 @@ public class ShooterSubsystem extends SubsystemBase {
         System.out.println("[Init] Creating Shooter");
         m_motor = new SparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
 
-        m_motor.setCANTimeout(500);//Units in miliseconds
-        m_motor.setIdleMode(IdleMode.kBrake);
-        m_motor.setInverted(false);
+        m_motor_config = (SparkMaxConfig) new SparkMaxConfig()
+                .inverted(true)
+                .idleMode(IdleMode.kBrake);
 
-        m_motor2 = new CANSparkMax(Config.ShooterConstants.MOTOR_ID2, MotorType.kBrushless);
-        m_motor2.restoreFactoryDefaults();
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        m_motor2.setCANTimeout(500);//Units in miliseconds
-        m_motor2.setIdleMode(IdleMode.kBrake);
-        m_motor2.setInverted(false);
+
+        m_motor2 = new SparkMax(Config.ShooterConstants.MOTOR_ID2, MotorType.kBrushless);
+
+        m_motor2_config = (SparkMaxConfig) new SparkMaxConfig()
+                .inverted(false)
+                .idleMode(IdleMode.kBrake);
+
+        m_motor2.configure(m_motor2_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
 
         //set the second motor as a follower of the first motor
         m_motor2.follow(m_motor);
 
-        m_pidController = m_motor.getPIDController();
+        m_pidController = m_motor.getClosedLoopController();
         m_encoder = m_motor.getEncoder();
 
         //Voltage compensation
