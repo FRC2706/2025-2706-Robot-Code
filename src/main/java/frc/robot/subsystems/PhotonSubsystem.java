@@ -13,6 +13,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
@@ -291,7 +292,8 @@ public class PhotonSubsystem extends SubsystemBase {
     Pose2d fieldToTarget = null;
     
     if (PhotonConfig.USE_3D_TAGS) {
-      Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update();
+      PhotonPipelineResult result = camera1.getLatestResult();
+      Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update(result);
       if (optEstPose.isEmpty()) {
         pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose");
         return;
