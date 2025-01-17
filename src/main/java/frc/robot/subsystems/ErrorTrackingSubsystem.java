@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.Warnings;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -45,10 +47,10 @@ public class ErrorTrackingSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         if (!motors.isEmpty()) { // Ensure motor list is not empty!
-            short faults = motors.get(currentMotor).getStickyFaults();
+            Warnings warnings = motors.get(currentMotor).getStickyWarnings();
             motors.get(currentMotor).clearFaults(); // we need to make sure to clear the bus, so it doesn't just add up
             StringPublisher publisher = motorPublishers.get(currentMotor);
-            String faultWords = faultWordToString(faults); // the faults are marked as IDs and must be converted to strings
+            String faultWords = faultWordToString(warnings); // the faults are marked as IDs and must be converted to strings
             publisher.set(faultWords); // send to networktables
             GenericEntry statusEntry = statusTabEntries.get(currentMotor); // Gets status entry from shuffleboard
             statusEntry.setBoolean(faultWords.isEmpty());
@@ -81,22 +83,43 @@ public class ErrorTrackingSubsystem extends SubsystemBase {
 
     /**
      * Function to convert a "fault word" to a string.
-     * @param faults A short containing the faults.
+     * @param warnings A Warnings object containing the warnings.
      * @return A string containing the faults as a string.
      */
-    public static String faultWordToString(short faults) {
-        if (faults == 0) {
+    public static String faultWordToString(Warnings warnings) {
+
+        String warningString = "";
+
+        if (warnings.brownout) {
+            warningString += "Brownout ";
+        }
+        if (warnings.overcurrent) {
+            warningString += "Overcurrent";
+        }
+        if (warnings.escEeprom) {
+            warningString += "EscEeprom";
+        }
+        if (warnings.extEeprom) {
+            warningString += "ExtEeprom";
+        }
+        if (warnings.sensor) {
+            warningString += "Sensor";
+        }
+        if (warnings.stall) {
+            warningString += "Stall";
+        }
+        if (warnings.hasReset) {
+            warningString += "Hasreset";
+        }
+        if (warnings.other) {
+            warningString += "Other";
+        }
+
+        if (warningString.isEmpty()) {
             return "";
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 12; i++) {
-            if (((1 << i) & (int) faults) != 0) {
-                builder.append(SparkMax.FaultID.fromId(i).toString());
-                builder.append(" ");
-            }
-        }
-        return builder.toString();
+        return warningString;
     }
 
 }
