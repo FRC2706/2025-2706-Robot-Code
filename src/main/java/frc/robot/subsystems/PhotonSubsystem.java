@@ -65,7 +65,6 @@ public class PhotonSubsystem extends SubsystemBase {
   public DoublePublisher pubSpeakerRange, pubSpeakerYaw;
   private IntegerPublisher pubSetTagId;
   private StringPublisher pub3DTagsDebugMsg;
-  private IntegerEntry subOverrideTagID;
   private PhotonCamera camera1;
   private Translation2d targetPos;
   private Rotation2d targetRotation;
@@ -73,7 +72,6 @@ public class PhotonSubsystem extends SubsystemBase {
   private LinearFilter filterX = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterY = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private int numSamples;
-  private int id;
   private double recentTimeStamp = 0;
 
   private IntegerEntry intakeCameraInputSaveImgEntry;
@@ -99,13 +97,10 @@ public class PhotonSubsystem extends SubsystemBase {
     pubYaw = photonTable.getDoubleTopic("Yaw").publish(PubSubOption.periodic(0.02));
     pubSpeakerRange = photonTable.getDoubleTopic("SpeakerRange").publish(PubSubOption.periodic(0.02));
     pubSpeakerYaw = photonTable.getDoubleTopic("SpeakerYaw").publish(PubSubOption.periodic(0.02));
-    pubSetTagId = photonTable.getIntegerTopic("SetTagId").publish();
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
-    subOverrideTagID = photonTable.getIntegerTopic("OVERIDEID").getEntry(-1);
-    subOverrideTagID.setDefault(-1);
-    SmartDashboard.putData("command reset id",Commands.runOnce(()->reset((int)subOverrideTagID.get())));
+    SmartDashboard.putData("command reset id",Commands.runOnce(()->reset()));
 
-    reset(-1);
+    reset();
 
     try {
       aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -121,7 +116,7 @@ public class PhotonSubsystem extends SubsystemBase {
     intakeCameraInputSaveImgEntry = intakeTable.getIntegerTopic("inputSaveImgCmd").getEntry(0);
   }
 
-  public void reset(int desiredId) {
+  public void reset() {
     filterX.reset();
     filterY.reset();
     filteryaw.reset();
@@ -130,7 +125,6 @@ public class PhotonSubsystem extends SubsystemBase {
     targetPos = SwerveSubsystem.getInstance().getPose().getTranslation();
     //initialize vars
     numSamples = 0;
-    id = desiredId;
   }
 
   public void resetTagAtBootup() {
@@ -140,7 +134,7 @@ public class PhotonSubsystem extends SubsystemBase {
     // } else {
     //   reset(4);
     // }
-    reset(8);
+    reset();
   }
 
   /**
@@ -150,8 +144,8 @@ public class PhotonSubsystem extends SubsystemBase {
    * @return
    * the command
    */
-  public Command getResetCommand(int tagid){
-    return runOnce(() -> reset(tagid));
+  public Command getResetCommand(){
+    return runOnce(() -> reset());
   }
   
   //publishes yaw
@@ -166,8 +160,8 @@ public class PhotonSubsystem extends SubsystemBase {
    * @return
    * the command
    */
-  public Command getWaitForDataCommand(int tagid){
-    return new FunctionalCommand(() -> reset(tagid), ()->{}, (interrupted) ->{}, ()->hasData(), this);
+  public Command getWaitForDataCommand(){
+    return new FunctionalCommand(() -> reset(), ()->{}, (interrupted) ->{}, ()->hasData(), this);
   }
 
   //todo: 
@@ -215,15 +209,6 @@ public class PhotonSubsystem extends SubsystemBase {
     return(numSamples >= PhotonConfig.maxNumSamples);
   }
 
-  //++++++
-  private double range(double y) {
-    y = Math.toRadians(y);
-    y += PhotonConfig.CAMERA_PITCH.getRadians();
-
-    return (Config.PhotonConfig.APRIL_HEIGHTS[0]-PhotonConfig.CAMERA_HEIGHT)/Math.tan(y);
-
-  }
-
   private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
     PhotonTrackedTarget biggestTarget=null;
 
@@ -239,58 +224,27 @@ public class PhotonSubsystem extends SubsystemBase {
     return (biggestTarget);
   }
 
-  private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget target=null;
-
-    for (PhotonTrackedTarget t:targets) {
-       int targetId = t.getFiducialId();
-            if (targetId == 8 )//|| targetId == 4)
-            {
-              //Do something with this target.. Get the Pose2d, etc.
-              //publish the yaw to the network table
-              pubSpeakerYaw.accept(t.getYaw());
-
-              target = t;
-              break;
-            }
-      
-    }
-    return (target);
-  }
-
-  private Pose2d convertToField(double range, Rotation2d yaw, Pose2d odometryPose) {
-    Rotation2d fieldOrientedTarget = yaw.rotateBy(odometryPose.getRotation());
-    Translation2d visionXY = new Translation2d(range, yaw);
-    Translation2d robotRotated = visionXY.rotateBy(PhotonConfig.cameraOffset.getRotation());
-    Translation2d robotToTargetRELATIVE = robotRotated.plus(PhotonConfig.cameraOffset.getTranslation());
-    Translation2d robotToTarget = robotToTargetRELATIVE.rotateBy(odometryPose.getRotation());
-    return new Pose2d(robotToTarget.plus(odometryPose.getTranslation()), fieldOrientedTarget);
-  }
-
   @Override
   public void periodic() {
 
-    pubSetTagId.accept(id);
-
-    //System.out.println("the id is" + id);
-  
     Pose2d fieldToTarget = null;
     
     // Must be set by 2D or 3D mode
     PhotonPipelineResult result = camera1.getLatestResult();
     if (result.getTimestampSeconds() == recentTimeStamp){
-      System.out.println("time stamp is stale");
+      //--System.out.println("time stamp is stale");
       return;
     }
     recentTimeStamp = result.getTimestampSeconds();
 
     if(result.hasTargets()==false)
     { 
-      System.out.println("result does not have any target");
+     // System.out.println("result does not have any target");
       return;
     }
 
-    if (PhotonConfig.USE_3D_TAGS) {
+    //if (PhotonConfig.USE_3D_TAGS) 
+    {
       // Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update();
       // if (optEstPose.isEmpty()) {
       //   pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose"); 
@@ -339,7 +293,7 @@ public class PhotonSubsystem extends SubsystemBase {
       //=================================================================================================
       //new stuff
      
-      //or to get the biggest target
+      //Get the best target
       PhotonTrackedTarget target = result.getBestTarget();
 
       if (target == null)
@@ -348,12 +302,20 @@ public class PhotonSubsystem extends SubsystemBase {
         return;
       }
 
-      //todo check target's ID here. could accept multiple IDs.
-      if(target.getFiducialId() != id)
-      {
-        System.out.println("Best target ID is wrong: " + target.getFiducialId());
-        return;
-      }
+      //todo check target's ID here. Should accept all Reef's IDs and Human player station IDs.
+      //for now, any detected best tag is fine
+      // if(target.getFiducialId() != id)
+      // {
+      //   System.out.println("Best target ID: " + target.getFiducialId());
+      //   return;
+      // }
+
+      //todo: use the best tag's ID to get its angle in the field.
+        // Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
+      // if (tagPose.isEmpty()) {
+      //   pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
+      //   return;
+      // }  
 
       //get the swerve pose at the time that the result was gotten
       Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
@@ -376,65 +338,7 @@ public class PhotonSubsystem extends SubsystemBase {
       } 
    
     } 
-    else 
-    {
-      //2D 
-      //get the swerve pose at the time that the result was gotten
-      Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
-      //for security reasons
-      if (optPose.isEmpty()){
-        System.out.println("the optPose is empty");
-        return;
-      }
-      Pose2d odometryPose = optPose.get();
-
-      PhotonTrackedTarget target = null;
-      
-      List<PhotonTrackedTarget> allTargets = result.getTargets();
-      if (allTargets.size()==0){
-         System.out.println("all targets size is zero");
-        return;
-      }
-
-      if (id == -1){
-        target = biggestTarget(allTargets);
-
-        if (target == null) {
-          return;
-        }
-        id = target.getFiducialId();
-      } 
-      else
-      {
-        for (PhotonTrackedTarget t:allTargets){
-          if (t.getFiducialId() == id){
-            target = t;
-            break;
-          }
-        }
-        if (target == null){
-          return;
-        }
-      }
-        
-      //get tag info
-      //calculate yaw
-      Rotation2d yaw = Rotation2d.fromDegrees(target.getYaw()*-1);
-      //calculate range
-      double range = (range (target.getPitch()));
-      // if (range < 6 && range > 1.5){
-      //   double va = (range-1.5)/10;
-
-      //   range*=(1-va);
-      // }
-      //convert to field quordinates
-      fieldToTarget = convertToField(range, yaw, odometryPose);
-
-      pubRange.accept(range);
-      pubYaw.accept(yaw.getDegrees());
-
-    }
-
+    
     if (fieldToTarget != null) {
       //update rolling averages
       targetPos = new Translation2d(
