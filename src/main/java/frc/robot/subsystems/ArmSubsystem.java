@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
-import static frc.lib.lib2706.ErrorCheck.configureSpark;
+//import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkBase.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
@@ -78,41 +80,26 @@ public class ArmSubsystem extends SubsystemBase {
   private ArmSubsystem() {
     m_arm = new SparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
     m_arm_config = new SparkMaxConfig();
-    configureSpark("arm set CANTimeout", () -> m_arm.setCANTimeout(Config.CANTIMEOUT_MS));
-    configureSpark("Arm set current limits", () -> {
-      m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT);
-    });
-    m_arm.setInverted(Config.ArmConfig.SET_INVERTED); // sets movement direction
-    configureSpark("Arm set brakes when idle", () -> (m_arm.setIdleMode(IdleMode.kBrake))); // sets brakes when there is  no motion
-    configureSpark("Arm voltage compesentation", () -> m_arm.enableVoltageCompensation(6));                                                                                           
 
-    configureSpark("Arm set soft limits forward",
-        () -> (m_arm.setSoftLimit(SoftLimitDirection.kForward, (float) (Config.ArmConfig.arm_forward_limit))));
-    configureSpark("Arm sets soft limits reverse",
-        () -> (m_arm.setSoftLimit(SoftLimitDirection.kReverse, (float) (Config.ArmConfig.arm_reverse_limit))));
-    configureSpark("Arm enables soft limits forward",
-        () -> (m_arm.enableSoftLimit(SoftLimitDirection.kForward, Config.ArmConfig.SOFT_LIMIT_ENABLE)));
-    configureSpark("Arm enable soft limit reverse",
-        () -> (m_arm.enableSoftLimit(SoftLimitDirection.kReverse, Config.ArmConfig.SOFT_LIMIT_ENABLE)));
+    m_arm.setCANTimeout(Config.CANTIMEOUT_MS);
 
-    // SparkMax periodic status frame 5: frequency absolute encoder position data is
-    // sent over the can bus
-    // SparkMax perioidc status frame 6: frequency absolute encoder velocity data is
-    // sent over the can bus
-    configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
-    configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
+    m_arm_config.smartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT);
+    m_arm_config.inverted(Config.ArmConfig.SET_INVERTED);
+    m_arm_config.idleMode(IdleMode.kBrake);
+    m_arm_config.voltageCompensation(6);
+    m_arm_config.softLimit.forwardSoftLimit(Config.ArmConfig.arm_forward_limit);
+    m_arm_config.softLimit.reverseSoftLimit(Config.ArmConfig.arm_reverse_limit);
+    m_arm_config.softLimit.forwardSoftLimitEnabled(Config.ArmConfig.SOFT_LIMIT_ENABLE);
+    m_arm_config.softLimit.reverseSoftLimitEnabled(Config.ArmConfig.SOFT_LIMIT_ENABLE);
+    m_arm_config.signals.primaryEncoderPositionPeriodMs(20);
+    m_arm_config.signals.primaryEncoderVelocityPeriodMs(20);
+    m_arm_config.encoder.inverted(Config.ArmConfig.INVERT_ENCODER);
+    m_arm_config.encoder.positionConversionFactor(Config.ArmConfig.armPositionConversionFactor);
+    m_arm_config.encoder.velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor);
+    m_arm_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset));
+    m_arm_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
 
-    m_absEncoder = m_arm.getAbsoluteEncoder();
-    configureSpark("Absolute encoder set inerted", () -> m_absEncoder.setInverted(Config.ArmConfig.INVERT_ENCODER));
-    configureSpark("Absolute encoder set position conersation factor",
-        () -> m_absEncoder.setPositionConversionFactor(Config.ArmConfig.armPositionConversionFactor));
-    configureSpark("Absolute Encoder set velocity conversion factor",
-        () -> m_absEncoder.setVelocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor));
-    configureSpark("Absolute encoder set zero offset",
-        () -> m_absEncoder.setZeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)));
-
-    m_pidControllerArm = m_arm.getPIDController();
-    configureSpark("Pid controller arm set feedback device", () -> m_pidControllerArm.setFeedbackDevice(m_absEncoder));
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     NetworkTable ArmTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
     m_armPSubs = ArmTuningTable.getDoubleTopic("P").getEntry(Config.ArmConfig.arm_kP);
@@ -142,7 +129,7 @@ public class ArmSubsystem extends SubsystemBase {
     updatePID1Settings();
 
     burnFlash();
-    configureSpark("Arm set CANTimeout", () -> m_arm.setCANTimeout(0));
+    m_arm.setCANTimeout(0)
 
     ErrorTrackingSubsystem.getInstance().register(m_arm);
   }

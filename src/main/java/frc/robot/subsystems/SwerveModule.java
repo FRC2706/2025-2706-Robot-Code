@@ -1,9 +1,10 @@
 package frc.robot.subsystems;
 
-import static frc.lib.lib2706.ErrorCheck.configureSpark;
+//import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.ctre.phoenix.sensors.CANCoder; // This will be deprecated, we should migrate to Phoenix 6
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -169,24 +170,29 @@ public class SwerveModule {
   }
 
   private void configDriveMotor() {
-    configureSpark("Drive factory defaults", () -> driveMotor.restoreFactoryDefaults());
-    configureSpark("Drive set can timeout", () -> driveMotor.setCANTimeout(Config.CANTIMEOUT_MS));
-    SparkMaxUtil.setSparkMaxBusUsage(driveMotor, Usage.kAll);
-    configureSpark("Drive smart current limit", () -> driveMotor.setSmartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit));
-    driveMotor.setInverted(Config.Swerve.driveInvert);
-    configureSpark("Drive idle mode", () -> driveMotor.setIdleMode(Config.Swerve.driveNeutralMode));
-    configureSpark("Drive velocity conversion factor", () -> driveEncoder.setVelocityConversionFactor(Config.Swerve.driveConversionVelocityFactor));
-    configureSpark("Drive position conversion factor", () -> driveEncoder.setPositionConversionFactor(Config.Swerve.driveConversionPositionFactor));
-    configureSpark("Drive set P", () -> driveController.setP(Config.Swerve.driveKP));
-    configureSpark("Drive set I", () -> driveController.setI(Config.Swerve.driveKI));
-    configureSpark("Drive set D", () -> driveController.setD(Config.Swerve.driveKD));
-    configureSpark("Drive set FF", () -> driveController.setFF(Config.Swerve.driveKFF));
-    configureSpark("Drive set pid wrap min", () -> driveController.setPositionPIDWrappingMinInput(0));
-    configureSpark("Drive set pid wrap max", () -> driveController.setPositionPIDWrappingMaxInput(2 * Math.PI));
-    configureSpark("Drive set pid wrap", () -> driveController.setPositionPIDWrappingEnabled(true));
-    configureSpark("Drive voltage comp", () -> driveMotor.enableVoltageCompensation(Config.Swerve.voltageComp));
-    configureSpark("Drive set position", () -> driveEncoder.setPosition(0.0));
-    configureSpark("Drive remove can timeout", () -> driveMotor.setCANTimeout(0));
+    SparkMaxConfig driveMotorConfig = new SparkMaxConfig();
+
+    driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
+    driveMotorConfig.inverted(Config.Swerve.driveInvert);
+    driveMotorConfig.idleMode(Config.Swerve.driveNeutralMode);
+    driveMotorConfig.encoder.velocityConversionFactor(Config.Swerve.driveConversionVelocityFactor);
+    driveMotorConfig.encoder.positionConversionFactor(Config.Swerve.driveConversionPositionFactor);
+    driveMotorConfig.closedLoop.p(Config.Swerve.driveKP);
+    driveMotorConfig.closedLoop.i(Config.Swerve.driveKI);
+    driveMotorConfig.closedLoop.d(Config.Swerve.driveKD);
+    driveMotorConfig.closedLoop.velocityFF(Config.Swerve.driveKFF);
+    driveMotorConfig.closedLoop.positionWrappingMinInput(0);
+    driveMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
+    driveMotorConfig.closedLoop.positionWrappingEnabled(true);
+    driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
+
+    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
+
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
+    driveEncoder.setPosition(0.0);
+
+    driveMotor.setCANTimeout(0);
   }
 
   /**
@@ -198,8 +204,8 @@ public class SwerveModule {
     } 
     catch (Exception e) {}
 
-    driveMotor.burnFlash();
-    angleMotor.burnFlash();
+    /*driveMotor.burnFlash();
+    angleMotor.burnFlash();*/ // broken in 2025
   }
 
   /**
@@ -209,9 +215,13 @@ public class SwerveModule {
    */
   public void setVoltageCompensation(boolean enable) {
     if (enable) {
-      errSpark("Drive enable volt comp", driveMotor.enableVoltageCompensation(Config.Swerve.voltageComp));
+      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
+              .voltageCompensation(Config.Swerve.voltageComp);
+      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     } else {
-      errSpark("Drive disable volt comp", driveMotor.disableVoltageCompensation());
+      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
+              .disableVoltageCompensation();
+      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
   }
 
@@ -234,7 +244,7 @@ public class SwerveModule {
         driveController.setReference(
           speed,
           ControlType.kVelocity,
-          0,
+          ClosedLoopSlot.kSlot0,
           feedforward.calculate(speed)));
     }
   }
@@ -258,7 +268,7 @@ public class SwerveModule {
       angle = desiredState.angle;
     }
 
-    errSpark("Angle set reference", angleController.setReference(angle.getRadians(), CANSparkBase.ControlType.kPosition));
+    errSpark("Angle set reference", angleController.setReference(angle.getRadians(), SparkBase.ControlType.kPosition));
     lastAngle = angle;
   }
 
