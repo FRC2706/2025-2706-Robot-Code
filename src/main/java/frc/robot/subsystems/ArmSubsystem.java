@@ -4,17 +4,14 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -129,27 +126,33 @@ public class ArmSubsystem extends SubsystemBase {
     updatePID1Settings();
 
     burnFlash();
-    m_arm.setCANTimeout(0)
+    m_arm.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_arm);
   }
 
   public void updatePID0Settings() {
-    configureSpark("Arm set FF", () -> (m_pidControllerArm.setFF(m_armFFSubs.get(), 0)));
-    configureSpark("Arm set P", () -> (m_pidControllerArm.setP(m_armPSubs.get(), 0)));
-    configureSpark("Arm set I", () -> (m_pidControllerArm.setI(m_armISubs.get(), 0)));
-    configureSpark("Arm set D", () -> (m_pidControllerArm.setD(m_armDSubs.get(), 0)));
-    configureSpark("Arm set Iz", () -> (m_pidControllerArm.setIZone(m_armIzSubs.get(), 0)));
-    configureSpark("Arm set Output Range",
-        () -> (m_pidControllerArm.setOutputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output)));
+    SparkMaxConfig m_arm_config = new SparkMaxConfig();
+    m_arm_config.closedLoop.velocityFF(m_armFFSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.p(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.i(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.d(m_armDSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.iZone(m_armIzSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.outputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output);
+
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
   public void updatePID1Settings() {
-    configureSpark("Arm set far FF", () -> m_pidControllerArm.setFF(ArmConfig.arm_far_kFF, 1));
-    configureSpark("Arm set far P", () -> m_pidControllerArm.setP(ArmConfig.arm_far_kP, 1));
-    configureSpark("Arm set far I", () -> m_pidControllerArm.setI(ArmConfig.arm_far_kI, 1));
-    configureSpark("Arm set far D", () -> m_pidControllerArm.setD(ArmConfig.arm_far_kD, 1));
-    configureSpark("Arm set far Iz", () -> m_pidControllerArm.setIZone(ArmConfig.arm_far_iZone, 1));
+    SparkMaxConfig m_arm_config = new SparkMaxConfig();
+    m_arm_config.closedLoop.velocityFF(ArmConfig.arm_far_kFF, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.p(ArmConfig.arm_far_kP, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.i(ArmConfig.arm_far_kI, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.d(ArmConfig.arm_far_kD, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.iZone(ArmConfig.arm_far_iZone, ClosedLoopSlot.kSlot1);
+
+
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
   @Override
@@ -165,13 +168,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
     double angleDeg = Math.toDegrees(angle);
-    int pidSlot = 0;
+    ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
     if (angleDeg < 25) {
-      pidSlot = 0;
+      pidSlot = ClosedLoopSlot.kSlot0;
     } else if (angleDeg >= 25 && angleDeg < 55) {
-      pidSlot = 1;
+      pidSlot = ClosedLoopSlot.kSlot1;
     } else if (angleDeg >= 55) {
-      pidSlot = 0;
+      pidSlot = ClosedLoopSlot.kSlot0;
     }
 
     m_ProfiledPIDController.calculate(getPosition(), clampedAngle);
@@ -204,7 +207,7 @@ public class ArmSubsystem extends SubsystemBase {
       } 
       catch (Exception e) {}
 
-      errSpark("Arm burn flash", m_arm.burnFlash());      
+      //errSpark("Arm burn flash", m_arm.burnFlash());
     }
 
     private double calculateFF(double encoder1Rad) {
@@ -219,7 +222,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setArmIdleMode(IdleMode mode) {
-      m_arm.setIdleMode(mode);
+      SparkMaxConfig m_arm_config = new SparkMaxConfig();
+
+      m_arm_config.idleMode(mode);
+
+      m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public void testFeedForward(double additionalVoltage) {
