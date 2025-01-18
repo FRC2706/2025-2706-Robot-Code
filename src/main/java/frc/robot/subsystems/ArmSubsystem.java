@@ -6,7 +6,7 @@ import static frc.lib.lib2706.ErrorCheck.errSpark;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
+import com.revrobotics.spark.SparkBase.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.spark.SparkMax;
@@ -78,9 +78,10 @@ public class ArmSubsystem extends SubsystemBase {
   private ArmSubsystem() {
     m_arm = new SparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
     m_arm_config = new SparkMaxConfig();
-    configureSpark("Arm restore factory defaults", () -> (m_arm.restoreFactoryDefaults()));
     configureSpark("arm set CANTimeout", () -> m_arm.setCANTimeout(Config.CANTIMEOUT_MS));
-    configureSpark("Arm set current limits", () -> m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT));
+    configureSpark("Arm set current limits", () -> {
+      m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT);
+    });
     m_arm.setInverted(Config.ArmConfig.SET_INVERTED); // sets movement direction
     configureSpark("Arm set brakes when idle", () -> (m_arm.setIdleMode(IdleMode.kBrake))); // sets brakes when there is  no motion
     configureSpark("Arm voltage compesentation", () -> m_arm.enableVoltageCompensation(6));                                                                                           

@@ -59,6 +59,7 @@ public class ErrorCheck {
         return false;
     }
 
+
     /**
      * Configure a SparkMax setting multiple times until it succeeds.
      * 
@@ -66,6 +67,7 @@ public class ErrorCheck {
      * @param config The Supplier to call to configure which returns a REVLibError.
      * @return true for success, false for failure.
      */
+    /*
     public static boolean configureSpark(String message, Supplier<REVLibError> config) {
         REVLibError err = REVLibError.kOk;
         for (int i = 0; i < MAXIMUM_RETRIES; i++) {
@@ -84,6 +86,7 @@ public class ErrorCheck {
             
         return false;
     }
+    */ // Temporarily removed for 2025 changes, will fix later
     
     public static boolean errREV(REVLibError error) {
         if (error == REVLibError.kOk) {
