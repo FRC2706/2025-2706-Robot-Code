@@ -1,14 +1,19 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import java.util.function.BooleanSupplier;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -25,9 +30,11 @@ import frc.lib.lib2706.TunableNumber;
 import frc.robot.Config;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private CANSparkMax m_motor;
-    private CANSparkMax m_motor2;
-    private SparkPIDController m_pidController;
+    private SparkMax m_motor;
+    private SparkMaxConfig m_motor_config;
+    private SparkMax m_motor2;
+    private SparkMaxConfig m_motor2_config;
+    private SparkClosedLoopController m_pidController;
     private RelativeEncoder m_encoder;
     private boolean closedLoopControl = false;
     private boolean stateFulControl = false;
@@ -60,37 +67,40 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         System.out.println("[Init] Creating Shooter");
-        m_motor = new CANSparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
-        m_motor.restoreFactoryDefaults();
+        m_motor = new SparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
 
-        m_motor.setCANTimeout(500);//Units in miliseconds
-        m_motor.setIdleMode(IdleMode.kBrake);
-        m_motor.setInverted(false);
+        m_motor_config = (SparkMaxConfig) new SparkMaxConfig()
+                .inverted(true)
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(60);
 
-        m_motor2 = new CANSparkMax(Config.ShooterConstants.MOTOR_ID2, MotorType.kBrushless);
-        m_motor2.restoreFactoryDefaults();
+        m_motor_config.closedLoop.minOutput(Config.ShooterConstants.kMinOutput);
+        m_motor_config.closedLoop.maxOutput(Config.ShooterConstants.kMaxOutput);
 
-        m_motor2.setCANTimeout(500);//Units in miliseconds
-        m_motor2.setIdleMode(IdleMode.kBrake);
-        m_motor2.setInverted(false);
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        //set the second motor as a follower of the first motor
-        m_motor2.follow(m_motor);
 
-        m_pidController = m_motor.getPIDController();
+        m_motor2 = new SparkMax(Config.ShooterConstants.MOTOR_ID2, MotorType.kBrushless);
+
+        m_motor2_config = (SparkMaxConfig) new SparkMaxConfig()
+                .inverted(false)
+                .idleMode(IdleMode.kBrake)
+                .follow(m_motor);
+
+        m_motor2.configure(m_motor2_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        m_pidController = m_motor.getClosedLoopController();
         m_encoder = m_motor.getEncoder();
 
         //Voltage compensation
         // m_motor.enableVoltageCompensation(10); //adjust on final robot
-        m_motor.setSmartCurrentLimit(60);//Change this back to 70
         setBrake(true);
 
-        m_pidController.setOutputRange(Config.ShooterConstants.kMinOutput, Config.ShooterConstants.kMaxOutput);
-        setPIDGains(kP.get(), kI.get(), kD.get(), 0);
-        setFFGains(kFF.get(), 0);
+        setPIDGains(kP.get(), kI.get(), kD.get(), ClosedLoopSlot.kSlot0);
+        setFFGains(kFF.get(), ClosedLoopSlot.kSlot0);
 
-        setPIDGains(kP1.get(), kI1.get(), kD1.get(), 1);
-        setFFGains(kFF1.get(), 1);
+        setPIDGains(kP1.get(), kI1.get(), kD1.get(), ClosedLoopSlot.kSlot1);
+        setFFGains(kFF1.get(), ClosedLoopSlot.kSlot1);
 
         ErrorCheck.sparkBurnFlash("Shooter", m_motor);
 
@@ -130,8 +140,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setRPM(double setPoint) {
-        int slotID = 1;
-        m_pidController.setReference(setPoint, ControlType.kVelocity, slotID);
+        ClosedLoopSlot slot = ClosedLoopSlot.kSlot1;
+        m_pidController.setReference(setPoint, ControlType.kVelocity, slot);
     }
 
     public void setVoltage(double setVolt) {
@@ -142,18 +152,21 @@ public class ShooterSubsystem extends SubsystemBase {
         m_motor.stopMotor();
     }
 
-    public void setBrake(boolean enableBreak){
-        m_motor.setIdleMode(enableBreak ? IdleMode.kBrake: IdleMode.kCoast);
+    public void setBrake(boolean enableBreak) {
+        m_motor_config.idleMode(enableBreak ? IdleMode.kBrake: IdleMode.kCoast);
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    private void setPIDGains(double kP, double kI, double kD, int slotID){
-        m_pidController.setP(kP, slotID);
-        m_pidController.setI(kI, slotID);
-        m_pidController.setD(kD, slotID);
+    private void setPIDGains(double kP, double kI, double kD, ClosedLoopSlot slot){
+        m_motor_config.closedLoop.p(kP, slot);
+        m_motor_config.closedLoop.i(kI, slot);
+        m_motor_config.closedLoop.d(kD, slot);
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }   
 
-    private void setFFGains(double kFF, int slotID){
-        m_pidController.setFF(kFF, slotID);
+    private void setFFGains(double kFF, ClosedLoopSlot slot) {
+        m_motor_config.closedLoop.velocityFF(kFF, slot);
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }   
 
     /*---------------------------Commands---------------------------*/
@@ -161,11 +174,11 @@ public class ShooterSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
-        TunableNumber.ifChanged(hashCode(), ()->setPIDGains(kP.get(), kI.get(), kD.get(), 0), kP, kI, kD);
-        TunableNumber.ifChanged(hashCode(), ()->setFFGains(kFF.get(), 0), kFF);
+        TunableNumber.ifChanged(hashCode(), ()->setPIDGains(kP.get(), kI.get(), kD.get(), ClosedLoopSlot.kSlot0), kP, kI, kD);
+        TunableNumber.ifChanged(hashCode(), ()->setFFGains(kFF.get(), ClosedLoopSlot.kSlot0), kFF);
 
-        TunableNumber.ifChanged(hashCode(), ()->setPIDGains(kP1.get(), kI1.get(), kD1.get(), 1), kP1, kI1, kD1);
-        TunableNumber.ifChanged(hashCode(), ()->setFFGains(kFF1.get(), 1), kFF1);
+        TunableNumber.ifChanged(hashCode(), ()->setPIDGains(kP1.get(), kI1.get(), kD1.get(), ClosedLoopSlot.kSlot1), kP1, kI1, kD1);
+        TunableNumber.ifChanged(hashCode(), ()->setFFGains(kFF1.get(), ClosedLoopSlot.kSlot1), kFF1);
 
         velocityPub.accept(getVelocityRPM());
         pubMotorTemp.setDouble(getMotorTemperature());

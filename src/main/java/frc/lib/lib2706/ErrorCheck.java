@@ -3,9 +3,12 @@ package frc.lib.lib2706;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix.ErrorCode;
-import com.revrobotics.CANSparkBase;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.REVLibError;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
 
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class ErrorCheck {
@@ -24,7 +27,7 @@ public class ErrorCheck {
         if (error == REVLibError.kOk) {
             return true;
         }
-        String msg = "[MergeError] - CANSparkMax error. MergeMessage:" + message;
+        String msg = "[MergeError] - SparkMax error. MergeMessage:" + message;
         msg += " Spark error code: " + error.toString() + " \nSee stack trace below.";
 
         DriverStation.reportError(
@@ -56,6 +59,7 @@ public class ErrorCheck {
         return false;
     }
 
+
     /**
      * Configure a SparkMax setting multiple times until it succeeds.
      * 
@@ -63,6 +67,7 @@ public class ErrorCheck {
      * @param config The Supplier to call to configure which returns a REVLibError.
      * @return true for success, false for failure.
      */
+    /*
     public static boolean configureSpark(String message, Supplier<REVLibError> config) {
         REVLibError err = REVLibError.kOk;
         for (int i = 0; i < MAXIMUM_RETRIES; i++) {
@@ -72,7 +77,7 @@ public class ErrorCheck {
             }
         }
 
-        String msg = "[MergeError] - CANSparkMax failed to configure setting. MergeMessage:" + message;
+        String msg = "[MergeError] - SparkMax failed to configure setting. MergeMessage:" + message;
         msg += " Spark error code: " + err.toString() + " \nSee stack trace below.";
 
         DriverStation.reportError(
@@ -81,6 +86,7 @@ public class ErrorCheck {
             
         return false;
     }
+    */ // Temporarily removed for 2025 changes, will fix later
     
     public static boolean errREV(REVLibError error) {
         if (error == REVLibError.kOk) {
@@ -97,20 +103,23 @@ public class ErrorCheck {
      * @param sparkmaxs The sparkmaxs to run burn flash on.
      * @return true for success, false for failure.
      */
-    public static boolean sparkBurnFlash(String sparkmaxNames, CANSparkBase... sparkmaxs) {
+    public static boolean sparkBurnFlash(String sparkmaxNames, SparkBase... sparkmaxs) {
         try {
             Thread.sleep(200);
         } catch (Exception e) {}
 
         boolean allOk = true;
-        for (CANSparkBase sparkmax : sparkmaxs) {
+
+        SparkMaxConfig blankConfig = (SparkMaxConfig) new SparkMaxConfig();
+
+        for (SparkBase sparkmax : sparkmaxs) {
             // Burn flash and record error
-            REVLibError error = sparkmax.burnFlash();
+            REVLibError error = sparkmax.configure(blankConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
             if (error != REVLibError.kOk) {
                 allOk = false;
                 
-                String msg = "[MergeError] - CANSparkMax failed to burn flash on sparkmax(s): " + sparkmaxNames;
+                String msg = "[MergeError] - SparkMax failed to burn flash on sparkmax(s): " + sparkmaxNames;
                 msg += " Spark error code: " + error.toString() + " \nSee stack trace below.";
 
                 DriverStation.reportError(
