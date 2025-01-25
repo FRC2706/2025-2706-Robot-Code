@@ -26,42 +26,42 @@ import frc.lib.lib2706.ProfiledPIDFFController;
 import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
-import frc.robot.Config.ArmConfig;
+import frc.robot.Config.ElevatorConfig;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private static ElevatorSubsystem instance = null; // static object that contains all movement controls
 
     private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
-    private final SparkMax m_arm; // bottom SparkMax motor controller
-    private SparkMaxConfig m_arm_config;
+    private final SparkMax m_elevator; // bottom SparkMax motor controller
+    private SparkMaxConfig m_elevator_config;
 
     // network table entry
     private final String m_tuningTable = "Elevator/ElevatorTuning";
     private final String m_dataTable = "Elevator/ElevatorData";
 
     // network table entries
-    private DoubleEntry m_armPSubs;
-    private DoubleEntry m_armISubs;
-    private DoubleEntry m_armDSubs;
-    private DoubleEntry m_armIzSubs;
-    private DoubleEntry m_armFFSubs;
-    private DoublePublisher m_armSetpointPub;
-    private DoublePublisher m_armVelPub;
-    private DoublePublisher m_armFFTestingVolts;
-    private DoubleEntry m_armOffset;
+    private DoubleEntry m_elevatorPSubs;
+    private DoubleEntry m_elevatorISubs;
+    private DoubleEntry m_elevatorDSubs;
+    private DoubleEntry m_elevatorIzSubs;
+    private DoubleEntry m_elevatorFFSubs;
+    private DoublePublisher m_elevatorSetpointPub;
+    private DoublePublisher m_elevatorVelPub;
+    private DoublePublisher m_elevatorFFTestingVolts;
+    private DoubleEntry m_elevatorOffset;
     private DoublePublisher m_targetAngle;
-    private DoublePublisher m_armPosPub;
+    private DoublePublisher m_elevatorPosPub;
 
-    // for arm ff
-    private DoubleEntry m_armMomentToVoltage;
+    // for elevator ff
+    private DoubleEntry m_elevatorMomentToVoltage;
 
     //spark absolute encoder
     private SparkAbsoluteEncoder m_absEncoder;
     //embedded relative encoder
-    private SparkClosedLoopController m_pidControllerArm;
+    private SparkClosedLoopController m_pidControllerElevator;
 
     private final TrapezoidProfile.Constraints m_constraints =
-            new TrapezoidProfile.Constraints(Config.ArmConfig.MAX_VEL, Config.ArmConfig.MAX_ACCEL);
+            new TrapezoidProfile.Constraints(Config.ElevatorConfig.MAX_VEL, Config.ElevatorConfig.MAX_ACCEL);
     private final ProfiledPIDController m_ProfiledPIDController =
             new ProfiledPIDController(1.6,0.002,40, m_constraints, 0.02);
 
@@ -75,97 +75,97 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private ElevatorSubsystem() {
-        m_arm = new SparkMax(Config.ElevatorConfig.ELEVATOR_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
-        m_arm_config = new SparkMaxConfig();
+        m_elevator = new SparkMax(Config.ElevatorConfig.ELEVATOR_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
+        m_elevator_config = new SparkMaxConfig();
 
-        m_arm.setCANTimeout(Config.CANTIMEOUT_MS);
+        m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
 
-        m_arm_config.smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT);
-        m_arm_config.inverted(Config.ElevatorConfig.SET_INVERTED);
-        m_arm_config.idleMode(IdleMode.kBrake);
-        m_arm_config.voltageCompensation(6);
-        m_arm_config.softLimit.forwardSoftLimit(Config.ElevatorConfig.elevator_up_limit);
-        m_arm_config.softLimit.reverseSoftLimit(Config.ElevatorConfig.elevator_down_limit);
-        m_arm_config.softLimit.forwardSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
-        m_arm_config.softLimit.reverseSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
-        m_arm_config.signals.primaryEncoderPositionPeriodMs(20);
-        m_arm_config.signals.primaryEncoderVelocityPeriodMs(20);
-        m_arm_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
-        m_arm_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
-        m_arm_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
-        m_arm_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ElevatorConfig.elevatorAbsEncoderOffset));
-        m_arm_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
+        m_elevator_config.smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT);
+        m_elevator_config.inverted(Config.ElevatorConfig.SET_INVERTED);
+        m_elevator_config.idleMode(IdleMode.kBrake);
+        m_elevator_config.voltageCompensation(6);
+        m_elevator_config.softLimit.forwardSoftLimit(Config.ElevatorConfig.elevator_up_limit);
+        m_elevator_config.softLimit.reverseSoftLimit(Config.ElevatorConfig.elevator_down_limit);
+        m_elevator_config.softLimit.forwardSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
+        m_elevator_config.softLimit.reverseSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
+        m_elevator_config.signals.primaryEncoderPositionPeriodMs(20);
+        m_elevator_config.signals.primaryEncoderVelocityPeriodMs(20);
+        m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
+        m_elevator_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
+        m_elevator_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
+        m_elevator_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ElevatorConfig.elevatorAbsEncoderOffset));
+        m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
 
-        m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        /*NetworkTable ArmTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
-        m_armPSubs = ArmTuningTable.getDoubleTopic("P").getEntry(Config.ArmConfig.arm_kP);
-        m_armISubs = ArmTuningTable.getDoubleTopic("I").getEntry(Config.ArmConfig.arm_kI);
-        m_armDSubs = ArmTuningTable.getDoubleTopic("D").getEntry(Config.ArmConfig.arm_kD);
-        m_armIzSubs = ArmTuningTable.getDoubleTopic("IZone").getEntry(Config.ArmConfig.arm_kIz);
-        m_armFFSubs = ArmTuningTable.getDoubleTopic("FF").getEntry(Config.ArmConfig.arm_kFF);
-        // m_topArmOffset =
-        // topArmTuningTable.getDoubleTopic("Offset").getEntry(ArmConfig.top_arm_offset);
-        m_armMomentToVoltage = ArmTuningTable.getDoubleTopic("MomentToVoltage")
-                .getEntry(Config.ArmConfig.MOMENT_TO_VOLTAGE);
+        /*NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
+        m_elevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(Config.ElevatorConfig.elevator_kP);
+        m_elevatorISubs = ElevatorTuningTable.getDoubleTopic("I").getEntry(Config.ElevatorConfig.elevator_kI);
+        m_elevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(Config.ElevatorConfig.elevator_kD);
+        m_elevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(Config.ElevatorConfig.elevator_kIz);
+        m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
+        // m_topElevatorOffset =
+        // topElevatorTuningTable.getDoubleTopic("Offset").getEntry(ElevatorConfig.top_elevator_offset);
+        m_elevatorMomentToVoltage = ElevatorTuningTable.getDoubleTopic("MomentToVoltage")
+                .getEntry(Config.ElevatorConfig.MOMENT_TO_VOLTAGE);
 
-        m_armFFSubs.setDefault(Config.ArmConfig.arm_kFF);
-        m_armPSubs.setDefault(Config.ArmConfig.arm_kP);
-        m_armISubs.setDefault(Config.ArmConfig.arm_kI);
-        m_armDSubs.setDefault(Config.ArmConfig.arm_kD);
-        m_armIzSubs.setDefault(Config.ArmConfig.arm_kIz);
+        m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
+        m_elevatorPSubs.setDefault(Config.ElevatorConfig.elevator_kP);
+        m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
+        m_elevatorDSubs.setDefault(Config.ElevatorConfig.elevator_kD);
+        m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
 
-        NetworkTable ArmDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
+        NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
 
-        m_armPosPub = ArmDataTable.getDoubleTopic("MeasuredAngleDeg").publish(PubSubOption.periodic(0.02));
-        m_armVelPub = ArmDataTable.getDoubleTopic("MeasuredVelocity").publish(PubSubOption.periodic(0.02));
-        m_armFFTestingVolts= ArmDataTable.getDoubleTopic("FFTestingVolts").publish(PubSubOption.periodic(0.02));
-        m_targetAngle = ArmDataTable.getDoubleTopic("TargetAngleDeg").publish(PubSubOption.periodic(0.02));
+        m_elevatorPosPub = ElevatorDataTable.getDoubleTopic("MeasuredAngleDeg").publish(PubSubOption.periodic(0.02));
+        m_elevatorVelPub = ElevatorDataTable.getDoubleTopic("MeasuredVelocity").publish(PubSubOption.periodic(0.02));
+        m_elevatorFFTestingVolts= ElevatorDataTable.getDoubleTopic("FFTestingVolts").publish(PubSubOption.periodic(0.02));
+        m_targetAngle = ElevatorDataTable.getDoubleTopic("TargetAngleDeg").publish(PubSubOption.periodic(0.02));
         */
 
         updatePID0Settings();
         updatePID1Settings();
 
         burnFlash();
-        m_arm.setCANTimeout(0);
+        m_elevator.setCANTimeout(0);
 
-        ErrorTrackingSubsystem.getInstance().register(m_arm);
+        ErrorTrackingSubsystem.getInstance().register(m_elevator);
     }
 
     public void updatePID0Settings() {
-        SparkMaxConfig m_arm_config = new SparkMaxConfig();
-        m_arm_config.closedLoop.velocityFF(m_armFFSubs.get(), ClosedLoopSlot.kSlot0);
-        m_arm_config.closedLoop.p(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
-        m_arm_config.closedLoop.i(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
-        m_arm_config.closedLoop.d(m_armDSubs.get(), ClosedLoopSlot.kSlot0);
-        m_arm_config.closedLoop.iZone(m_armIzSubs.get(), ClosedLoopSlot.kSlot0);
-        m_arm_config.closedLoop.outputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output);
+        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
+        m_elevator_config.closedLoop.velocityFF(m_elevatorFFSubs.get(), ClosedLoopSlot.kSlot0);
+        m_elevator_config.closedLoop.p(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
+        m_elevator_config.closedLoop.i(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
+        m_elevator_config.closedLoop.d(m_elevatorDSubs.get(), ClosedLoopSlot.kSlot0);
+        m_elevator_config.closedLoop.iZone(m_elevatorIzSubs.get(), ClosedLoopSlot.kSlot0);
+        m_elevator_config.closedLoop.outputRange(Config.ElevatorConfig.min_output, Config.ElevatorConfig.max_output);
 
-        m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public void updatePID1Settings() {
-        SparkMaxConfig m_arm_config = new SparkMaxConfig();
-        m_arm_config.closedLoop.velocityFF(ArmConfig.arm_far_kFF, ClosedLoopSlot.kSlot1);
-        m_arm_config.closedLoop.p(ArmConfig.arm_far_kP, ClosedLoopSlot.kSlot1);
-        m_arm_config.closedLoop.i(ArmConfig.arm_far_kI, ClosedLoopSlot.kSlot1);
-        m_arm_config.closedLoop.d(ArmConfig.arm_far_kD, ClosedLoopSlot.kSlot1);
-        m_arm_config.closedLoop.iZone(ArmConfig.arm_far_iZone, ClosedLoopSlot.kSlot1);
+        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
+        m_elevator_config.closedLoop.velocityFF(ElevatorConfig.elevator_far_kFF, ClosedLoopSlot.kSlot1);
+        m_elevator_config.closedLoop.p(ElevatorConfig.elevator_far_kP, ClosedLoopSlot.kSlot1);
+        m_elevator_config.closedLoop.i(ElevatorConfig.elevator_far_kI, ClosedLoopSlot.kSlot1);
+        m_elevator_config.closedLoop.d(ElevatorConfig.elevator_far_kD, ClosedLoopSlot.kSlot1);
+        m_elevator_config.closedLoop.iZone(ElevatorConfig.elevator_far_iZone, ClosedLoopSlot.kSlot1);
 
 
-        m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     @Override
     public void periodic() {
-        m_armPosPub.accept(Math.toDegrees(getPosition()));
-        m_armVelPub.accept(Math.toDegrees(m_absEncoder.getVelocity()));
+        m_elevatorPosPub.accept(Math.toDegrees(getPosition()));
+        m_elevatorVelPub.accept(Math.toDegrees(m_absEncoder.getVelocity()));
     }
 
     // input angle_bottom in radians(
     public void setJointAngle(double angle) {
-        double clampedAngle = MathUtil.clamp(angle, Math.toRadians(Config.ArmConfig.MIN_ARM_ANGLE_DEG),
-                Math.toRadians(Config.ArmConfig.MAX_ARM_ANGLE_DEG));
+        double clampedAngle = MathUtil.clamp(angle, Math.toRadians(ElevatorConfig.MIN_ELEVATOR_EXTENSION),
+                Math.toRadians(ElevatorConfig.MAX_ELEVATOR_EXTENSION));
 
         // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
         double angleDeg = Math.toDegrees(angle);
@@ -181,8 +181,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_ProfiledPIDController.calculate(getPosition(), clampedAngle);
         double targetPos = m_ProfiledPIDController.getSetpoint().position;
 
-        //m_pidControllerArm.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
-        m_pidControllerArm.setReference(targetPos + Math.toRadians(ArmConfig.shiftEncoderRange), ControlType.kPosition, pidSlot, 0);
+        //m_pidControllerElevator.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
+        m_pidControllerElevator.setReference(targetPos + Math.toRadians(ElevatorConfig.shiftEncoderRange), ControlType.kPosition, pidSlot, 0);
 
         m_targetAngle.accept(Math.toDegrees(targetPos));
     }
@@ -197,11 +197,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //return radius
     public double getPosition() {
-        return m_absEncoder.getPosition() - Math.toRadians(ArmConfig.shiftEncoderRange);
+        return m_absEncoder.getPosition() - Math.toRadians(ElevatorConfig.shiftEncoderRange);
     }
 
     public void stopMotors() {
-        m_arm.stopMotor();
+        m_elevator.stopMotor();
     }
 
     public void burnFlash() {
@@ -210,32 +210,32 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
         catch (Exception e) {}
 
-        //errSpark("Arm burn flash", m_arm.burnFlash());
+        //errSpark("Elevator burn flash", m_elevator.burnFlash());
     }
 
     private double calculateFF(double encoder1Rad) {
-        //double ArmMoment = Config.ArmConfig.ARM_FORCE * (Config.ArmConfig.LENGTH_ARM_TO_COG*Math.cos(encoder1Rad));
-        //return (ArmMoment) * m_armMomentToVoltage.get();
+        //double ElevatorMoment = Config.ElevatorConfig.Elevator_FORCE * (Config.ElevatorConfig.LENGTH_Elevator_TO_COG*Math.cos(encoder1Rad));
+        //return (ElevatorMoment) * m_elevatorMomentToVoltage.get();
 
-        double toTunedConst = m_armMomentToVoltage.get();
+        double toTunedConst = m_elevatorMomentToVoltage.get();
         return toTunedConst*Math.cos(encoder1Rad);
     }
 
     public void isAtSetpoint() {
     }
 
-    public void setArmIdleMode(IdleMode mode) {
-        SparkMaxConfig m_arm_config = new SparkMaxConfig();
+    public void setElevatorIdleMode(IdleMode mode) {
+        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
 
-        m_arm_config.idleMode(mode);
+        m_elevator_config.idleMode(mode);
 
-        m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public void testFeedForward(double additionalVoltage) {
         double voltage = additionalVoltage + calculateFF(getPosition());
-        m_pidControllerArm.setReference(voltage, ControlType.kVoltage);
-        m_armFFTestingVolts.accept(voltage);
+        m_pidControllerElevator.setReference(voltage, ControlType.kVoltage);
+        m_elevatorFFTestingVolts.accept(voltage);
     }
 
 }
