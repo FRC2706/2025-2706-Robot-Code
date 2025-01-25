@@ -24,18 +24,8 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.Config.Swerve.TeleopSpeeds;
 import frc.robot.Robot;
-import frc.robot.commands.BlingCommand;
+import frc.robot.commands.*;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ClimberRPM;
-import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.IntakeControl;
-import frc.robot.commands.MakeIntakeMotorSpin;
-import frc.robot.commands.RotateAngleToVisionSupplier;
-import frc.robot.commands.RotateToAngle;
-import frc.robot.commands.RumbleJoystick;
-import frc.robot.commands.SetArm;
-import frc.robot.commands.SubwooferShot;
-import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -179,11 +169,18 @@ public class NewRobotContainer extends RobotContainer {
      * Operator Controls
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
-    // Arm
+    /*//Arm
     operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
     operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
     operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
-    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
+    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));*/
+
+    // ELEVATOR PROTOTYPE
+    operator.y().onTrue(new SetElevator(()->50));
+    operator.x().onTrue(new SetElevator(()->30));
+    operator.a().onTrue(new SetElevator(()->20));
+    operator.b().onTrue(new SetElevator(()->0));
+
     // Climber
     operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
 
