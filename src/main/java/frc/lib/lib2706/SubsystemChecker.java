@@ -27,15 +27,17 @@ public class SubsystemChecker {
         VisionNTSubsystem,
         BlingSubsystem,
         GripperSubsystem,
+        ElevatorSubsystem
     };
 
     /**
      * Allowed Subsystems for each robot
      */
-    // RobotID: 0, 2023 Competition robot, unnamed
+    // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
         SubsystemType.ArmSubsystem,
+        SubsystemType.ElevatorSubsystem,
         SubsystemType.RelaySubsystem,
         SubsystemType.VisionNTSubsystem,
         SubsystemType.GripperSubsystem,
