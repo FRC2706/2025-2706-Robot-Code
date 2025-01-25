@@ -90,9 +90,11 @@ public class ArmSubsystem extends SubsystemBase {
     m_arm_config.softLimit.reverseSoftLimitEnabled(Config.ArmConfig.SOFT_LIMIT_ENABLE);
     m_arm_config.signals.primaryEncoderPositionPeriodMs(20);
     m_arm_config.signals.primaryEncoderVelocityPeriodMs(20);
-    m_arm_config.encoder.inverted(Config.ArmConfig.INVERT_ENCODER);
-    m_arm_config.encoder.positionConversionFactor(Config.ArmConfig.armPositionConversionFactor);
-    m_arm_config.encoder.velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor);
+
+    m_absEncoder = m_arm.getAbsoluteEncoder();
+    m_arm_config.absoluteEncoder.inverted(Config.ArmConfig.INVERT_ENCODER);
+    m_arm_config.absoluteEncoder.positionConversionFactor(Config.ArmConfig.armPositionConversionFactor);
+    m_arm_config.absoluteEncoder.velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor);
     m_arm_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset));
     m_arm_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
 
