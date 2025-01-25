@@ -162,23 +162,23 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorVelPub.accept(Math.toDegrees(m_absEncoder.getVelocity()));
     }
 
-    // input angle_bottom in radians(
-    public void setJointAngle(double angle) {
-        double clampedAngle = MathUtil.clamp(angle, Math.toRadians(ElevatorConfig.MIN_ELEVATOR_EXTENSION),
+    public void setElevatorHeight(double height) {
+        double clampedHeight = MathUtil.clamp(height, Math.toRadians(ElevatorConfig.MIN_ELEVATOR_EXTENSION),
                 Math.toRadians(ElevatorConfig.MAX_ELEVATOR_EXTENSION));
 
         // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
-        double angleDeg = Math.toDegrees(angle);
+        //double angleDeg = Math.toDegrees(angle);
         ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
+        /*
         if (angleDeg < 25) {
             pidSlot = ClosedLoopSlot.kSlot0;
         } else if (angleDeg >= 25 && angleDeg < 55) {
             pidSlot = ClosedLoopSlot.kSlot1;
         } else if (angleDeg >= 55) {
             pidSlot = ClosedLoopSlot.kSlot0;
-        }
+        }*/
 
-        m_ProfiledPIDController.calculate(getPosition(), clampedAngle);
+        m_ProfiledPIDController.calculate(getPosition(), clampedHeight);
         double targetPos = m_ProfiledPIDController.getSetpoint().position;
 
         //m_pidControllerElevator.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
