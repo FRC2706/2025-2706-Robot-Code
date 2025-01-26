@@ -60,6 +60,8 @@ public class SwerveModule {
 
   private final SparkClosedLoopController driveController;
   private final SparkClosedLoopController angleController;
+  SparkMaxConfig driveMotorConfig;
+  SparkMaxConfig angleMotorConfig;
 
   private boolean synchronizeEncoderQueued = false;
 
@@ -150,7 +152,7 @@ public class SwerveModule {
   }
 
   private void configAngleMotor() {
-    SparkMaxConfig angleMotorConfig = new SparkMaxConfig();
+    angleMotorConfig = new SparkMaxConfig();
     angleMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     angleMotorConfig.smartCurrentLimit(Config.Swerve.angleContinuousCurrentLimit);
@@ -173,7 +175,7 @@ public class SwerveModule {
   }
 
   private void configDriveMotor() {
-    SparkMaxConfig driveMotorConfig = new SparkMaxConfig();
+    driveMotorConfig = new SparkMaxConfig();
 
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
     driveMotorConfig.inverted(Config.Swerve.driveInvert);
@@ -207,8 +209,9 @@ public class SwerveModule {
     } 
     catch (Exception e) {}
 
-    /*driveMotor.burnFlash();
-    angleMotor.burnFlash();*/ // broken in 2025
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    
   }
 
   /**
