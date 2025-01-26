@@ -176,6 +176,7 @@ public class SwerveModule {
 
   private void configDriveMotor() {
     driveMotorConfig = new SparkMaxConfig();
+    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
     driveMotorConfig.inverted(Config.Swerve.driveInvert);
@@ -190,8 +191,6 @@ public class SwerveModule {
     driveMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
     driveMotorConfig.closedLoop.positionWrappingEnabled(true);
     driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
-
-    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
@@ -221,14 +220,12 @@ public class SwerveModule {
    */
   public void setVoltageCompensation(boolean enable) {
     if (enable) {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .voltageCompensation(Config.Swerve.voltageComp);
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
     } else {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .disableVoltageCompensation();
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+      driveMotorConfig.disableVoltageCompensation();
     }
+
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
   }
 
   /*
