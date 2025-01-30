@@ -27,6 +27,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -125,24 +126,26 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
-  //  // RobotConfig config = null;
-  //   //try {
-  //     config = RobotConfig.fromGUISettings();
-  //   } catch (Exception e) {
-  //     // Handle exception as needed
-  //     e.printStackTrace();
-  //   }
+    // RobotConfig config = null;
+    // try {
+    //   config = RobotConfig.fromGUISettings();
+    // } catch (Exception e) {
+    //   // Handle exception as needed
+    //   e.printStackTrace();
+    // }
+      
 
-      //Please make sure these numbesr are good, current values are dumm values 
-      DCMotor dcMotor = new DCMotor(1.0,1.0,1.0,1.0,1.0,2);
-      ModuleConfig moduleConfig = new ModuleConfig(1.0,1.0,1.0,dcMotor,1.0,1);
-      Translation2d[] offsets = new Translation2d[4]; 
-      offsets[0] = new Translation2d();
-      offsets[1] = new Translation2d();
-      offsets[2] = new Translation2d();
-      offsets[3] = new Translation2d(); 
+    //Please make sure these numbers are good. CUrrent values are dummy values.
+    DCMotor dcMotor = new DCMotor(1.0, 1.0, 1.0, 1.0, 1.0, 1);
+    ModuleConfig moduleConfig = new ModuleConfig(1.0,1.0,1.0,dcMotor,1.0,1);
+    Translation2d[] offsets = new Translation2d[4];
+    //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
+    offsets[0] = new Translation2d(Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//FL
+    offsets[1] = new Translation2d(Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//FR
+    offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
+    offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-    RobotConfig config = new RobotConfig(0.1,0.1,moduleConfig, offsets);
+       RobotConfig config = new RobotConfig(0.1, 0.1, moduleConfig, offsets );
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
