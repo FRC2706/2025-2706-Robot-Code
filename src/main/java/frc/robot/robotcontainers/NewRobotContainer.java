@@ -176,10 +176,19 @@ public class NewRobotContainer extends RobotContainer {
     operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));*/
 
     // ELEVATOR PROTOTYPE
-    operator.y().onTrue(new SetElevator(()->50));
-    operator.x().onTrue(new SetElevator(()->30));
-    operator.a().onTrue(new SetElevator(()->20));
+    operator.x().onTrue(new SetElevator(()->50));
     operator.b().onTrue(new SetElevator(()->0));
+
+    // go up
+    operator.y()
+            .whileTrue(new ControlElevator(2))
+                    .onFalse(new ControlElevator(0));
+    operator.a()
+            .whileTrue(new ControlElevator(1))
+                    .onFalse(new ControlElevator(0));
+
+
+
 
     // Climber
     operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));

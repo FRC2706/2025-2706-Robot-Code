@@ -187,8 +187,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_targetAngle.accept(Math.toDegrees(targetPos));
     }
 
-    // Todo: A set height command.
-
     public void resetProfiledPIDController() {
         m_ProfiledPIDController.reset(getPosition(), m_absEncoder.getVelocity());
     }
@@ -198,6 +196,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     //return radius
     public double getPosition() {
         return m_absEncoder.getPosition() - Math.toRadians(ElevatorConfig.shiftEncoderRange);
+    }
+
+
+    public void raiseMotor() {
+        m_elevator.set(1);
+    }
+
+    public void lowerMotor() {
+        m_elevator.set(-1);
     }
 
     public void stopMotors() {
