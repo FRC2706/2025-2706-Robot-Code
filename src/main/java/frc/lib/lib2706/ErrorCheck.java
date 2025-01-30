@@ -96,39 +96,4 @@ public class ErrorCheck {
         return false;
     }
 
-    /**
-     * Run burn flash on all the given sparkmaxs.
-     * 
-     * @param sparkmaxNames A string to identify the sparkmaxs to run burnFlash on.
-     * @param sparkmaxs The sparkmaxs to run burn flash on.
-     * @return true for success, false for failure.
-     */
-    public static boolean sparkBurnFlash(String sparkmaxNames, SparkBase... sparkmaxs) {
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {}
-
-        boolean allOk = true;
-
-        SparkMaxConfig blankConfig = (SparkMaxConfig) new SparkMaxConfig();
-
-        for (SparkBase sparkmax : sparkmaxs) {
-            // Burn flash and record error
-            REVLibError error = sparkmax.configure(blankConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-            if (error != REVLibError.kOk) {
-                allOk = false;
-                
-                String msg = "[MergeError] - SparkMax failed to burn flash on sparkmax(s): " + sparkmaxNames;
-                msg += " Spark error code: " + error.toString() + " \nSee stack trace below.";
-
-                DriverStation.reportError(
-                    msg,
-                    PRINT_STACK_TRACE_CONFIGURE);
-            }
-        }
-
-        return allOk;
-    }
-
 }
