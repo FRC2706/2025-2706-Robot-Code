@@ -76,7 +76,7 @@ public final class Config {
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
-    public static final int ELEVATOR = 200; // temp can number for testing
+    public static final int ELEVATOR = 22; // temp can number for testing
     
   }
 
