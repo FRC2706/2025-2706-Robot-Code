@@ -4,6 +4,8 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.ctre.phoenix.sensors.CANCoder; // This will be deprecated, we should migrate to Phoenix 6
+//import com.ctre.phoenix6.configs.CANcoderConfiguration;
+//import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -58,6 +60,8 @@ public class SwerveModule {
 
   private final SparkClosedLoopController driveController;
   private final SparkClosedLoopController angleController;
+  SparkMaxConfig driveMotorConfig;
+  SparkMaxConfig angleMotorConfig;
 
   private boolean synchronizeEncoderQueued = false;
 
@@ -148,7 +152,8 @@ public class SwerveModule {
   }
 
   private void configAngleMotor() {
-    SparkMaxConfig angleMotorConfig = new SparkMaxConfig();
+    angleMotorConfig = new SparkMaxConfig();
+    angleMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     angleMotorConfig.smartCurrentLimit(Config.Swerve.angleContinuousCurrentLimit);
     angleMotorConfig.inverted(Config.Swerve.angleInvert);
@@ -165,12 +170,13 @@ public class SwerveModule {
     angleMotorConfig.closedLoop.positionWrappingMinInput(0);
     angleMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
     angleMotorConfig.closedLoop.positionWrappingEnabled(true);
-    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     angleMotor.setCANTimeout(0);
   }
 
   private void configDriveMotor() {
-    SparkMaxConfig driveMotorConfig = new SparkMaxConfig();
+    driveMotorConfig = new SparkMaxConfig();
+    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
     driveMotorConfig.inverted(Config.Swerve.driveInvert);
@@ -186,9 +192,7 @@ public class SwerveModule {
     driveMotorConfig.closedLoop.positionWrappingEnabled(true);
     driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
 
-    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
-
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
     driveEncoder.setPosition(0.0);
 
@@ -204,8 +208,9 @@ public class SwerveModule {
     } 
     catch (Exception e) {}
 
-    /*driveMotor.burnFlash();
-    angleMotor.burnFlash();*/ // broken in 2025
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    
   }
 
   /**
@@ -215,14 +220,12 @@ public class SwerveModule {
    */
   public void setVoltageCompensation(boolean enable) {
     if (enable) {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .voltageCompensation(Config.Swerve.voltageComp);
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
     } else {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .disableVoltageCompensation();
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      driveMotorConfig.disableVoltageCompensation();
     }
+
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
   }
 
   /*

@@ -37,9 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private SparkClosedLoopController m_pidController;
     private RelativeEncoder m_encoder;
     private boolean closedLoopControl = false;
-    private boolean stateFulControl = false;
-
-
+  
     private TunableNumber kP = new TunableNumber("Shooter/PID0/kP", Config.ShooterConstants.kP);
     private TunableNumber kI = new TunableNumber("Shooter/PID0/kI", Config.ShooterConstants.kI);
     private TunableNumber kD = new TunableNumber("Shooter/PID0/kD", Config.ShooterConstants.kD);
@@ -70,15 +68,12 @@ public class ShooterSubsystem extends SubsystemBase {
         m_motor = new SparkMax(Config.ShooterConstants.MOTOR_ID, MotorType.kBrushless);
 
         m_motor_config = (SparkMaxConfig) new SparkMaxConfig()
-                .inverted(true)
+                .inverted(false)
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(60);
 
         m_motor_config.closedLoop.minOutput(Config.ShooterConstants.kMinOutput);
         m_motor_config.closedLoop.maxOutput(Config.ShooterConstants.kMaxOutput);
-
-        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
 
         m_motor2 = new SparkMax(Config.ShooterConstants.MOTOR_ID2, MotorType.kBrushless);
 
@@ -86,9 +81,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .inverted(false)
                 .idleMode(IdleMode.kBrake)
                 .follow(m_motor);
-
-        m_motor2.configure(m_motor2_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+       
         m_pidController = m_motor.getClosedLoopController();
         m_encoder = m_motor.getEncoder();
 
@@ -102,7 +95,9 @@ public class ShooterSubsystem extends SubsystemBase {
         setPIDGains(kP1.get(), kI1.get(), kD1.get(), ClosedLoopSlot.kSlot1);
         setFFGains(kFF1.get(), ClosedLoopSlot.kSlot1);
 
-        ErrorCheck.sparkBurnFlash("Shooter", m_motor);
+        //@todo: could add a burnflash
+        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_motor2.configure(m_motor2_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         NetworkTable shooterTable = NetworkTableInstance.getDefault().getTable("Shooter");
         velocityPub = shooterTable.getDoubleTopic("Shooter Velocity RPM").publish(PubSubOption.periodic(0.02));
@@ -154,19 +149,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setBrake(boolean enableBreak) {
         m_motor_config.idleMode(enableBreak ? IdleMode.kBrake: IdleMode.kCoast);
-        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
     }
 
     private void setPIDGains(double kP, double kI, double kD, ClosedLoopSlot slot){
         m_motor_config.closedLoop.p(kP, slot);
         m_motor_config.closedLoop.i(kI, slot);
         m_motor_config.closedLoop.d(kD, slot);
-        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
     }   
 
     private void setFFGains(double kFF, ClosedLoopSlot slot) {
         m_motor_config.closedLoop.velocityFF(kFF, slot);
-        m_motor.configure(m_motor_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+       
     }   
 
     /*---------------------------Commands---------------------------*/
