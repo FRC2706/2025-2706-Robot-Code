@@ -26,7 +26,7 @@ public class SubsystemChecker {
         RelaySubsystem,
         VisionNTSubsystem,
         BlingSubsystem,
-        GripperSubsystem,
+        CoralIntakeSubsystem        
     };
 
     /**
