@@ -27,6 +27,7 @@ public class SubsystemChecker {
         VisionNTSubsystem,
         BlingSubsystem,
         GripperSubsystem,
+        CoralManipulatorSubsystem,
     };
 
     /**
@@ -60,6 +61,8 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.CoralManipulatorSubsystem,
+        
     };
 
     // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
