@@ -133,7 +133,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void updatePID0Settings() {
-        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
+        m_elevator_config = new SparkMaxConfig();
         m_elevator_config.closedLoop.velocityFF(m_elevatorFFSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.p(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.i(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
@@ -145,7 +145,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void updatePID1Settings() {
-        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
+        m_elevator_config = new SparkMaxConfig();
         m_elevator_config.closedLoop.velocityFF(ElevatorConfig.elevator_far_kFF, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.p(ElevatorConfig.elevator_far_kP, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.i(ElevatorConfig.elevator_far_kI, ClosedLoopSlot.kSlot1);
