@@ -1,5 +1,5 @@
-  
-  // Copyright (c) FIRST and other WPILib contributors.
+
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -24,8 +24,18 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.Config.Swerve.TeleopSpeeds;
 import frc.robot.Robot;
-import frc.robot.commands.*;
+import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
+import frc.robot.commands.ClimberRPM;
+import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.IntakeControl;
+import frc.robot.commands.MakeIntakeMotorSpin;
+import frc.robot.commands.RotateAngleToVisionSupplier;
+import frc.robot.commands.RotateToAngle;
+import frc.robot.commands.RumbleJoystick;
+import frc.robot.commands.SetArm;
+import frc.robot.commands.SubwooferShot;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -85,8 +95,8 @@ public class NewRobotContainer extends RobotContainer {
 
     if(Config.demoEnabled)
     {
-      //Demo mode: 
-      //difference between demo and normal modes: 
+      //Demo mode:
+      //difference between demo and normal modes:
       //subwoofer shooter RPM and teleop swerve speeds are different
       m_subwooferShotRpm = Config.ShooterRPM.DEMO_SUBWOOFERSHOT;
       m_subwooferShotRpmTrigger = Config.ShooterRPM.DEMO_SUBWOOFERSHOT_TRIGGER;
@@ -106,16 +116,16 @@ public class NewRobotContainer extends RobotContainer {
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the {@link CommandXboxController} or other ways.
    */
-  private void configureButtonBindings() { 
+  private void configureButtonBindings() {
     // Set bling to purple when note is in
 
     new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
-                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
+            .onFalse(new BlingCommand(BlingColour.DISABLED));
 
     new Trigger(() -> intake.isBackSensorLongActive() && DriverStation.isTeleopEnabled()).onTrue(Commands.parallel(
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
             new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false))
-    );          
+    );
 
     /**
      * Driver Controls
@@ -126,18 +136,18 @@ public class NewRobotContainer extends RobotContainer {
 
     if ( Config.demoEnabled )
     {
-        driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)));
+      driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)))
+              .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)));
 
     }
     else
     {
-        driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-                            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-    }   
+      driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+              .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    }
 
     driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
@@ -145,16 +155,16 @@ public class NewRobotContainer extends RobotContainer {
     driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
     driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
     driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
-    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));
     driver.rightTrigger().whileTrue(new RotateAngleToVisionSupplier(driver, "/photonvision/" + PhotonConfig.apriltagCameraName));
-    
+
     // Vision scoring commands with no intake, shooter, arm
     // driver.leftTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
-    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_BLUE, driver),
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_RED, driver)));
 
     // driver.rightTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
-    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver),
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.LEFT_SPEAKER_RED, driver)));
 
     driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
@@ -165,45 +175,29 @@ public class NewRobotContainer extends RobotContainer {
     //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
     //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
-     /**
+    /**
      * Operator Controls
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
-    /*//Arm
+    // Arm
     operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
     operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
     operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
-    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));*/
-
-    // ELEVATOR PROTOTYPE
-    operator.x().onTrue(new SetElevator(()->50));
-    operator.b().onTrue(new SetElevator(()->0));
-
-    // go up
-    operator.y()
-            .whileTrue(new ControlElevator(2))
-                    .onFalse(new ControlElevator(0));
-    operator.a()
-            .whileTrue(new ControlElevator(1))
-                    .onFalse(new ControlElevator(0));
-
-
-
-
+    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
     // Climber
     operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
 
     // Eject the note from the front with start
     operator.start()
-      .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
-      .onFalse(Commands.runOnce(() -> intake.stop()));
-  
-       
+            .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
+            .onFalse(Commands.runOnce(() -> intake.stop()));
+
+
     //operator.leftTrigger(0.3).whileTrue(
     operator.leftBumper()
-      .whileTrue(CombinedCommands.armIntake())
-      .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
-      .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
+            .whileTrue(CombinedCommands.armIntake())
+            .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
+            .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
 
     //right trigger for shooter with speaker RPM
     operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
@@ -212,11 +206,11 @@ public class NewRobotContainer extends RobotContainer {
     // operator.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1))
     //                       .onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
 
-      operator.rightBumper().onTrue(new SubwooferShot(
-      operator.rightBumper(), 
-      ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
-      m_subwooferShotRpm, 
-      m_subwooferShotRpmTrigger));
+    operator.rightBumper().onTrue(new SubwooferShot(
+            operator.rightBumper(),
+            ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg,
+            m_subwooferShotRpm,
+            m_subwooferShotRpmTrigger));
   }
 
   /**
