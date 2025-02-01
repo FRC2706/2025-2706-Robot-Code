@@ -55,8 +55,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     // for elevator ff
     private DoubleEntry m_elevatorMomentToVoltage;
 
-    //spark absolute encoder
-    private SparkAbsoluteEncoder m_absEncoder;
     //embedded relative encoder
     private SparkClosedLoopController m_pidControllerElevator;
 
@@ -93,10 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
         m_elevator_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
         m_elevator_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
-        m_elevator_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ElevatorConfig.elevatorAbsEncoderOffset));
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
-
-        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
         /*NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
         m_elevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(Config.ElevatorConfig.elevator_kP);
@@ -133,7 +128,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void updatePID0Settings() {
-        m_elevator_config = new SparkMaxConfig();
         m_elevator_config.closedLoop.velocityFF(m_elevatorFFSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.p(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.i(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
@@ -145,7 +139,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void updatePID1Settings() {
-        m_elevator_config = new SparkMaxConfig();
         m_elevator_config.closedLoop.velocityFF(ElevatorConfig.elevator_far_kFF, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.p(ElevatorConfig.elevator_far_kP, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.i(ElevatorConfig.elevator_far_kI, ClosedLoopSlot.kSlot1);
@@ -159,7 +152,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_elevatorPosPub.accept(Math.toDegrees(getPosition()));
-        m_elevatorVelPub.accept(Math.toDegrees(m_absEncoder.getVelocity()));
+        m_elevatorVelPub.accept(Math.toDegrees(getVelocity()));
     }
 
     public void setElevatorHeight(double height) {
@@ -188,14 +181,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetProfiledPIDController() {
-        m_ProfiledPIDController.reset(getPosition(), m_absEncoder.getVelocity());
+        m_ProfiledPIDController.reset(getPosition(), getVelocity());
     }
 
 
 
-    //return radius
+    //return positon
     public double getPosition() {
-        return m_absEncoder.getPosition() - Math.toRadians(ElevatorConfig.shiftEncoderRange);
+        return m_elevator.getEncoder().getPosition() - ElevatorConfig.shiftEncoderRange;
+    }
+
+
+    public double getVelocity() {
+        return m_elevator.getEncoder().getVelocity();
     }
 
 

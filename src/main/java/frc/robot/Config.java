@@ -475,8 +475,6 @@ public final class Config {
     public static final int CURRENT_LIMIT = 20;
 
     public static final double shiftEncoderRange = 10;
-    //offset unit: degrees
-    public static final double elevatorAbsEncoderOffset = Math.toDegrees(3.20433) + 3.0 - shiftEncoderRange;
 
 
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
@@ -489,7 +487,7 @@ public final class Config {
     public static final boolean SOFT_LIMIT_ENABLE = true;
 
     //PID constants
-    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.0, 1.4);
+    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 2.7, 1.4);
     public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0003);
     public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.9);
     public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.3);
@@ -512,9 +510,9 @@ public final class Config {
 
     public static final double ELEVATOR_ENCODER_GEAR_RATIO = 1;
 
-    //elevator position unit: radians
-    public static final double elevatorPositionConversionFactor = 2 * Math.PI / ELEVATOR_ENCODER_GEAR_RATIO;
-    //elevator velocity unit: radians/sec
+    //elevator position unit: inches
+    public static final double elevatorPositionConversionFactor = ELEVATOR_ENCODER_GEAR_RATIO;
+    //elevator velocity unit: inches/sec
     public static final double elevatorVelocityConversionFactor = elevatorPositionConversionFactor / 60.0;
 
     public static final double MAX_VEL = Math.PI * 1.5;
