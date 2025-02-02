@@ -108,8 +108,8 @@ public class PhotonSubsystem extends SubsystemBase {
     reset(-1);
 
     try {
-      aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera1, PhotonConfig.cameraTransform);
+      aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
+      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       PhotonConfig.USE_3D_TAGS = false;
