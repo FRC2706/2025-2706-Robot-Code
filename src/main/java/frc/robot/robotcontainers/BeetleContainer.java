@@ -13,7 +13,7 @@ import frc.robot.Robot;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ClimberRPM;
+import frc.robot.commands.ElevatorCommand;
 import frc.robot.subsystems.DiffTalonSubsystem;
 
 /**
@@ -47,6 +47,14 @@ public class BeetleContainer extends RobotContainer {
   
     // ()-> is double supplier, this makes the code repeat and continue updating every time so the speed is not a single value
     //driver.rightTrigger().whileTrue(new ClimberRPM(()->  driver.getRightTriggerAxis()));
+
+    //for elevator prototype
+    operator.y().onTrue(new ElevatorCommand(()->5)); // L1
+    operator.b().onTrue(new ElevatorCommand(()->10)); // L2
+    operator.a().onTrue(new ElevatorCommand(()->15)); // L3
+    operator.x().onTrue(new ElevatorCommand(()->20)); //L4
+    operator.start().onTrue(new ElevatorCommand(()->0));
+
   }
 
 
