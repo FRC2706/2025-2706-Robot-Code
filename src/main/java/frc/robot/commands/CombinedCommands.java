@@ -167,8 +167,8 @@ public class CombinedCommands {
 
         // Wait for vision data to be available
         Command waitForVisionData = Commands.deadline(new ProxyCommand(new SelectByAllianceCommand(
-            PhotonSubsystem.getInstance().getWaitForDataCommand(bluePosition.id), 
-            PhotonSubsystem.getInstance().getWaitForDataCommand(redPosition.id)).withName("ProxiedWaitForVisionData")),
+            PhotonSubsystem.getInstance().getWaitForDataCommand(), 
+            PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData")),
             new ProxyCommand(Commands.parallel(
                 new IntakeControl(false), // Reverse note until not touching shooter
                 new WaitCommand(0.2).andThen(new Shooter_PID_Tuner(() -> shooterSpeed))
@@ -343,8 +343,8 @@ public class CombinedCommands {
 
         // Wait for vision data to be available
         Command waitForVisionData = new ProxyCommand(new SelectByAllianceCommand(
-            PhotonSubsystem.getInstance().getWaitForDataCommand(bluePosition.id), 
-            PhotonSubsystem.getInstance().getWaitForDataCommand(redPosition.id)).withName("ProxiedWaitForVisionData"));
+            PhotonSubsystem.getInstance().getWaitForDataCommand(), 
+            PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData"));
      
             
         //Wait for all subsytems to get ready
