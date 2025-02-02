@@ -37,7 +37,7 @@ public class SubsystemChecker {
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
         SubsystemType.ArmSubsystem,
-        SubsystemType.ElevatorSubsystem,
+        //SubsystemType.ElevatorSubsystem,
         SubsystemType.RelaySubsystem,
         SubsystemType.VisionNTSubsystem,
         SubsystemType.GripperSubsystem,
@@ -62,6 +62,7 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
     };
 
     // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut

@@ -121,6 +121,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         updatePID0Settings();
         updatePID1Settings();
 
+        // configure elevator motor
+        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
         burnFlash();
         m_elevator.setCANTimeout(0);
 
@@ -134,8 +137,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.d(m_elevatorDSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.iZone(m_elevatorIzSubs.get(), ClosedLoopSlot.kSlot0);
         m_elevator_config.closedLoop.outputRange(Config.ElevatorConfig.min_output, Config.ElevatorConfig.max_output);
-
-        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public void updatePID1Settings() {
@@ -144,9 +145,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.i(ElevatorConfig.elevator_far_kI, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.d(ElevatorConfig.elevator_far_kD, ClosedLoopSlot.kSlot1);
         m_elevator_config.closedLoop.iZone(ElevatorConfig.elevator_far_iZone, ClosedLoopSlot.kSlot1);
-
-
-        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     @Override
