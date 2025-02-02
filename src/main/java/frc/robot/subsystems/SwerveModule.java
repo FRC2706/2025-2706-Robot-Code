@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -150,11 +151,13 @@ public class SwerveModule {
    
     //CANCoderUtil.setCANCoderBusUsage(angleEncoder, CCUsage.kMinimal);
    
-    angleEncoderConfig.MagnetSensor.MagnetOffset = 0;
-    angleEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive; //Config.Swerve.canCoderInvert
-    angleEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1; //Unsigned_0_to_360
-    
-    angleEncoder.getConfigurator().apply(angleEncoderConfig, 0.020);
+    MagnetSensorConfigs magnetCfg = new MagnetSensorConfigs()
+                                    .withMagnetOffset(0)
+                                    .withSensorDirection(SensorDirectionValue.Clockwise_Positive) //Config.Swerve.canCoderInvert
+                                    .withAbsoluteSensorDiscontinuityPoint(1);//Unsigned_0_to_360
+        
+    angleEncoderConfig.withMagnetSensor(magnetCfg);
+    angleEncoder.getConfigurator().apply(angleEncoderConfig);
   }
 
   private void configAngleMotor() {
