@@ -61,13 +61,19 @@ public class Robot extends TimedRobot {
     // Instantiate the RobotContainer based on the Robot ID.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
 
+    System.out.println("*****************************Robot ID = "+ Config.getRobotId());
     switch (Config.getRobotId()) {
+     
       case 0:
         // m_robotContainer = new ContainerForTesting(); break; // testing
-        m_robotContainer = new NewRobotContainer(); break; //competition
+        m_robotContainer = new NewRobotContainer(); 
+        System.out.println("********************* new robot container");
+        break; //competition
         
       case 2:
-        m_robotContainer = new BeetleContainer(); break; //beetle
+        m_robotContainer = new BeetleContainer();
+        System.out.println("****************** Beetle container");
+         break; //beetle
        
       default:
         m_robotContainer = new NewRobotContainer();
@@ -75,6 +81,8 @@ public class Robot extends TimedRobot {
             String.format("ISSUE WITH CONSTRUCTING THE ROBOT CONTAINER. \n " +
                           "NewRobotContainer constructed by default. RobotID: %d", Config.getRobotId()), 
             true);
+
+        System.out.println("********************* default container");
     }
 
      // Add CommandScheduler to shuffleboard so we can display what commands are scheduled

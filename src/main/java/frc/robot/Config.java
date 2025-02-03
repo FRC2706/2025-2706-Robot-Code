@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.spark.SparkBase;
-
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -148,7 +145,7 @@ public final class Config {
   public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
 
   public static final class PhotonConfig{
-    public static boolean USE_3D_TAGS = false;
+    public static boolean USE_3D_TAGS = true;
     public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
 
     public static final double CAMERA_HEIGHT = 0.215;
@@ -188,6 +185,9 @@ public final class Config {
       // COMPETITION USE
       FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
       FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
+
+      REEF_ID_8_RED(8, new Translation2d(2.3, -0.5), Rotation2d.fromDegrees(0)),
+      REEF_ID_8_BLUE(8, new Translation2d(2.3, 0.5), Rotation2d.fromDegrees(0)),
 
       PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
       PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
