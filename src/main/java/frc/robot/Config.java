@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.spark.SparkBase;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
