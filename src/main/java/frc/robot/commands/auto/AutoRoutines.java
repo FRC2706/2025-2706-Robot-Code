@@ -100,8 +100,8 @@ public class AutoRoutines extends SubsystemBase {
 
         NamedCommands.registerCommand("ResetToSpeakerTag",
             new SelectByAllianceCommand(
-                PhotonSubsystem.getInstance().getResetCommand(7), // Blue alliance
-                PhotonSubsystem.getInstance().getResetCommand(4) // Red alliance
+                PhotonSubsystem.getInstance().getResetCommand(), // Blue alliance
+                PhotonSubsystem.getInstance().getResetCommand() // Red alliance
             )
         );
 
@@ -131,8 +131,8 @@ public class AutoRoutines extends SubsystemBase {
 
         NamedCommands.registerCommand("SetVisionSideSpeakerTag", 
             new SelectByAllianceCommand(
-                PhotonSubsystem.getInstance().getResetCommand(7),
-                PhotonSubsystem.getInstance().getResetCommand(3)));
+                PhotonSubsystem.getInstance().getResetCommand(),
+                PhotonSubsystem.getInstance().getResetCommand()));
     }
 
     public Command getAutonomousCommand(int selectAuto) {

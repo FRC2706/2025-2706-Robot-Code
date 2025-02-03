@@ -148,7 +148,7 @@ public final class Config {
   public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
 
   public static final class PhotonConfig{
-    public static boolean USE_3D_TAGS = false;
+    public static boolean USE_3D_TAGS = true;
     public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
 
     public static final double CAMERA_HEIGHT = 0.215;
@@ -189,6 +189,19 @@ public final class Config {
       FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
       FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
 
+            //to remove id
+      //REEF_LEFT
+      //REFF_RIGHT
+
+      //==================================
+      //reset gyro: Front facing the tag. When we see the tag, heading is 180.
+      //red: right; blue: left
+      REEF_ID_8_RED(8, new Translation2d(1.0, 0.2), Rotation2d.fromDegrees(0)),
+      REEF_ID_8_BLUE(8, new Translation2d(-1.0, 0.2), Rotation2d.fromDegrees( 180)),
+
+      //HUMAN_STATION_LEFT
+      //HUMAN_STATION_MID
+      //HUMAN_STATION_RIGHT
       PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
       PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
 
@@ -301,7 +314,7 @@ public final class Config {
 
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
-      SLOW(0.5, 0.5 * Math.PI, 16, 12 * Math.PI),
+      SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
       MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
       DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
 

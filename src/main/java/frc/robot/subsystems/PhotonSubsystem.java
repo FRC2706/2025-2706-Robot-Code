@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -64,9 +65,6 @@ public class PhotonSubsystem extends SubsystemBase {
   public DoublePublisher pubSpeakerRange, pubSpeakerYaw;
   private IntegerPublisher pubSetTagId;
   private StringPublisher pub3DTagsDebugMsg;
-  //private IntegerArrayPublisher pub3DTagIdsArray;
-  private StringPublisher pub3DTargetTags;
-  private IntegerEntry subOverrideTagID;
   private PhotonCamera camera1;
   private Translation2d targetPos;
   private Rotation2d targetRotation;
@@ -74,9 +72,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private LinearFilter filterX = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterY = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private int numSamples;
-  private int id;
   private double recentTimeStamp = 0;
-  private ArrayList<Boolean> aprilTagsId = new ArrayList<>();
 
   private IntegerEntry intakeCameraInputSaveImgEntry;
 
@@ -101,20 +97,10 @@ public class PhotonSubsystem extends SubsystemBase {
     pubYaw = photonTable.getDoubleTopic("Yaw").publish(PubSubOption.periodic(0.02));
     pubSpeakerRange = photonTable.getDoubleTopic("SpeakerRange").publish(PubSubOption.periodic(0.02));
     pubSpeakerYaw = photonTable.getDoubleTopic("SpeakerYaw").publish(PubSubOption.periodic(0.02));
-    pubSetTagId = photonTable.getIntegerTopic("SetTagId").publish();
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
-    pub3DTargetTags = photonTable.getStringTopic("3DTagsTargetID's").publish(PubSubOption.periodic(0.02));
-    //pub3DTagIdsArray = photonTable.getIntegerArrayTopic("3DTagsTargetID's").publish(PubSubOption.periodic(0.02));
-    subOverrideTagID = photonTable.getIntegerTopic("OVERIDEID").getEntry(-1);
-    subOverrideTagID.setDefault(-1);
-    SmartDashboard.putData("command reset id",Commands.runOnce(()->reset((int)subOverrideTagID.get())));
+    SmartDashboard.putData("command reset id",Commands.runOnce(()->reset()));
 
-    reset(-1);
-
-    aprilTagsId.add(0, false);
-    aprilTagsId.add(1, false);
-    aprilTagsId.add(2, false);
-    aprilTagsId.add(3, false);
+    reset();
 
     try {
       aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
@@ -130,7 +116,7 @@ public class PhotonSubsystem extends SubsystemBase {
     intakeCameraInputSaveImgEntry = intakeTable.getIntegerTopic("inputSaveImgCmd").getEntry(0);
   }
 
-  public void reset(int desiredId) {
+  public void reset() {
     filterX.reset();
     filterY.reset();
     filteryaw.reset();
@@ -142,13 +128,12 @@ public class PhotonSubsystem extends SubsystemBase {
     id = desiredId;
   }
 
-  public void resetTagAtBootup() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if (alliance.isEmpty() || alliance.get() == Alliance.Blue) {
-      reset(7);
-    } else {
-      reset(4);
-    }
+    // if (alliance.isEmpty() || alliance.get() == Alliance.Blue) {
+    //   reset(8);
+    // } else {
+    //   reset(4);
+    // }
+    reset();
   }
 
   /**
@@ -158,8 +143,8 @@ public class PhotonSubsystem extends SubsystemBase {
    * @return
    * the command
    */
-  public Command getResetCommand(int tagid){
-    return runOnce(() -> reset(tagid));
+  public Command getResetCommand(){
+    return runOnce(() -> reset());
   }
   
   //publishes yaw
@@ -174,9 +159,12 @@ public class PhotonSubsystem extends SubsystemBase {
    * @return
    * the command
    */
-  public Command getWaitForDataCommand(int tagid){
-    return new FunctionalCommand(() -> reset(tagid), ()->{}, (interrupted) ->{}, ()->hasData(), this);
+  public Command getWaitForDataCommand(){
+    return new FunctionalCommand(() -> reset(), ()->{}, (interrupted) ->{}, ()->hasData(), this);
   }
+
+    //todo: 
+  //multiple tags. For now, only tag 8
 
 /**
  * this is the command for going to a specific position based off of an apriltag during teleoperated,------------------------       
@@ -187,6 +175,9 @@ public class PhotonSubsystem extends SubsystemBase {
  * @return
  * the command to run
  */
+
+ 
+ //why this command is in the subsystem?
   public Command getAprilTagCommand(PhotonPositions spacePositions, CommandXboxController driverStick, boolean neverEnd){
     Command moveToTargetCommands;
     if (spacePositions.hasWaypoint) {
@@ -218,209 +209,120 @@ public class PhotonSubsystem extends SubsystemBase {
     return(numSamples >= PhotonConfig.maxNumSamples);
   }
 
-  private double range(double y) {
-    y = Math.toRadians(y);
-    y += PhotonConfig.CAMERA_PITCH.getRadians();
-
-    int id_array = id - 3;
-
-    if (id_array < 0) {
-      return 0;
-    }else if(id_array>= Config.PhotonConfig.APRIL_HEIGHTS.length){
-      return 0;
-    }
-
-    return (Config.PhotonConfig.APRIL_HEIGHTS[id_array]-PhotonConfig.CAMERA_HEIGHT)/Math.tan(y);
-  }
-
-  private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget biggestTarget=null;
-
-    double tallest = 0;
-    for (PhotonTrackedTarget t:targets) {
-      List<TargetCorner> corners = t.getDetectedCorners();
-      double sizeY = corners.get(1).y-corners.get(3).y;
-      if (sizeY > tallest) {
-        tallest = sizeY;
-        biggestTarget = t;
-      }
-    }
-    return (biggestTarget);
-  }
-
-  private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget target=null;
-
-    for (PhotonTrackedTarget t:targets) {
-       int targetId = t.getFiducialId();
-            if (targetId == 7 )//|| targetId == 4)
-            {
-              //Do something with this target.. Get the Pose2d, etc.
-              //publish the yaw to the network table
-              pubSpeakerYaw.accept(t.getYaw());
-
-              target = t;
-              break;
-            }
-      
-    }
-    return (target);
-  }
-
-  private Pose2d convertToField(double range, Rotation2d yaw, Pose2d odometryPose) {
-    Rotation2d fieldOrientedTarget = yaw.rotateBy(odometryPose.getRotation());
-    Translation2d visionXY = new Translation2d(range, yaw);
-    Translation2d robotRotated = visionXY.rotateBy(PhotonConfig.cameraOffset.getRotation());
-    Translation2d robotToTargetRELATIVE = robotRotated.plus(PhotonConfig.cameraOffset.getTranslation());
-    Translation2d robotToTarget = robotToTargetRELATIVE.rotateBy(odometryPose.getRotation());
-    return new Pose2d(robotToTarget.plus(odometryPose.getTranslation()), fieldOrientedTarget);
-  }
-
   @Override
   public void periodic() {
-    // List<PhotonTrackedTarget> targets = camera1.getLatestResult().targets;
-    // targets.get(0).getYaw();
-    // targets.get(0).getFiducialId();
-
-    pubSetTagId.accept(id);
-    pub3DTargetTags.accept(
-        "Sees Target 3: " + aprilTagsId.get(0) + 
-        ", Sees Target 4: " + aprilTagsId.get(1) + 
-        ", Sees Target 7: " + aprilTagsId.get(2) + 
-        ", Sees Target 8: " + aprilTagsId.get(3));
-    // Must be set by 2D or 3D mode
-    Pose2d fieldToTarget = null;
     
-    if (PhotonConfig.USE_3D_TAGS) {
-      PhotonPipelineResult result = camera1.getLatestResult();
-      Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update(result);
-      if (optEstPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose");
-        return;
-      }
+    Pose2d fieldToTarget = null;
+    // Must be set by 2D or 3D mode
+    PhotonPipelineResult result = camera1.getLatestResult();
+    if (result.getTimestampSeconds() == recentTimeStamp){
+      //--System.out.println("time stamp is stale");
+      return;
+    }
+    recentTimeStamp = result.getTimestampSeconds();
 
-      // Ensure the desired tag is set to 3, 4, 7 or 8
-      if (!PhotonConfig.ALLOWED_TAGS_3D.contains(id)) {
-        pub3DTagsDebugMsg.accept("Desired tag set to " + id);
-        return;
-      }
+    if(result.hasTargets()==false)
+    { 
+     // System.out.println("result does not have any target");
+      return;
+    }
 
-      // Create a list of tags seen
-      ArrayList<Integer> tagsInFrame = new ArrayList<>();
-      for (PhotonTrackedTarget target : optEstPose.get().targetsUsed) {
-        tagsInFrame.add(target.getFiducialId()); //************************************** */
-      }
+
+    //if (PhotonConfig.USE_3D_TAGS) 
+    {
+      // Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update();
+      // if (optEstPose.isEmpty()) {
+      //   pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose"); 
+      //   return;
+      // }
+
+      // // Ensure the desired tag is set to 3, 4, 7 or 8
+      // if (!PhotonConfig.ALLOWED_TAGS_3D.contains(id)) {
+      //   pub3DTagsDebugMsg.accept("Desired tag set to " + id);
+      //   return;
+      // }
+
+      // // Create a list of tags seen
+      // ArrayList<Integer> tagsInFrame = new ArrayList<>();
+      // for (PhotonTrackedTarget target : optEstPose.get().targetsUsed) {
+      //   tagsInFrame.add(target.getFiducialId()); //************************************** */
+      // }
          
-      // Only procede if tag 3 and 4 or 7 and 8 are seen in the same frame
-      if (! ((tagsInFrame.contains(3) && tagsInFrame.contains(4)) || (tagsInFrame.contains(7) && tagsInFrame.contains(8)))) {
-        pub3DTagsDebugMsg.accept("3&4 or 7&8 not in frame. Tags in frame: " + tagsInFrame.toString());
-          return;
-      }
-      aprilTagsId.add(0, tagsInFrame.contains(3));
-      aprilTagsId.add(1, tagsInFrame.contains(4));
-      aprilTagsId.add(2, tagsInFrame.contains(7));
-      aprilTagsId.add(3, tagsInFrame.contains(8));
-          //pub3DTagIdsArray.accept(tagsInFrame.toArray());
-      
+      // // Todo: add all the reef tags, human player station tags
+      // if (! ( tagsInFrame.contains(7) || tagsInFrame.contains(8))) {
+      //   pub3DTagsDebugMsg.accept("expected tags not in frame. Tags in frame: " + tagsInFrame.toString());
+      //     return;
+      // }
 
+      // Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
+      // if (tagPose.isEmpty()) {
+      //   pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
+      //   return;
+      // }
 
-      Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
-      if (tagPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
+      // // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
+      // Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
+      // if (odometryPose.isEmpty()) {
+      //   pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
+      //   return;
+      // }
+
+      // // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
+      // Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
+
+      // // Map the position of the tag relative to the current odometry pose with latency compensation
+      // fieldToTarget = odometryPose.get().plus(robotToTarget);
+
+      // pub3DTagsDebugMsg.accept("Got pose. Transform2d from robot to tag: " + robotToTarget.toString());
+      // end of the old stuff
+      //=================================================================================================
+      //new stuff
+
+      //Get the best target
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      if (target == null)
+      {
+        System.out.println("Best target is null");
         return;
       }
 
-      // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
-      Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
-      if (odometryPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
+      //todo check target's ID here. Should accept all Reef's IDs and Human player station IDs.
+      //for now, any detected best tag is fine
+      // if(target.getFiducialId() != id)
+      // {
+      //   System.out.println("Best target ID: " + target.getFiducialId());
+      //   return;
+      // }
+
+      //todo: use the best tag's ID to get its angle in the field.
+        // Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
+      // if (tagPose.isEmpty()) {
+      //   pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
+      //   return;
+      // }  
+
+      //get the swerve pose at the time that the result was gotten
+      Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
+      //for security reasons
+      if (optPose.isEmpty()){
+        System.out.println("the odometryPose is empty");
         return;
       }
-
-      // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
-      Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
-
-      // Map the position of the tag relative to the current odometry pose with latency compensation
-      fieldToTarget = odometryPose.get().plus(robotToTarget);
-
-      pub3DTagsDebugMsg.accept("Got pose. Transform2d from robot to tag: " + robotToTarget.toString());
-      
-    } else {
-      // This method will be called once per scheduler run
-      var result = camera1.getLatestResult();
-      if (result.getTimestampSeconds() == recentTimeStamp){
-        return;
-      }
-
-      recentTimeStamp = result.getTimestampSeconds();
-      if (result.hasTargets()){
-        //get the swerve pose at the time that the result was gotten
-        Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
-        //for security reasons
-        if (optPose.isEmpty()){
-          return;
-        }
+      else
+      {
         Pose2d odometryPose = optPose.get();
 
-        PhotonTrackedTarget target = null;
-        PhotonTrackedTarget speakerTarget = null;
+        Transform3d robotToTarget3d = PhotonConfig.cameraTransform.plus(target.getBestCameraToTarget());
+        Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
-        List<PhotonTrackedTarget> allTargets = result.getTargets();
-        if (allTargets.size()==0){
-          return;
-        }
+        // Map the position of the tag relative to the current odometry pose with latency compensation
+        fieldToTarget = odometryPose.plus(robotToTarget);
 
-        speakerTarget = getSpeakerTarget(allTargets);
-        if(speakerTarget == null)
-        {
-          System.out.println("speakerTarget is null");
-        }
+        pub3DTagsDebugMsg.accept("Transform2d from robot to tag: " + robotToTarget.toString());
+      } 
 
-        if (id == -1){
-          target = biggestTarget(allTargets);
-
-          if (target == null) {
-            return;
-          }
-          id = target.getFiducialId();
-        } 
-        else
-        {
-          for (PhotonTrackedTarget t:allTargets){
-            if (t.getFiducialId() == id){
-            target = t;
-            break;
-            }
-          }
-          if (target == null){
-            return;
-          }
-        }
-
-        
-        // if (camera.hasTargets())
-        // {
-        //   List<PhotonTrackedTarget>targets = camer.getTargets();
-        //   
-        // } // end hasTarget
-
-        //get tag info
-        //calculate yaw
-        Rotation2d yaw = Rotation2d.fromDegrees(target.getYaw()*-1);
-        //calculate range
-        double range = (range(target.getPitch()));
-        if (range < 6 && range > 1.5){
-          double va = (range-1.5)/10;
-
-          range*=(1-va);
-        }
-        //convert to field quordinates
-        fieldToTarget = convertToField(range, yaw, odometryPose);
-
-        pubRange.accept(range);
-        pubYaw.accept(yaw.getDegrees());
-      }
-    }
+    } 
 
     if (fieldToTarget != null) {
       //update rolling averages
@@ -442,7 +344,9 @@ public class PhotonSubsystem extends SubsystemBase {
       if (timer.hasElapsed(0.4)) {
         timer.restart();
         intakeCameraInputSaveImgEntry.set(intakeCameraInputSaveImgEntry.get() + 1);
+      
       }
-    });
+    }
   }
 }
+
