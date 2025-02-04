@@ -11,16 +11,23 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 
 public class ElevatorSubsystem extends SubsystemBase {
-private static ElevatorSubsystem instance = null; // static object that contains all movement controls
+  private static ElevatorSubsystem instance = null; // static object that contains all movement controls
 
   private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
 
@@ -37,6 +44,19 @@ private static ElevatorSubsystem instance = null; // static object that contains
 
   //@todo: elevator CAN ID
   int elevatorCanID = 22;
+
+  // network table entry
+  private final String m_tuningTable = "Elevator/ElevatorTuning";
+  private final String m_dataTable = "Elevator/ElevatorData";
+   // network table entries
+  private DoubleEntry m_ElevatorPSubs;
+  private DoubleEntry m_ElevatorISubs;
+  private DoubleEntry m_ElevatorDSubs;
+  private DoubleEntry m_ElevatorIzSubs;
+  private DoubleEntry m_ElevatorFFSubs;
+  
+  private DoublePublisher m_targetPosPub;
+  private DoublePublisher m_currentPosPub;
 
   public static ElevatorSubsystem getInstance() {
     if (instance == null) {
@@ -56,26 +76,44 @@ private static ElevatorSubsystem instance = null; // static object that contains
     m_encoder = m_elevator.getEncoder();
 
     //configure the left motor controller
-    m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
+    //m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
     
     m_elevator_config.inverted(false)
                      .idleMode(IdleMode.kBrake)
                      .smartCurrentLimit(20)
                      .voltageCompensation(6);
     
-    //closed loop configuration
-    m_elevator_config.closedLoop.minOutput(-1.0);
-    m_elevator_config.closedLoop.maxOutput(1.0);
-    m_elevator_config.closedLoop.p(0.0002, ClosedLoopSlot.kSlot0);
-    m_elevator_config.closedLoop.i(0.0, ClosedLoopSlot.kSlot0);
-    m_elevator_config.closedLoop.d(0.0, ClosedLoopSlot.kSlot0);
-    m_elevator_config.closedLoop.velocityFF(0.003, ClosedLoopSlot.kSlot0);
+    //set up the network entry
+    NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
+    m_ElevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(0.1);
+    m_ElevatorISubs = ElevatorTuningTable.getDoubleTopic("I").getEntry(0.0);
+    m_ElevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(0.0);
+    m_ElevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(0.0);
+    m_ElevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(0.0);
+
+    m_ElevatorPSubs.setDefault(0.1);
+    m_ElevatorISubs.setDefault(0.0);
+    m_ElevatorDSubs.setDefault(0.0);
+    m_elevator_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                                .pid(m_ElevatorPSubs.get(), m_ElevatorISubs.get(), m_ElevatorDSubs.get())
+                                //.pid(0.1, 0.0, 0.0)
+                                //.iZone(0.02)
+                                .velocityFF(0.003)
+                                .outputRange(-1,1)
+                                .maxMotion.maxVelocity(1000)
+                                          .maxAcceleration(1000)
+                                          .allowedClosedLoopError(0.25);
+
 
     //encoder configuration
     double r = 0.02; //unit meter
     double gear_ratio = 1.0;
-    m_elevator_config.encoder.inverted(false)
-                            .positionConversionFactor(1.0*2*Math.PI*r*gear_ratio);
+    //m_elevator_config.encoder.positionConversionFactor(2*Math.PI*r*gear_ratio);
+
+    m_elevator_config.signals.primaryEncoderPositionPeriodMs(5);
+
+    // m_elevator_config.encoder.inverted(false)
+    //                         .positionConversionFactor(2*Math.PI*r*gear_ratio);
                         
     
     //normal config
@@ -84,12 +122,19 @@ private static ElevatorSubsystem instance = null; // static object that contains
     //persist memory
     m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-    m_elevator.setCANTimeout(0);
+   // m_elevator.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_elevator);
 
     //reset encoder position
     m_encoder.setPosition(0);
+
+    
+
+    NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
+    m_currentPosPub = ElevatorDataTable.getDoubleTopic("CurrentPostition").publish(PubSubOption.periodic(0.02));
+    m_targetPosPub = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
+    
   }
 
   public void startElevatorPercent(double percentOutput){
@@ -105,16 +150,25 @@ private static ElevatorSubsystem instance = null; // static object that contains
 
   public void setElevatorPosition(double position)
   {
-    m_pidController.setReference(position, ControlType.kPosition);
+    m_pidController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
    
   }
 
   public void resetEncoderPosition()
   {
     m_encoder.setPosition(0.0);
-    //m_pidController.setReference(0, ControlType.kPosition);
   }
 
+  public void updateEncoderPosition(double newPosition)
+  {
+    m_encoder.setPosition(newPosition);
+  }
+
+  public double getCurrentPosition()
+  {
+
+    return m_encoder.getPosition();
+  }
   public void stop() 
   {
     m_elevator.stopMotor();
@@ -126,5 +180,7 @@ private static ElevatorSubsystem instance = null; // static object that contains
 
     //@todo: when the switch is detected, reset the position
     //m_encoder.setPosition(0.0);
+
+    m_currentPosPub.accept(getCurrentPosition());
   }
 }

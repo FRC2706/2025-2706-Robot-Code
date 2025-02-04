@@ -49,10 +49,10 @@ public class BeetleContainer extends RobotContainer {
     //driver.rightTrigger().whileTrue(new ClimberRPM(()->  driver.getRightTriggerAxis()));
 
     //for elevator prototype
-    operator.y().onTrue(new ElevatorCommand(()->5)); // L1
-    operator.b().onTrue(new ElevatorCommand(()->10)); // L2
-    operator.a().onTrue(new ElevatorCommand(()->15)); // L3
-    operator.x().onTrue(new ElevatorCommand(()->20)); //L4
+    operator.y().whileTrue(new ElevatorCommand(()->1)); // L1
+    operator.b().whileTrue(new ElevatorCommand(()->-20)); // L2
+    operator.a().whileTrue(new ElevatorCommand(()->3)); // L3
+    operator.x().whileTrue(new ElevatorCommand(()->20)); //L4
     operator.start().onTrue(new ElevatorCommand(()->0));
 
   }

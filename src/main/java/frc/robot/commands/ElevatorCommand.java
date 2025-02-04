@@ -29,18 +29,26 @@ public class ElevatorCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("current position: "+ elevator.getCurrentPosition());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.startElevatorPercent(percent);
-    //elevator.setElevatorPosition(posInMeter.getAsDouble());
+    //elevator.startElevatorPercent(percent);
+    //elevator.setElevatorRPM(-300);
+
+    elevator.setElevatorPosition(posInMeter.getAsDouble());
+    //System.out.println( elevator.getCurrentPosition());
+    
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    //elevator.setElevatorPosition(elevator.getCurrentPosition());
     elevator.stop();
   }
 
