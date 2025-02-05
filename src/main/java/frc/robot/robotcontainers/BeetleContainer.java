@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
+import frc.robot.Config.ElevatorSetPoints;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ClimberRPM;
 import frc.robot.subsystems.DiffTalonSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,6 +48,15 @@ public class BeetleContainer extends RobotContainer {
   
     // ()-> is double supplier, this makes the code repeat and continue updating every time so the speed is not a single value
     //driver.rightTrigger().whileTrue(new ClimberRPM(()->  driver.getRightTriggerAxis()));
+
+    //for elevator prototype
+    operator.y().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L1)); // L1
+    operator.b().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L2)); // L2
+    operator.a().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L3)); // L3
+    operator.x().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L4)); //L4
+    operator.start().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.IDLE));
+
+
   }
 
 

@@ -60,8 +60,8 @@ public class Robot extends TimedRobot {
   private void createRobotContainer() {
     // Instantiate the RobotContainer based on the Robot ID.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-
     switch (Config.getRobotId()) {
+     
       case 0:
         // m_robotContainer = new ContainerForTesting(); break; // testing
         m_robotContainer = new NewRobotContainer(); break; //competition
