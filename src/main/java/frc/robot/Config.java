@@ -550,4 +550,22 @@ public static enum ArmSetPoints {
                                maxRPM = 5700.0,
                                subwooferRPM = 2750;
   }
+
+
+  public static enum ElevatorSetPoints {
+    //@todo: to be calibrated
+    IDLE(0), 
+    FEEDER(14.0),
+    L1(5.0),
+    L2(10.0),
+    L3(15.0), 
+    L4(20.0),
+    NET(18.0); 
+  
+    public final double position;
+  
+    ElevatorSetPoints(double setPosition) {
+      position = setPosition;
+    }
+  }
 }

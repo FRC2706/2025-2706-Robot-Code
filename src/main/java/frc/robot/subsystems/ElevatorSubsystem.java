@@ -21,10 +21,12 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
+import frc.robot.Config.ElevatorSetPoints;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private static ElevatorSubsystem instance = null; // static object that contains all movement controls
@@ -58,6 +60,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private DoublePublisher m_targetPosPub;
   private DoublePublisher m_currentPosPub;
 
+  private double elevatorCurrentTarget = ElevatorSetPoints.IDLE.position;
+
   public static ElevatorSubsystem getInstance() {
     if (instance == null) {
       SubsystemChecker.subsystemConstructed(SubsystemType.ElevatorSubsystem);
@@ -75,25 +79,26 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_pidController = m_elevator.getClosedLoopController();
     m_encoder = m_elevator.getEncoder();
 
-    //configure the left motor controller
-    //m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
-    
+    //configure the elevator motor controller   
     m_elevator_config.inverted(false)
                      .idleMode(IdleMode.kBrake)
-                     .smartCurrentLimit(20)
-                     .voltageCompensation(6);
+                     .smartCurrentLimit(50)
+                     .voltageCompensation(10);
     
     //set up the network entry
     NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
-    m_ElevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(0.1);
+    m_ElevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(0.1 );
     m_ElevatorISubs = ElevatorTuningTable.getDoubleTopic("I").getEntry(0.0);
     m_ElevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(0.0);
     m_ElevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(0.0);
     m_ElevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(0.0);
 
-    m_ElevatorPSubs.setDefault(0.1);
+    m_ElevatorPSubs.setDefault(0.3);
     m_ElevatorISubs.setDefault(0.0);
     m_ElevatorDSubs.setDefault(0.0);
+    m_ElevatorIzSubs.setDefault(0.0);
+    m_ElevatorFFSubs.setDefault(0.0);
+
     m_elevator_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                 .pid(m_ElevatorPSubs.get(), m_ElevatorISubs.get(), m_ElevatorDSubs.get())
                                 //.pid(0.1, 0.0, 0.0)
@@ -108,9 +113,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     //encoder configuration
     double r = 0.02; //unit meter
     double gear_ratio = 1.0;
-    //m_elevator_config.encoder.positionConversionFactor(2*Math.PI*r*gear_ratio);
+    double positionConvFactor = 1.0;//2*Math.PI*r*gear_ratio;
+    m_elevator_config.encoder.positionConversionFactor(positionConvFactor) //in meters
+                             .velocityConversionFactor(positionConvFactor/60.0); // in m/s
 
-    m_elevator_config.signals.primaryEncoderPositionPeriodMs(5);
+    //m_elevator_config.signals.primaryEncoderPositionPeriodMs(20);
 
     // m_elevator_config.encoder.inverted(false)
     //                         .positionConversionFactor(2*Math.PI*r*gear_ratio);
@@ -121,8 +128,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //persist memory
     m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
-   // m_elevator.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_elevator);
 
@@ -151,6 +156,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setElevatorPosition(double position)
   {
     m_pidController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    //m_pidController.setReference(position, ControlType.kMAXMOtionPositionControl, ClosedLoopSlot.kSlot0);
    
   }
 
@@ -166,7 +172,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public double getCurrentPosition()
   {
-
     return m_encoder.getPosition();
   }
   public void stop() 
@@ -174,13 +179,31 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_elevator.stopMotor();
   }
 
+  /**
+   * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
+   * positions for the given setpoint.
+   */
+  public Command setElevatorSetpointCommand(ElevatorSetPoints setpoint) {
+    return this.runOnce(
+        () -> {
+          elevatorCurrentTarget = setpoint.position;
+          }
+        );
+  }
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
+    //******************************************* */
+    setElevatorPosition(elevatorCurrentTarget);
+
     //@todo: when the switch is detected, reset the position
     //m_encoder.setPosition(0.0);
 
+    //update the network table
+    m_targetPosPub.accept(elevatorCurrentTarget);
     m_currentPosPub.accept(getCurrentPosition());
   }
 }

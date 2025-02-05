@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
+import frc.robot.Config.ElevatorSetPoints;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ElevatorCommand;
 import frc.robot.subsystems.DiffTalonSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,11 +50,12 @@ public class BeetleContainer extends RobotContainer {
     //driver.rightTrigger().whileTrue(new ClimberRPM(()->  driver.getRightTriggerAxis()));
 
     //for elevator prototype
-    operator.y().whileTrue(new ElevatorCommand(()->1)); // L1
-    operator.b().whileTrue(new ElevatorCommand(()->-20)); // L2
-    operator.a().whileTrue(new ElevatorCommand(()->3)); // L3
-    operator.x().whileTrue(new ElevatorCommand(()->20)); //L4
-    operator.start().onTrue(new ElevatorCommand(()->0));
+    operator.y().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L1)); // L1
+    operator.b().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L2)); // L2
+    operator.a().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L3)); // L3
+    operator.x().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L4)); //L4
+    operator.start().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.IDLE));
+
 
   }
 
