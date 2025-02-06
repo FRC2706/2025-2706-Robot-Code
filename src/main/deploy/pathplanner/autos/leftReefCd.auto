@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Start Line - Reef"
+            "pathName": "leftStartLine-reef"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Reef - Left CD"
+            "pathName": "leftReef-leftCd"
           }
         },
         {

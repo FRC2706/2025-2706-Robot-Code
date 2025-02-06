@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Score"
+            "pathName": "leftStartLine-reef"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center-Right CD"
+            "pathName": "leftReef-leftCd"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right CD - Reef"
+            "pathName": "leftCd-reef"
           }
         }
       ]

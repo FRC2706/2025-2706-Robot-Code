@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Score"
+            "pathName": "centerScore"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Reef-Left CD"
+            "pathName": "center-rightCd"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left CD - Reef"
+            "pathName": "rightCD-reef"
           }
         }
       ]
