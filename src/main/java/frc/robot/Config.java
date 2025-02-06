@@ -73,9 +73,8 @@ public final class Config {
     
     //mechanism CAN IDs
     public static final int ARM = 19; 
-    public static final int INTAKE = 21; 
-    public static final int SHOOTER = 22;
-    public static final int SHOOTER2 = 23;
+    public static final int CoralDepositor_LEFT_MOTOR = 21; 
+    public static final int CoralDepositor_RIGHT_MOTOR = 22;
     
   }
 
@@ -398,7 +397,7 @@ public final class Config {
 
   public static final class Intake {
     public static final int INTAKE = CANID.INTAKE;
-    public static final byte frontSensor = 0;//its the same but lighter, so dtw 
+    public static final byte Sensor = 0;//its the same but lighter, so dtw 
     public static final byte centerSensor = 2;//its the same but lighter, so dtw 
     public static final byte backSensor = 1;//its the same but lighter, so dtw 
   }
