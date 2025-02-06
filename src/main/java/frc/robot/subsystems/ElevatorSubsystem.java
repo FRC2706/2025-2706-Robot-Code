@@ -83,7 +83,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_elevator_config.inverted(false)
                      .idleMode(IdleMode.kBrake)
                      .smartCurrentLimit(50)
-                     .voltageCompensation(10);
+                     .voltageCompensation(12);
     
     //set up the network entry
     NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
@@ -93,7 +93,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_ElevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(0.0);
     m_ElevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(0.0);
 
-    m_ElevatorPSubs.setDefault(0.3);
+    m_ElevatorPSubs.setDefault(0.5);
     m_ElevatorISubs.setDefault(0.0);
     m_ElevatorDSubs.setDefault(0.0);
     m_ElevatorIzSubs.setDefault(0.0);
@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                                 //.iZone(0.02)
                                 .velocityFF(0.003)
                                 .outputRange(-1,1)
-                                .maxMotion.maxVelocity(1000)
+                                .MaxMotion.maxVelocity(1000)
                                           .maxAcceleration(1000)
                                           .allowedClosedLoopError(0.25);
 
