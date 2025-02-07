@@ -100,7 +100,7 @@ public class SwerveModule {
     lastAngle = getState().angle;
 
     desiredSpeedEntry = swerveModuleTable.getDoubleTopic("Desired speed (mps)").publish(PubSubOption.periodic(0.02));
-    desiredAngleEntry = swerveModuleTable.getDoubleTopic("Desired angle (deg)").publish(PubSubOption.periodic(0.02));
+    desiredAngleEntry = swerveModuleTable.getDoubleTopic("Desired angle (rad)").publish(PubSubOption.periodic(0.02));
     currentSpeedEntry = swerveModuleTable.getDoubleTopic("Current speed (mps)").publish(PubSubOption.periodic(0.02));
     currentAngleEntry = swerveModuleTable.getDoubleTopic("Current angle (rad)").publish(PubSubOption.periodic(0.02));
     speedError = swerveModuleTable.getDoubleTopic("Speed error (mps)").publish(PubSubOption.periodic(0.02));
@@ -179,7 +179,7 @@ public class SwerveModule {
     angleMotorConfig.closedLoop.positionWrappingMinInput(0);
     angleMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
     angleMotorConfig.closedLoop.positionWrappingEnabled(true);
-    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    //angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     angleMotor.setCANTimeout(0);
   }
 
@@ -201,7 +201,7 @@ public class SwerveModule {
     driveMotorConfig.closedLoop.positionWrappingEnabled(true);
     driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
 
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    //driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
     driveEncoder.setPosition(0.0);
 
