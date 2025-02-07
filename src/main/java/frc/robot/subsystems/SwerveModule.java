@@ -153,7 +153,7 @@ public class SwerveModule {
    
     MagnetSensorConfigs magnetCfg = new MagnetSensorConfigs()
                                     .withMagnetOffset(0)
-                                    .withSensorDirection(SensorDirectionValue.Clockwise_Positive) //Config.Swerve.canCoderInvert
+                                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive) //Config.Swerve.canCoderInvert
                                     .withAbsoluteSensorDiscontinuityPoint(1);//Unsigned_0_to_360
         
     angleEncoderConfig.withMagnetSensor(magnetCfg);
