@@ -111,7 +111,6 @@ public class SwerveModule {
     entryAngleOffset.accept(angleOffset.getDegrees());
 
     resetToAbsolute();
-    burnFlash();
 
     ErrorTrackingSubsystem.getInstance().register(angleMotor);
     ErrorTrackingSubsystem.getInstance().register(driveMotor);
@@ -145,6 +144,8 @@ public class SwerveModule {
     double absolutePosition = getCanCoder().getRadians() - angleOffset.getRadians();
     integratedAngleEncoder.setPosition(absolutePosition);
     lastAngle = getAngle();
+ 
+    System.out.println("ModuleName resetAngle (rad)"+ absolutePosition);
   }
 
   private void configAngleEncoder() {
@@ -179,7 +180,7 @@ public class SwerveModule {
     angleMotorConfig.closedLoop.positionWrappingMinInput(0);
     angleMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
     angleMotorConfig.closedLoop.positionWrappingEnabled(true);
-    //angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     angleMotor.setCANTimeout(0);
   }
 
@@ -201,27 +202,14 @@ public class SwerveModule {
     driveMotorConfig.closedLoop.positionWrappingEnabled(true);
     driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
 
-    //driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     driveEncoder.setPosition(0.0);
 
     driveMotor.setCANTimeout(0);
   }
 
-  /**
-   * Save the configurations from flash to EEPROM.
-   */
-  private void burnFlash() {
-    try {
-      Thread.sleep(200);
-    } 
-    catch (Exception e) {}
-
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    
-  }
-
+ 
   /**
    * Enable/disable voltage compensation on the drive motors. 
    * 
