@@ -49,12 +49,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoubleEntry m_elevatorDSubs;
     private DoubleEntry m_elevatorIzSubs;
     private DoubleEntry m_elevatorFFSubs;
-    private DoublePublisher m_elevatorSetpointPub;
-    private DoublePublisher m_elevatorVelPub;
-    private DoublePublisher m_elevatorFFTestingVolts;
     private DoubleEntry m_elevatorOffset;
-    private DoublePublisher m_targetAngle;
-    private DoublePublisher m_elevatorPosPub;
+    private DoublePublisher m_targetPosition;
+    private DoublePublisher m_currentPosition;
 
     // for elevator ff
     private DoubleEntry m_elevatorMomentToVoltage;
@@ -123,10 +120,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
 
-        m_elevatorPosPub = ElevatorDataTable.getDoubleTopic("MeasuredAngleDeg").publish(PubSubOption.periodic(0.02));
-        m_elevatorVelPub = ElevatorDataTable.getDoubleTopic("MeasuredVelocity").publish(PubSubOption.periodic(0.02));
-        m_elevatorFFTestingVolts= ElevatorDataTable.getDoubleTopic("FFTestingVolts").publish(PubSubOption.periodic(0.02));
-        m_targetAngle = ElevatorDataTable.getDoubleTopic("TargetAngleDeg").publish(PubSubOption.periodic(0.02));
+        m_targetPosition = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
+        m_currentPosition = ElevatorDataTable.getDoubleTopic("CurrentPosition").publish(PubSubOption.periodic(0.02));
 
 
         updatePID0Settings();
@@ -161,8 +156,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_elevatorPosPub.accept(Math.toDegrees(getPosition()));
-        m_elevatorVelPub.accept(Math.toDegrees(getVelocity()));
+        m_currentPosition.accept(m_elevator_encoder.getPosition());
     }
 
     public void setElevatorHeight(double height) {
@@ -180,6 +174,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }*/
 
         //m_pidControllerElevator.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
+        m_targetPosition.accept(height);
         m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
     }
 
@@ -243,7 +238,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void testFeedForward(double additionalVoltage) {
         double voltage = additionalVoltage + calculateFF(getPosition());
         m_pidControllerElevator.setReference(voltage, ControlType.kVoltage);
-        m_elevatorFFTestingVolts.accept(voltage);
     }
 
 }
