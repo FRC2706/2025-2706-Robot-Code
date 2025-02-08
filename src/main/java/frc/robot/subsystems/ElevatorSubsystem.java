@@ -105,17 +105,17 @@ public class ElevatorSubsystem extends SubsystemBase {
                                 //.iZone(0.02)
                                 .velocityFF(0.003)
                                 .outputRange(-1,1)
-                                .MaxMotion.maxVelocity(1000)
+                                .maxMotion.maxVelocity(1000)
                                           .maxAcceleration(1000)
                                           .allowedClosedLoopError(0.25);
 
 
     //encoder configuration
-    double r = 0.02; //unit meter
-    double gear_ratio = 1.0;
-    double positionConvFactor = 1.0;//2*Math.PI*r*gear_ratio;
-    m_elevator_config.encoder.positionConversionFactor(positionConvFactor) //in meters
-                             .velocityConversionFactor(positionConvFactor/60.0); // in m/s
+    // double r = 0.02; //unit meter
+    // double gear_ratio = 1.0;
+    // double positionConvFactor = 1.0;//2*Math.PI*r*gear_ratio;
+    // m_elevator_config.encoder.positionConversionFactor(positionConvFactor) //in meters
+    //                          .velocityConversionFactor(positionConvFactor/60.0); // in m/s
 
     //m_elevator_config.signals.primaryEncoderPositionPeriodMs(20);
 
