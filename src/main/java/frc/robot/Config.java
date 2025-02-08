@@ -74,7 +74,7 @@ public final class Config {
     //mechanism CAN IDs
     public static final int ARM = 19; 
     public static final int CoralDepositor_LEFT_MOTOR = 16; 
-    public static final int CoralDepositor_RIGHT_MOTOR = 22;
+    //public static final int CoralDepositor_RIGHT_MOTOR = 22;
     
   }
 
