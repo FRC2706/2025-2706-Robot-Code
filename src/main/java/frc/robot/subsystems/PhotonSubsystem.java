@@ -46,6 +46,8 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
@@ -85,6 +87,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
   public static PhotonSubsystem getInstance(){
     if (instance == null){
+      SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystem);
       instance = new PhotonSubsystem();
     }
     return instance;
