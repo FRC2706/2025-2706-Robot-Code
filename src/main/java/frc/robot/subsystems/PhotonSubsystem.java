@@ -83,7 +83,6 @@ public class PhotonSubsystem extends SubsystemBase {
   private IntegerEntry intakeCameraInputSaveImgEntry;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
 
   public static PhotonSubsystem getInstance(){
     if (instance == null){
@@ -121,7 +120,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
     try {
       aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
+      //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       PhotonConfig.USE_3D_TAGS = false;
@@ -219,37 +218,8 @@ public class PhotonSubsystem extends SubsystemBase {
   public boolean hasData() {
     //if data is the max that the filters hold
     return(numSamples >= PhotonConfig.maxNumSamples);
-  }
+  } 
 
-  private double range(double y) {
-    y = Math.toRadians(y);
-    y += PhotonConfig.CAMERA_PITCH.getRadians();
-
-    int id_array = id - 3;
-
-    if (id_array < 0) {
-      return 0;
-    }else if(id_array>= Config.PhotonConfig.APRIL_HEIGHTS.length){
-      return 0;
-    }
-
-    return (Config.PhotonConfig.APRIL_HEIGHTS[id_array]-PhotonConfig.CAMERA_HEIGHT)/Math.tan(y);
-  }
-
-  private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget biggestTarget=null;
-
-    double tallest = 0;
-    for (PhotonTrackedTarget t:targets) {
-      List<TargetCorner> corners = t.getDetectedCorners();
-      double sizeY = corners.get(1).y-corners.get(3).y;
-      if (sizeY > tallest) {
-        tallest = sizeY;
-        biggestTarget = t;
-      }
-    }
-    return (biggestTarget);
-  }
 
   private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
     PhotonTrackedTarget target=null;
