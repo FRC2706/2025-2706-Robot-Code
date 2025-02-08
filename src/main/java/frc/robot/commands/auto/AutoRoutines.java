@@ -38,30 +38,48 @@ public class AutoRoutines extends SubsystemBase {
     
     // PathPlannerPath speakerPath = PathPlannerPath.fromPathFile("Speaker Path");
    
-    PathPlannerAuto fourNoteAuto,
+    PathPlannerAuto //fourNoteAuto,
                     // twoNoteAuto,
                     // threeNoteAuto,
-                    twoNoteLeftAuto,
-                    twoNoteCenter,
-                    threeNoteCenterSourceSideNote,
-                    threeNoteCenterAmpSideNote,
-                    oneNoteSourceSide,
-                    twoNoteSourceSide;
+                    //twoNoteLeftAuto,
+                    //twoNoteCenter,
+                    //threeNoteCenterSourceSideNote,
+                    //threeNoteCenterAmpSideNote,
+                    //oneNoteSourceSide,
+                    Right_R_CD,
+                    Right_R_CD_R,
+                    RIGHTCenter_R_CD,
+                    RIGHTCenter_R_CD_R,
+                    LEFTCenter_R_CD,
+                    LEFTCenter_R_CD_R,
+                    Left_R_CD,
+                    Left_R_CD_R;
+                    //twoNoteSourceSide;
     
 
     public AutoRoutines() {
         registerCommandsToPathplanner();
+        Right_R_CD = new PathPlannerAuto("Right-R-CD");
+        Right_R_CD_R = new PathPlannerAuto("Right-R-CD-R");
+        Left_R_CD = new PathPlannerAuto("Left-R-CD");
+        Left_R_CD_R = new PathPlannerAuto("Left-R-CD-R");
+        RIGHTCenter_R_CD = new PathPlannerAuto("RIGHTCenter-R-CD");
+        RIGHTCenter_R_CD_R = new PathPlannerAuto("RIGHTCenter-R-CD-R");
+        LEFTCenter_R_CD_R = new PathPlannerAuto("LEFTCenter-R-CD-R");
+        LEFTCenter_R_CD = new PathPlannerAuto("LEFTCenter-R-CD");
 
+
+         
         // twoNoteAuto = new PathPlannerAuto("twoNoteSpeaker");
         // threeNoteAuto = new PathPlannerAuto("threeNoteSpeaker");
-        fourNoteAuto = new PathPlannerAuto("4NoteCenterSimple");
+        /*fourNoteAuto = new PathPlannerAuto("4NoteCenterSimple");
         twoNoteLeftAuto = new PathPlannerAuto("2NoteLeft");
 
         twoNoteCenter = new PathPlannerAuto("2NoteCenter");
         threeNoteCenterSourceSideNote = new PathPlannerAuto("3NoteCenterSourceSideNote");
         threeNoteCenterAmpSideNote = new PathPlannerAuto("3NoteCenterAmpSideNote");
         oneNoteSourceSide = new PathPlannerAuto("1NoteSourceSide");
-        twoNoteSourceSide = new PathPlannerAuto("2NoteSourceSideFar");
+        twoNoteSourceSide = new PathPlannerAuto("2NoteSourceSideFar");*/
     }
 
     public void registerCommandsToPathplanner() {
@@ -141,17 +159,23 @@ public class AutoRoutines extends SubsystemBase {
             default: 
                 return null;
             case 1:
-                return twoNoteLeftAuto;
+                return Right_R_CD;
             case 2:
-                return fourNoteAuto;
+                return Right_R_CD_R;
             case 3:
-                return oneNoteSourceSide;
+                return RIGHTCenter_R_CD;
             case 4:
-                return twoNoteSourceSide;
+                return RIGHTCenter_R_CD_R;
             case 5:
-                return threeNoteCenterSourceSideNote;
+                return LEFTCenter_R_CD;
             case 6:
+                return LEFTCenter_R_CD_R;
             case 7:
+                return Left_R_CD;
+            case 8:
+                return Left_R_CD_R;
+            case 9:
+            case 10:
                 var alliance = DriverStation.getAlliance();
 
                 // Default to blue alliance
