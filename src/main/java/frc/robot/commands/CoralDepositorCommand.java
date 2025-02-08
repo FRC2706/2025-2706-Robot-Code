@@ -21,9 +21,9 @@ public class CoralDepositorCommand extends Command {
       * @return 
       * @return
       */
-     public void CoralDepositorCommand(boolean feedNote) {
-    this.direction = feedNote;
-    coralDepositorControl = CoralDepositorControl.getInstance();
+    public CoralDepositorCommand(boolean feedNote) {
+      this.direction = feedNote;
+      coralDepositorControl = CoralDepositorControl.getInstance();
 
     // Use addRequirements() here to declare subsystem dependencies.
     if (coralDepositorControl != null) {

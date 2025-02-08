@@ -42,6 +42,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.CoralDepositorCommand;
+import frc.robot.subsystems.CoralDepositorControl;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -128,9 +130,8 @@ public class ContainerForTesting extends RobotContainer {
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
     // Arm
-      operator.y().onTrue(new SetArm(()->armAngleDeg.get())).onFalse(new SetArm(()->-0.1)); // Amp
-      operator.x().whileTrue(new Shooter_PID_Tuner(()->4000))//()->shooterTargetRPM.get()))
-                  .onFalse(Commands.run(()->shooter.setVoltage(0)));
+      operator.y().onTrue(new CoralDepositorCommand(true)); // Amp
+      operator.x().onTrue(new CoralDepositorCommand(false));
       operator.a().whileTrue(Commands.run(()->shooter.setVoltage(12)))
                   .onFalse(Commands.run(()->shooter.setVoltage(0)));
       operator.rightBumper().onTrue(new MakeIntakeMotorSpin(9.0, 0)).onFalse(new MakeIntakeMotorSpin(0.0, 0));
