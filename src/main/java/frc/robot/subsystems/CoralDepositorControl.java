@@ -60,28 +60,30 @@ public class CoralDepositorControl extends SubsystemBase {
         leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
         */
 
-        SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-                .inverted(true)
-                .smartCurrentLimit(70)
-                .idleMode(IdleMode.kBrake)
-                .voltageCompensation(10)
-                leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        // This code below may or may not be deleted
+        SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig();
+        leftMotorConfig.inverted(true);
+        leftMotorConfig.smartCurrentLimit(70);
+        leftMotorConfig.idleMode(IdleMode.kBrake);
+        leftMotorConfig.voltageCompensation(10);
+        leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
         
         SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
         rightMotorConfig.inverted(true);
         rightMotorConfig.idleMode(IdleMode.kBrake);
         rightMotorConfig.smartCurrentLimit(40);
+        rightMotorConfig.voltageCompensation(10);
         rightMotor.configure(rightMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     }
-
-    private CoralDepositorControl() {
+//  This code below may or not also be deleted 
+     private CoralDepositorControl() {
         System.out.println("[Init]Creating Coral Depositor");
         leftMotor = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
-        leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-                .inverted(true)
-                .smartCurrentLimit(70)
-                .idleMode(IdleMode.kBrake)
-                .voltageCompensation(10);
+        SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
+                        .inverted(true)
+                        .smartCurrentLimit(70)
+                        .idleMode(IdleMode.kBrake)
+                        .voltageCompensation(10);
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -92,10 +94,11 @@ public class CoralDepositorControl extends SubsystemBase {
         
 
         NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
-        statesPub = intakeTable.getStringTopic("Intake's Current State").publish(PubSubOption.periodic(0.02));
-        sensorPub = intakeTable.getBooleanTopic("front sensor result").publish(PubSubOption.periodic(0.02));
+        statesPub = intakeTable.getStringTopic("Depositor's Current State").publish(PubSubOption.periodic(0.02));
+        sensorPub = intakeTable.getBooleanTopic("sensor result").publish(PubSubOption.periodic(0.02));
         
-        ErrorTrackingSubsystem.getInstance().register(m_intake);
+        ErrorTrackingSubsystem.getInstance().register(leftMotor);
+        ErrorTrackingSubsystem.getInstance().register(rightMotor);
 
         // Must be the last thing in the constructor
         //burnFlash(); // Broken in 2025
