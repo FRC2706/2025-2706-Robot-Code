@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -221,7 +222,9 @@ public class NewRobotContainer extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-
+    new BlingCommand(BlingColour.PURPLE);
+    new WaitCommand(5);
+    new BlingCommand(BlingColour.DISABLED);
     return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }
