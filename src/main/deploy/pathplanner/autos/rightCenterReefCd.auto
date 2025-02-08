@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Score"
+            "pathName": "centerScore"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center-Right CD"
+            "pathName": "center-rightCd"
           }
         },
         {

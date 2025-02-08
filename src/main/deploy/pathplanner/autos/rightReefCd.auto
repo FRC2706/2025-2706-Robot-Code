@@ -7,31 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Start Line - Reef"
+            "pathName": "rightStartLine-reef"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 4.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left Reef - Left CD"
+            "pathName": "rightReef-rightCd"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left CD - Reef"
+            "waitTime": 4.0
           }
         }
       ]
