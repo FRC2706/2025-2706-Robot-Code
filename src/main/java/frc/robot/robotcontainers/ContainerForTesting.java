@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.SelectByAllianceCommand;
@@ -42,6 +43,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.BlingSubsystem;
+import frc.robot.commands.BlingCommand.BlingColour;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -190,7 +193,9 @@ public class ContainerForTesting extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-
+    new BlingCommand(BlingColour.PURPLE);
+    new WaitCommand(5);
+    new BlingCommand(BlingColour.DISABLED);
     return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }
