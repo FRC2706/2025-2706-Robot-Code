@@ -29,7 +29,6 @@ public class ControlElevator extends Command {
     public void execute() {
         if (direction == 0) {
             ElevatorSubsystem.getInstance().stopMotors();
-            System.out.println("Stopped motors");
         } else if (direction == 1) {
             ElevatorSubsystem.getInstance().lowerMotor();
         } else if (direction == 2) {

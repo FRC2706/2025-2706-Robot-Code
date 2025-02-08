@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -35,6 +36,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
     private final SparkMax m_elevator; // bottom SparkMax motor controller
     private SparkMaxConfig m_elevator_config;
+
+    private RelativeEncoder m_elevator_encoder;
 
     // network table entry
     private final String m_tuningTable = "Elevator/ElevatorTuning";
@@ -76,6 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorSubsystem() {
         m_elevator = new SparkMax(Config.ElevatorConfig.ELEVATOR_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
         m_elevator_config = new SparkMaxConfig();
+        m_elevator_encoder = m_elevator.getEncoder();
 
         m_pidControllerElevator = m_elevator.getClosedLoopController();
 
@@ -133,6 +137,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         burnFlash();
         m_elevator.setCANTimeout(0);
+        m_elevator_encoder.setPosition(0);
 
         ErrorTrackingSubsystem.getInstance().register(m_elevator);
     }
@@ -161,8 +166,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setElevatorHeight(double height) {
-        double clampedHeight = MathUtil.clamp(height, Math.toRadians(ElevatorConfig.MIN_ELEVATOR_EXTENSION),
-                Math.toRadians(ElevatorConfig.MAX_ELEVATOR_EXTENSION));
 
         // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
         //double angleDeg = Math.toDegrees(angle);
@@ -176,13 +179,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             pidSlot = ClosedLoopSlot.kSlot0;
         }*/
 
-        m_ProfiledPIDController.calculate(getPosition(), clampedHeight);
-        double targetPos = m_ProfiledPIDController.getSetpoint().position;
-
         //m_pidControllerElevator.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
-        m_pidControllerElevator.setReference(targetPos + Math.toRadians(ElevatorConfig.shiftEncoderRange), ControlType.kPosition, pidSlot, 0);
-
-        m_targetAngle.accept(Math.toDegrees(targetPos));
+        m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
     }
 
     public void resetProfiledPIDController() {
