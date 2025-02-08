@@ -1,5 +1,5 @@
-  
-  // Copyright (c) FIRST and other WPILib contributors.
+
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -88,7 +88,7 @@ public class NewRobotContainer extends RobotContainer {
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
 
     // Setup auto
-    m_autoRoutines = new AutoRoutines();
+    //m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
     m_analogSelectorIndex = m_autoSelector.getAnalogSelectorIndex();
 
@@ -96,8 +96,8 @@ public class NewRobotContainer extends RobotContainer {
 
     if(Config.demoEnabled)
     {
-      //Demo mode: 
-      //difference between demo and normal modes: 
+      //Demo mode:
+      //difference between demo and normal modes:
       //subwoofer shooter RPM and teleop swerve speeds are different
       m_subwooferShotRpm = Config.ShooterRPM.DEMO_SUBWOOFERSHOT;
       m_subwooferShotRpmTrigger = Config.ShooterRPM.DEMO_SUBWOOFERSHOT_TRIGGER;
@@ -117,16 +117,16 @@ public class NewRobotContainer extends RobotContainer {
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the {@link CommandXboxController} or other ways.
    */
-  private void configureButtonBindings() { 
+  private void configureButtonBindings() {
     // Set bling to purple when note is in
 
     new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
-                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
+            .onFalse(new BlingCommand(BlingColour.DISABLED));
 
     new Trigger(() -> intake.isBackSensorLongActive() && DriverStation.isTeleopEnabled()).onTrue(Commands.parallel(
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
             new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false))
-    );          
+    );
 
     /**
      * Driver Controls
@@ -137,18 +137,18 @@ public class NewRobotContainer extends RobotContainer {
 
     if ( Config.demoEnabled )
     {
-        driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)));
+      driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)))
+              .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.DEMO)));
 
     }
     else
     {
-        driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-                            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-    }   
+      driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+              .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    }
 
     driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
@@ -156,16 +156,60 @@ public class NewRobotContainer extends RobotContainer {
     driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
     driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
     driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
-    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));
+
+    //for tuning the swerve
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // driver.y().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // driver.x().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesBackwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    // };
+    // driver.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStates270 = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    // };
+    // driver.b().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+    // ));
+
+
+
     driver.rightTrigger().whileTrue(new RotateAngleToVisionSupplier(driver, "/photonvision/" + PhotonConfig.apriltagCameraName));
-    
+
     // Vision scoring commands with no intake, shooter, arm
     // driver.leftTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
-    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_BLUE, driver),
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_RED, driver)));
 
     // driver.rightTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
-    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver),
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.LEFT_SPEAKER_RED, driver)));
 
     driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
@@ -176,7 +220,7 @@ public class NewRobotContainer extends RobotContainer {
     //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
     //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
-     /**
+    /**
      * Operator Controls
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
@@ -190,15 +234,15 @@ public class NewRobotContainer extends RobotContainer {
 
     // Eject the note from the front with start
     operator.start()
-      .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
-      .onFalse(Commands.runOnce(() -> intake.stop()));
-  
-       
+            .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
+            .onFalse(Commands.runOnce(() -> intake.stop()));
+
+
     //operator.leftTrigger(0.3).whileTrue(
     operator.leftBumper()
-      .whileTrue(CombinedCommands.armIntake())
-      .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
-      .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
+            .whileTrue(CombinedCommands.armIntake())
+            .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
+            .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
 
     //right trigger for shooter with speaker RPM
     operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
@@ -207,11 +251,11 @@ public class NewRobotContainer extends RobotContainer {
     // operator.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1))
     //                       .onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
 
-      operator.rightBumper().onTrue(new SubwooferShot(
-      operator.rightBumper(), 
-      ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
-      m_subwooferShotRpm, 
-      m_subwooferShotRpmTrigger));
+    operator.rightBumper().onTrue(new SubwooferShot(
+            operator.rightBumper(),
+            ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg,
+            m_subwooferShotRpm,
+            m_subwooferShotRpmTrigger));
   }
 
   /**
@@ -222,9 +266,8 @@ public class NewRobotContainer extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-    new BlingCommand(BlingColour.PURPLE);
-    new WaitCommand(5);
-    new BlingCommand(BlingColour.DISABLED);
-    return m_autoRoutines.getAutonomousCommand(autoId);
+    return new InstantCommand();
+
+    // return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }
