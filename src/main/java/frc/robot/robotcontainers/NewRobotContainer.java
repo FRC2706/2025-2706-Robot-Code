@@ -88,7 +88,7 @@ public class NewRobotContainer extends RobotContainer {
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
 
     // Setup auto
-   // m_autoRoutines = new AutoRoutines();
+    //m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
     m_analogSelectorIndex = m_autoSelector.getAnalogSelectorIndex();
 
@@ -212,9 +212,9 @@ public class NewRobotContainer extends RobotContainer {
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver), 
     //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.LEFT_SPEAKER_RED, driver)));
 
-    // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
+            .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
     // driver.leftTrigger().whileTrue(CombinedCommands.podiumSourceSideSpeakerVisionShot(driver, PhotonPositions.PODIUM_SOURCESIDE_BLUE, PhotonPositions.PODIUM_SOURCESIDE_RED))
     //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
@@ -225,37 +225,37 @@ public class NewRobotContainer extends RobotContainer {
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
     // Arm
-    // operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
-    // operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
-    // operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
-    // operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
-    // Climber
-    // operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
+    operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
+    operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
+    operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
+    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
+   // Climber
+    operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
 
     // Eject the note from the front with start
-    // operator.start()
-    //   .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
-    //   .onFalse(Commands.runOnce(() -> intake.stop()));
+    operator.start()
+      .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
+      .onFalse(Commands.runOnce(() -> intake.stop()));
   
        
     //operator.leftTrigger(0.3).whileTrue(
-    // operator.leftBumper()
-    //   .whileTrue(CombinedCommands.armIntake())
-    //   .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
-    //   .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
+    operator.leftBumper()
+      .whileTrue(CombinedCommands.armIntake())
+      .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
+      .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
 
     //right trigger for shooter with speaker RPM
-   // operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
+    operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
     //operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteAmp());
     // Shoot note with leftBumper
     // operator.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1))
     //                       .onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
 
-      // operator.rightBumper().onTrue(new SubwooferShot(
-      // operator.rightBumper(), 
-      // ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
-      // m_subwooferShotRpm, 
-      // m_subwooferShotRpmTrigger));
+      operator.rightBumper().onTrue(new SubwooferShot(
+      operator.rightBumper(), 
+      ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
+      m_subwooferShotRpm, 
+      m_subwooferShotRpmTrigger));
   }
 
   /**

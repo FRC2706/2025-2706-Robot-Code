@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
     if (Config.getRobotId() == 0)
     {
       SwerveSubsystem.getInstance().setVoltageCompensation(true);
-      //ArmSubsystem.getInstance().resetProfiledPIDController();
+      ArmSubsystem.getInstance().resetProfiledPIDController();
       PhotonSubsystem.getInstance().resetTagAtBootup();
     }
 
@@ -158,7 +158,7 @@ public class Robot extends TimedRobot {
     if( Config.getRobotId()==0)
     {
     SwerveSubsystem.getInstance().setVoltageCompensation(false);
-    //ArmSubsystem.getInstance().resetProfiledPIDController();
+    ArmSubsystem.getInstance().resetProfiledPIDController();
     PhotonSubsystem.getInstance().resetTagAtBootup();
     }
   }
