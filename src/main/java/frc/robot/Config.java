@@ -76,7 +76,7 @@ public final class Config {
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
-    public static final int ELEVATOR = 22; // temp can number for testing
+    public static final int ELEVATOR = 15; // temp can number for testing
     
   }
 
@@ -472,7 +472,7 @@ public final class Config {
     public static final boolean SET_INVERTED = true;
     public static final boolean INVERT_ENCODER = false;
 
-    public static final int CURRENT_LIMIT = 50;
+    public static final int CURRENT_LIMIT = 80;
 
     public static final double shiftEncoderRange = 10;
 

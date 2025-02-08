@@ -7,6 +7,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -95,7 +96,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         //m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
         m_elevator_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
         m_elevator_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
-        m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
+        m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
+        //m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true);
+        //m_elevator_config.limitSwitch.reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
         m_elevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(Config.ElevatorConfig.elevator_kP);
