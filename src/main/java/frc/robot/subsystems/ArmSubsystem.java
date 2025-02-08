@@ -100,7 +100,7 @@ public class ArmSubsystem extends SubsystemBase {
           .inverted(Config.ArmConfig.INVERT_ENCODER)
           .positionConversionFactor(Config.ArmConfig.armPositionConversionFactor) // radians
           .velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor); // radians per second
-          //.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); 
+          //??????.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); //this config is invalid and crash the code
 
     m_arm_config
           .closedLoop
