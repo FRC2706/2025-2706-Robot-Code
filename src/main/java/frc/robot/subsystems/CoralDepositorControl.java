@@ -38,7 +38,7 @@ public class CoralDepositorControl extends SubsystemBase {
 
     // Left and right motor controllers
     private SparkMax leftMotor;
-    private SparkMax rightMotor;
+    //private SparkMax rightMotor;
 
     /** Creates a new CoralDepositorControl. */
     public CoralDepositorControl(boolean feedNote) {
@@ -50,7 +50,7 @@ public class CoralDepositorControl extends SubsystemBase {
         
         // Initialize left and right motors
         leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
-        rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
+        //rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
 
         // Configure motors
         /*SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
@@ -67,14 +67,17 @@ public class CoralDepositorControl extends SubsystemBase {
         leftMotorConfig.idleMode(IdleMode.kBrake);
         leftMotorConfig.voltageCompensation(10);
         leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    }
         
-        SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
+
+        
+      /*   SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
         rightMotorConfig.inverted(true);
         rightMotorConfig.idleMode(IdleMode.kBrake);
         rightMotorConfig.smartCurrentLimit(40);
         rightMotorConfig.voltageCompensation(10);
         rightMotor.configure(rightMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-    }
+    }  */
 //  This code below may or not also be deleted 
      private CoralDepositorControl() {
         System.out.println("[Init]Creating Coral Depositor");
@@ -98,12 +101,23 @@ public class CoralDepositorControl extends SubsystemBase {
         sensorPub = intakeTable.getBooleanTopic("sensor result").publish(PubSubOption.periodic(0.02));
         
         ErrorTrackingSubsystem.getInstance().register(leftMotor);
-        ErrorTrackingSubsystem.getInstance().register(rightMotor);
+        //ErrorTrackingSubsystem.getInstance().register(rightMotor);
 
         // Must be the last thing in the constructor
         //burnFlash(); // Broken in 2025
     }
 
+    public void setVoltage(double voltage){
+        leftMotor.setVoltage(voltage);
+    }
+
+    public void stop(){
+        leftMotor.stopMotor();
+    }
+
+    public boolean isSensorActive() {
+        return sensorResult;
+    }
 
     @Override
     public void periodic() {
