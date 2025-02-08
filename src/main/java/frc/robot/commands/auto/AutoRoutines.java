@@ -53,21 +53,23 @@ public class AutoRoutines extends SubsystemBase {
                     LEFTCenter_R_CD,
                     LEFTCenter_R_CD_R,
                     Left_R_CD,
-                    Left_R_CD_R;
+                    Left_R_CD_R,
+                    centerMove;
                     //twoNoteSourceSide;
     
 
     public AutoRoutines() {
         registerCommandsToPathplanner();
-        Right_R_CD = new PathPlannerAuto("Right-R-CD");
-        Right_R_CD_R = new PathPlannerAuto("Right-R-CD-R");
-        Left_R_CD = new PathPlannerAuto("Left-R-CD");
-        Left_R_CD_R = new PathPlannerAuto("Left-R-CD-R");
-        RIGHTCenter_R_CD = new PathPlannerAuto("RIGHTCenter-R-CD");
-        RIGHTCenter_R_CD_R = new PathPlannerAuto("RIGHTCenter-R-CD-R");
-        LEFTCenter_R_CD_R = new PathPlannerAuto("LEFTCenter-R-CD-R");
-        LEFTCenter_R_CD = new PathPlannerAuto("LEFTCenter-R-CD");
 
+        Right_R_CD = new PathPlannerAuto("rightReefCd");
+        Right_R_CD_R = new PathPlannerAuto("rightReefCdReef");
+        Left_R_CD = new PathPlannerAuto("leftReefCd");
+        Left_R_CD_R = new PathPlannerAuto("leftReefCdReef");
+        RIGHTCenter_R_CD = new PathPlannerAuto("rightCenterReefCd");
+        RIGHTCenter_R_CD_R = new PathPlannerAuto("rightCenterReefCdReef");
+        LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
+        LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
+        centerMove = new PathPlannerAuto("centerMove");
 
          
         // twoNoteAuto = new PathPlannerAuto("twoNoteSpeaker");
@@ -159,7 +161,7 @@ public class AutoRoutines extends SubsystemBase {
             default: 
                 return null;
             case 1:
-                return Right_R_CD;
+                return centerMove;
             case 2:
                 return Right_R_CD_R;
             case 3:
@@ -174,8 +176,10 @@ public class AutoRoutines extends SubsystemBase {
                 return Left_R_CD;
             case 8:
                 return Left_R_CD_R;
-            case 9:
-            case 10:
+            case 9: 
+                return Right_R_CD;
+            case 10: 
+            case 11:
                 var alliance = DriverStation.getAlliance();
 
                 // Default to blue alliance
