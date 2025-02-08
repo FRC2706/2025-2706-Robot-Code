@@ -4,10 +4,14 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -23,7 +27,8 @@ import frc.robot.Config;
 
 /** Add your docs here. */
 public class IntakeSubsystem extends SubsystemBase{
-    private CANSparkMax m_intake;
+    private SparkMax m_intake;
+    private SparkMaxConfig m_intake_config;
 
     private DigitalInput frontSensor;//  -> 0 
     private DigitalInput centerSensor;// -> 1
@@ -54,12 +59,15 @@ public class IntakeSubsystem extends SubsystemBase{
 
     private IntakeSubsystem() {
         System.out.println("[Init]Creating Intake");
-        m_intake = new CANSparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
-        m_intake.restoreFactoryDefaults();
-        m_intake.setInverted(true);
-        m_intake.setSmartCurrentLimit(70);
-        m_intake.setIdleMode(IdleMode.kBrake);
-        m_intake.enableVoltageCompensation(10);
+        m_intake = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
+        m_intake_config = (SparkMaxConfig) new SparkMaxConfig()
+                .inverted(true)
+                .smartCurrentLimit(70)
+                .idleMode(IdleMode.kBrake)
+                .voltageCompensation(10);
+
+        m_intake.configure(m_intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
         frontSensor = new DigitalInput(Config.Intake.frontSensor);
         centerSensor = new DigitalInput(Config.Intake.centerSensor);
@@ -80,20 +88,20 @@ public class IntakeSubsystem extends SubsystemBase{
         ErrorTrackingSubsystem.getInstance().register(m_intake);
 
         // Must be the last thing in the constructor
-        burnFlash();
+        //burnFlash(); // Broken in 2025
     }
 
     /**
      * Save the configurations from flash to EEPROM.
      */
-    private void burnFlash() {
+    /*private void burnFlash() {
         try {
         Thread.sleep(200);
         } 
         catch (Exception e) {}
 
         m_intake.burnFlash();
-    }
+    }*/ // Broken in 2025
 
     public boolean isFrontSensorActive(){
         return frontSensorResult;

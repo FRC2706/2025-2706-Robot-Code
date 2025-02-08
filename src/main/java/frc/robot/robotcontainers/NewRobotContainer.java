@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -213,15 +214,127 @@ public class NewRobotContainer extends RobotContainer {
                 m_subwooferShotRpmTrigger));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *leop
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        int autoId = m_autoSelector.getAutoId();
-        System.out.println("*********************** Auto Id"+autoId);
+    driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
-        return m_autoRoutines.getAutonomousCommand(autoId);
-    }
+    driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
+
+    // Commands that take control of the rotation stick
+    driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
+    driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
+    driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+
+    //for tuning the swerve
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // driver.y().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // driver.x().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesBackwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    // };
+    // driver.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStates270 = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    // };
+    // driver.b().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+    // ));
+
+
+
+    driver.rightTrigger().whileTrue(new RotateAngleToVisionSupplier(driver, "/photonvision/" + PhotonConfig.apriltagCameraName));
+    
+    // Vision scoring commands with no intake, shooter, arm
+    // driver.leftTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.AMP_RED, driver)));
+
+    // driver.rightTrigger().whileTrue(new SelectByAllianceCommand( // Implement command group that also controls the arm, intake, shooter
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.RIGHT_SPEAKER_BLUE, driver), 
+    //   PhotonSubsystem.getInstance().getAprilTagCommand(PhotonPositions.LEFT_SPEAKER_RED, driver)));
+
+    driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
+            .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    // driver.leftTrigger().whileTrue(CombinedCommands.podiumSourceSideSpeakerVisionShot(driver, PhotonPositions.PODIUM_SOURCESIDE_BLUE, PhotonPositions.PODIUM_SOURCESIDE_RED))
+    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+     /**
+     * Operator Controls
+     * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
+     */
+    // Arm
+    operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
+    operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
+    operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
+    operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
+   // Climber
+    operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
+
+    // Eject the note from the front with start
+    operator.start()
+      .whileTrue(Commands.run(() -> intake.setVoltage(-12), intake))
+      .onFalse(Commands.runOnce(() -> intake.stop()));
+  
+       
+    //operator.leftTrigger(0.3).whileTrue(
+    operator.leftBumper()
+      .whileTrue(CombinedCommands.armIntake())
+      .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
+      .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
+
+    //right trigger for shooter with speaker RPM
+    operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
+    //operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteAmp());
+    // Shoot note with leftBumper
+    // operator.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1))
+    //                       .onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
+
+      operator.rightBumper().onTrue(new SubwooferShot(
+      operator.rightBumper(), 
+      ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
+      m_subwooferShotRpm, 
+      m_subwooferShotRpmTrigger));
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *leop
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    int autoId = m_autoSelector.getAutoId();
+    System.out.println("*********************** Auto Id"+autoId);
+    return new InstantCommand();
+
+    // return m_autoRoutines.getAutonomousCommand(autoId);
+  }
 }
