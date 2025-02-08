@@ -76,6 +76,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator = new SparkMax(Config.ElevatorConfig.ELEVATOR_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
         m_elevator_config = new SparkMaxConfig();
 
+        m_pidControllerElevator = m_elevator.getClosedLoopController();
+
         m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
 
         m_elevator_config.smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT);
@@ -84,16 +86,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.voltageCompensation(6);
         m_elevator_config.softLimit.forwardSoftLimit(Config.ElevatorConfig.elevator_up_limit);
         m_elevator_config.softLimit.reverseSoftLimit(Config.ElevatorConfig.elevator_down_limit);
-        m_elevator_config.softLimit.forwardSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
-        m_elevator_config.softLimit.reverseSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
+        //m_elevator_config.softLimit.forwardSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
+        //m_elevator_config.softLimit.reverseSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
+        m_elevator_config.softLimit.forwardSoftLimitEnabled(false);
+        m_elevator_config.softLimit.reverseSoftLimitEnabled(false);
         m_elevator_config.signals.primaryEncoderPositionPeriodMs(20);
         m_elevator_config.signals.primaryEncoderVelocityPeriodMs(20);
-        m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
+        //m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
         m_elevator_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
         m_elevator_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
 
-        /*NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
+        NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
         m_elevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(Config.ElevatorConfig.elevator_kP);
         m_elevatorISubs = ElevatorTuningTable.getDoubleTopic("I").getEntry(Config.ElevatorConfig.elevator_kI);
         m_elevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(Config.ElevatorConfig.elevator_kD);
@@ -116,7 +120,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorVelPub = ElevatorDataTable.getDoubleTopic("MeasuredVelocity").publish(PubSubOption.periodic(0.02));
         m_elevatorFFTestingVolts= ElevatorDataTable.getDoubleTopic("FFTestingVolts").publish(PubSubOption.periodic(0.02));
         m_targetAngle = ElevatorDataTable.getDoubleTopic("TargetAngleDeg").publish(PubSubOption.periodic(0.02));
-        */
+
 
         updatePID0Settings();
         updatePID1Settings();

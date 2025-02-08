@@ -41,7 +41,7 @@ public class BeetleContainer extends RobotContainer {
     CommandXboxController driver = new CommandXboxController(0);
     CommandXboxController operator = new CommandXboxController(1); 
 
-    driver.a().onTrue(new BlingCommand(BlingColour.HONEYDEW));
+    //driver.a().onTrue(new BlingCommand(BlingColour.HONEYDEW));
 
     // ELEVATOR PROTOTYPE
     operator.x().onTrue(new SetElevator(()->50));

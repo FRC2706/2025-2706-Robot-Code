@@ -472,7 +472,7 @@ public final class Config {
     public static final boolean SET_INVERTED = true;
     public static final boolean INVERT_ENCODER = false;
 
-    public static final int CURRENT_LIMIT = 20;
+    public static final int CURRENT_LIMIT = 50;
 
     public static final double shiftEncoderRange = 10;
 
