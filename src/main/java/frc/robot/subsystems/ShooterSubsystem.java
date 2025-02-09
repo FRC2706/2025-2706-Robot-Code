@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.ErrorCheck;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.lib.lib2706.TunableNumber;
 import frc.robot.Config;
 
@@ -59,7 +61,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private static ShooterSubsystem shooter;
     public static ShooterSubsystem getInstance() {
         if (shooter == null)
+        {
+            SubsystemChecker.subsystemConstructed(SubsystemType.ShooterSubsystem);
             shooter = new ShooterSubsystem();
+        }            
         return shooter;
     }
 
