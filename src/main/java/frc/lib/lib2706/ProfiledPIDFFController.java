@@ -38,7 +38,7 @@ public class ProfiledPIDFFController {
 
         double currVel = m_ProfiledPIDController.getSetpoint().velocity;
        // double currAccel = (m_ProfiledPIDController.getSetpoint().velocity - lastVel)/(0.02);
-        double ffVal = m_FFController.calculate(lastVel, currVel, 0.02);
+        double ffVal = m_FFController.calculate(lastVel, currVel);
 
         lastVel = currVel;
         return ffVal;

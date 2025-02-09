@@ -1,17 +1,18 @@
 package frc.robot.subsystems;
 
-import static frc.lib.lib2706.ErrorCheck.configureSpark;
+//import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -32,7 +33,8 @@ public class ArmSubsystem extends SubsystemBase {
   private static ArmSubsystem instance = null; // static object that contains all movement controls
 
   private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
-  private final CANSparkMax m_arm; // bottom SparkMax motor controller
+  private final SparkMax m_arm; // bottom SparkMax motor controller
+  private SparkMaxConfig m_arm_config;
 
   // network table entry
   private final String m_tuningTable = "Arm/ArmTuning";
@@ -57,7 +59,7 @@ public class ArmSubsystem extends SubsystemBase {
   //spark absolute encoder
   private SparkAbsoluteEncoder m_absEncoder;  
   //embedded relative encoder
-  private SparkPIDController m_pidControllerArm;    
+  private SparkClosedLoopController m_pidControllerArm;    
 
   private final TrapezoidProfile.Constraints m_constraints = 
     new TrapezoidProfile.Constraints(Config.ArmConfig.MAX_VEL, Config.ArmConfig.MAX_ACCEL);
@@ -74,41 +76,42 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   private ArmSubsystem() {
-    m_arm = new CANSparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
-    configureSpark("Arm restore factory defaults", () -> (m_arm.restoreFactoryDefaults()));
-    configureSpark("arm set CANTimeout", () -> m_arm.setCANTimeout(Config.CANTIMEOUT_MS));
-    configureSpark("Arm set current limits", () -> m_arm.setSmartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT));
-    m_arm.setInverted(Config.ArmConfig.SET_INVERTED); // sets movement direction
-    configureSpark("Arm set brakes when idle", () -> (m_arm.setIdleMode(IdleMode.kBrake))); // sets brakes when there is  no motion
-    configureSpark("Arm voltage compesentation", () -> m_arm.enableVoltageCompensation(6));                                                                                           
+    m_arm = new SparkMax(Config.ArmConfig.ARM_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
+    m_arm_config = new SparkMaxConfig();
 
-    configureSpark("Arm set soft limits forward",
-        () -> (m_arm.setSoftLimit(SoftLimitDirection.kForward, (float) (Config.ArmConfig.arm_forward_limit))));
-    configureSpark("Arm sets soft limits reverse",
-        () -> (m_arm.setSoftLimit(SoftLimitDirection.kReverse, (float) (Config.ArmConfig.arm_reverse_limit))));
-    configureSpark("Arm enables soft limits forward",
-        () -> (m_arm.enableSoftLimit(SoftLimitDirection.kForward, Config.ArmConfig.SOFT_LIMIT_ENABLE)));
-    configureSpark("Arm enable soft limit reverse",
-        () -> (m_arm.enableSoftLimit(SoftLimitDirection.kReverse, Config.ArmConfig.SOFT_LIMIT_ENABLE)));
+    m_arm.setCANTimeout(Config.CANTIMEOUT_MS);
 
-    // SparkMax periodic status frame 5: frequency absolute encoder position data is
-    // sent over the can bus
-    // SparkMax perioidc status frame 6: frequency absolute encoder velocity data is
-    // sent over the can bus
-    configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
-    configureSpark("Arm set periodic frame period", () -> m_arm.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
+    m_arm_config.smartCurrentLimit(Config.ArmConfig.CURRENT_LIMIT);
+    m_arm_config.inverted(Config.ArmConfig.SET_INVERTED);
+    m_arm_config.idleMode(IdleMode.kBrake);
+    m_arm_config.voltageCompensation(6);
+    m_arm_config.softLimit.forwardSoftLimit(Config.ArmConfig.arm_forward_limit);
+    m_arm_config.softLimit.reverseSoftLimit(Config.ArmConfig.arm_reverse_limit);
+    m_arm_config.softLimit.forwardSoftLimitEnabled(Config.ArmConfig.SOFT_LIMIT_ENABLE);
+    m_arm_config.softLimit.reverseSoftLimitEnabled(Config.ArmConfig.SOFT_LIMIT_ENABLE);
+    m_arm_config.signals.primaryEncoderPositionPeriodMs(20);
+    m_arm_config.signals.primaryEncoderVelocityPeriodMs(20);
 
-    m_absEncoder = m_arm.getAbsoluteEncoder(Type.kDutyCycle);
-    configureSpark("Absolute encoder set inerted", () -> m_absEncoder.setInverted(Config.ArmConfig.INVERT_ENCODER));
-    configureSpark("Absolute encoder set position conersation factor",
-        () -> m_absEncoder.setPositionConversionFactor(Config.ArmConfig.armPositionConversionFactor));
-    configureSpark("Absolute Encoder set velocity conversion factor",
-        () -> m_absEncoder.setVelocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor));
-    configureSpark("Absolute encoder set zero offset",
-        () -> m_absEncoder.setZeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)));
+    m_absEncoder = m_arm.getAbsoluteEncoder();
+    m_arm_config
+          .absoluteEncoder
+          // Invert the turning encoder, since the output shaft rotates in the opposite
+          // direction of the steering motor in the MAXSwerve Module.
+          .inverted(Config.ArmConfig.INVERT_ENCODER)
+          .positionConversionFactor(Config.ArmConfig.armPositionConversionFactor) // radians
+          .velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor); // radians per second
+          //??????.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); //this config is invalid and crash the code
 
-    m_pidControllerArm = m_arm.getPIDController();
-    configureSpark("Pid controller arm set feedback device", () -> m_pidControllerArm.setFeedbackDevice(m_absEncoder));
+    m_arm_config
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Enable PID wrap around for the turning motor. This will allow the PID
+          // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+          // to 10 degrees will go through 0 rather than the other direction which is a
+          // longer route.
+          .positionWrappingEnabled(true)
+          .positionWrappingInputRange(0, Config.ArmConfig.armPositionConversionFactor);
+
 
     NetworkTable ArmTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
     m_armPSubs = ArmTuningTable.getDoubleTopic("P").getEntry(Config.ArmConfig.arm_kP);
@@ -137,28 +140,32 @@ public class ArmSubsystem extends SubsystemBase {
     updatePID0Settings();
     updatePID1Settings();
 
-    burnFlash();
-    configureSpark("Arm set CANTimeout", () -> m_arm.setCANTimeout(0));
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    
+    //burnFlash();
+    m_arm.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_arm);
   }
 
   public void updatePID0Settings() {
-    configureSpark("Arm set FF", () -> (m_pidControllerArm.setFF(m_armFFSubs.get(), 0)));
-    configureSpark("Arm set P", () -> (m_pidControllerArm.setP(m_armPSubs.get(), 0)));
-    configureSpark("Arm set I", () -> (m_pidControllerArm.setI(m_armISubs.get(), 0)));
-    configureSpark("Arm set D", () -> (m_pidControllerArm.setD(m_armDSubs.get(), 0)));
-    configureSpark("Arm set Iz", () -> (m_pidControllerArm.setIZone(m_armIzSubs.get(), 0)));
-    configureSpark("Arm set Output Range",
-        () -> (m_pidControllerArm.setOutputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output)));
+    
+    m_arm_config.closedLoop.velocityFF(m_armFFSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.p(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.i(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.d(m_armDSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.iZone(m_armIzSubs.get(), ClosedLoopSlot.kSlot0);
+    m_arm_config.closedLoop.outputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output);
+
   }
 
-  public void updatePID1Settings() {
-    configureSpark("Arm set far FF", () -> m_pidControllerArm.setFF(ArmConfig.arm_far_kFF, 1));
-    configureSpark("Arm set far P", () -> m_pidControllerArm.setP(ArmConfig.arm_far_kP, 1));
-    configureSpark("Arm set far I", () -> m_pidControllerArm.setI(ArmConfig.arm_far_kI, 1));
-    configureSpark("Arm set far D", () -> m_pidControllerArm.setD(ArmConfig.arm_far_kD, 1));
-    configureSpark("Arm set far Iz", () -> m_pidControllerArm.setIZone(ArmConfig.arm_far_iZone, 1));
+  public void updatePID1Settings() { 
+    m_arm_config.closedLoop.velocityFF(ArmConfig.arm_far_kFF, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.p(ArmConfig.arm_far_kP, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.i(ArmConfig.arm_far_kI, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.d(ArmConfig.arm_far_kD, ClosedLoopSlot.kSlot1);
+    m_arm_config.closedLoop.iZone(ArmConfig.arm_far_iZone, ClosedLoopSlot.kSlot1);
+
   }
 
   @Override
@@ -174,13 +181,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
     double angleDeg = Math.toDegrees(angle);
-    int pidSlot = 0;
+    ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
     if (angleDeg < 25) {
-      pidSlot = 0;
+      pidSlot = ClosedLoopSlot.kSlot0;
     } else if (angleDeg >= 25 && angleDeg < 55) {
-      pidSlot = 1;
+      pidSlot = ClosedLoopSlot.kSlot1;
     } else if (angleDeg >= 55) {
-      pidSlot = 0;
+      pidSlot = ClosedLoopSlot.kSlot0;
     }
 
     m_ProfiledPIDController.calculate(getPosition(), clampedAngle);
@@ -213,7 +220,8 @@ public class ArmSubsystem extends SubsystemBase {
       } 
       catch (Exception e) {}
 
-      errSpark("Arm burn flash", m_arm.burnFlash());      
+      m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      //errSpark("Arm burn flash", m_arm.burnFlash());
     }
 
     private double calculateFF(double encoder1Rad) {
@@ -228,7 +236,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setArmIdleMode(IdleMode mode) {
-      m_arm.setIdleMode(mode);
+  
+      m_arm_config.idleMode(mode);
+
     }
 
     public void testFeedForward(double additionalVoltage) {

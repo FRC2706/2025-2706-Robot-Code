@@ -7,13 +7,13 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Config;
 import frc.robot.subsystems.DiffTalonSubsystem;
 
-public class ArcadeDrive extends CommandBase {
+public class ArcadeDrive extends Command {
     SubsystemBase m_subsystem;
     Supplier<Double> m_forward;
     Supplier<Double> m_steering;
@@ -25,7 +25,6 @@ public class ArcadeDrive extends CommandBase {
      * 
      * @param joystickForward Supplier to get the desired forward movement, range [-1, 1]
      * @param joystickSteering Supplier to get the desired steering movement, range [-1, 1]
-     * @param subsystem The DriveSubsystem
      */
     public ArcadeDrive(Supplier<Double> joystickForward, Supplier<Double> joystickSteering) {
         m_forward = joystickForward;
@@ -47,7 +46,6 @@ public class ArcadeDrive extends CommandBase {
      * @param driverStick Joystick of the driver's XboxController (or other controllers)
      * @param forwardAxis id of the axis for forwards
      * @param steeringAxis id of the axis for steering
-     * @param subsystem The DriveSubsystem
      */
     public ArcadeDrive(CommandXboxController driverStick, int forwardAxis, int steeringAxis) {
         this(
