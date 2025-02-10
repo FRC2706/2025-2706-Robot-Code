@@ -180,64 +180,6 @@ public class PhotonSubsystem extends SubsystemBase {
     return(numSamples >= PhotonConfig.maxNumSamples);
   }
 
-  private double range(double y) {
-    y = Math.toRadians(y);
-    y += PhotonConfig.CAMERA_PITCH.getRadians();
-
-    int id_array = id - 3;
-
-    if (id_array < 0) {
-      return 0;
-    }else if(id_array>= Config.PhotonConfig.APRIL_HEIGHTS.length){
-      return 0;
-    }
-
-    return (Config.PhotonConfig.APRIL_HEIGHTS[id_array]-PhotonConfig.CAMERA_HEIGHT)/Math.tan(y);
-  }
-
-  private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget biggestTarget=null;
-
-    double tallest = 0;
-    for (PhotonTrackedTarget t:targets) {
-      List<TargetCorner> corners = t.getDetectedCorners();
-      double sizeY = corners.get(1).y-corners.get(3).y;
-      if (sizeY > tallest) {
-        tallest = sizeY;
-        biggestTarget = t;
-      }
-    }
-    return (biggestTarget);
-  }
-
-  private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget target=null;
-
-    for (PhotonTrackedTarget t:targets) {
-       int targetId = t.getFiducialId();
-            if (targetId == 7 )//|| targetId == 4)
-            {
-              //Do something with this target.. Get the Pose2d, etc.
-              //publish the yaw to the network table
-              pubSpeakerYaw.accept(t.getYaw());
-
-              target = t;
-              break;
-            }
-      
-    }
-    return (target);
-  }
-
-  private Pose2d convertToField(double range, Rotation2d yaw, Pose2d odometryPose) {
-    Rotation2d fieldOrientedTarget = yaw.rotateBy(odometryPose.getRotation());
-    Translation2d visionXY = new Translation2d(range, yaw);
-    Translation2d robotRotated = visionXY.rotateBy(PhotonConfig.cameraOffset.getRotation());
-    Translation2d robotToTargetRELATIVE = robotRotated.plus(PhotonConfig.cameraOffset.getTranslation());
-    Translation2d robotToTarget = robotToTargetRELATIVE.rotateBy(odometryPose.getRotation());
-    return new Pose2d(robotToTarget.plus(odometryPose.getTranslation()), fieldOrientedTarget);
-  }
-
   @Override
   public void periodic() {
 
@@ -326,6 +268,7 @@ public class PhotonSubsystem extends SubsystemBase {
     //   pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
     // }
   }
+}
  
   public Command saveImagesIntakeCameraCommand() {
     Timer timer = new Timer();
