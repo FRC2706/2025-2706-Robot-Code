@@ -18,7 +18,6 @@ public class PhotonMoveToTarget extends Command {
   //declerations
   Translation2d targetOffset;
   boolean centerTarget;
-  Rotation2d desiredHeading;
   boolean isWaypoint;
   boolean shouldNeverEnd;
 
@@ -42,17 +41,15 @@ public class PhotonMoveToTarget extends Command {
  * Command for moving to the target currently selected in the PhotonSubsystem
  * @param _targetOffset
  * the field oriented offset from the aprilTag to move towards
- * @param _desiredHeading
- * what direction the robot should be facing compared to the field
+
  * @param _isWaypoint
  * whether or not to use the larger tolerences meant for stop-and-go waypoints
  */
-  public PhotonMoveToTarget(Translation2d _targetOffset, Rotation2d _desiredHeading, boolean _isWaypoint, boolean neverEnd) {
+  public PhotonMoveToTarget(Translation2d _targetOffset, boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
     addRequirements(SwerveSubsystem.getInstance());
     addRequirements(PhotonSubsystem.getInstance());
     targetOffset = _targetOffset;
-    desiredHeading = _desiredHeading;
-    centerTarget=false;
+    centerTarget=_centerTarget;
     isWaypoint=_isWaypoint;
     shouldNeverEnd = neverEnd;
   }
@@ -70,18 +67,18 @@ public class PhotonMoveToTarget extends Command {
   public void execute() {
     Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
     Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
+    Rotation2d targetRobotHeading = PhotonSubsystem.getInstance().getTargetRobotHeading();
+
     //@todo: 
     //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
-
     //convert to Robot: facing to AprilTag
-    //@todo: add offset to this heading
     Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
         
     if (centerTarget){
       SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), rotationSetPoint));
     }else{
-      //absolute heading
-      SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), desiredHeading));
+      //use the absolute heading
+      SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), targetRobotHeading));
     }
   }
  

@@ -116,19 +116,6 @@ public class AutoRoutines extends SubsystemBase {
         NamedCommands.registerCommand("ArmPickup", new SetArm(() -> Config.ArmSetPoints.INTAKE.angleDeg));
         NamedCommands.registerCommand("ArmKitbotShot", new SetArm(() -> Config.ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
 
-        // Working but behaves weirdly with pathplanner
-        NamedCommands.registerCommand("VisionScoreSourceSideClose",
-            autoSpeakerScore(
-                8,
-                2,
-                3750,
-                3720,
-                31,
-                PhotonPositions.RIGHT_SPEAKER_BLUE,
-                PhotonPositions.LEFT_SPEAKER_RED
-            )
-        );
-
         NamedCommands.registerCommand("SetVisionSideSpeakerTag", 
             new SelectByAllianceCommand(
                 PhotonSubsystem.getInstance().getResetCommand(),
@@ -165,74 +152,5 @@ public class AutoRoutines extends SubsystemBase {
                 );
         }
     }
-
-    /**
-     * Drive to the given photon position (blue or red) and score a note.
-     * 
-     * This command group will not reset vision to the correct tag. That must be done ahead of this command running.
-     * 
-     * @param preparingTimeoutSeconds Time in seconds before the preparing commands are canceled.
-     * @param scoringTimeoutSeconds Time in seconds for the scoring commands. Scoring commands do not end automatically and rely on this.
-     * @param shooterSpeed Setpoint for the shooter in RPM.
-     * @param shooterTriggerSpeed Shooter speed in RPM to consider the shooter ready to shoot.
-     * @param armAngleDeg Angle to put the arm at in degrees.
-     * @param bluePosition PhotonPosition to drive the chassis to when on the blue alliance.
-     * @param redPosition PhotonPosition to drive the chassis to when on the red alliance.
-     * @return
-     */
-    public static Command autoSpeakerScore(
-        double preparingTimeoutSeconds,
-        double scoringTimeoutSeconds, 
-        double shooterSpeed,
-        double shooterTriggerSpeed,
-        double armAngleDeg, 
-        PhotonPositions bluePosition, 
-        PhotonPositions redPosition
-    ) {
-        // Intake and shooter sequence
-        // Spin the intake forwards to center the note, when the chassis is not rotating for a bit, log the centered note in the intake rollers
-        Debouncer notRotatingDebouncer = new Debouncer(0.3);
-        Command intakeShooterSequence = Commands.sequence(
-            new MakeIntakeMotorSpin(8.0, 0).until(() -> notRotatingDebouncer.calculate(
-                // SwerveSubsystem.getInstance().isAtRotationTarget(30, 5))),
-                Math.abs(SwerveSubsystem.getInstance().getRobotRelativeSpeeds().omegaRadiansPerSecond) < Math.toRadians(3))),
-            Commands.parallel(
-                new IntakeControl(false), // Reverse note until not touching shooter
-                new WaitCommand(0.1).andThen(new Shooter_PID_Tuner(() -> shooterSpeed))
-            )
-        );
-
-        // Prepare the robot to score
-        Debouncer shooterDebounce = new Debouncer(0.2);
-        Command driveToPositionAndPrepare = Commands.deadline(
-            Commands.parallel(
-                new WaitUntilCommand(() -> shooterDebounce.calculate(ShooterSubsystem.getInstance().getVelocityRPM() > shooterTriggerSpeed)),
-                new WaitUntilCommand(() -> Math.abs(Math.toDegrees(ArmSubsystem.getInstance().getPosition()) - armAngleDeg) < 0.5),
-                new WaitUntilCommand(() -> SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
-                                        && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE))
-            ),
-            intakeShooterSequence,
-            new SelectByAllianceCommand(
-                new PhotonMoveToTarget(bluePosition.destination, bluePosition.direction, false, true),
-                new PhotonMoveToTarget(redPosition.destination, redPosition.direction, false, true)),
-            new SetArm(()->armAngleDeg)
-        );
-
-        // Score the note
-        Command scoreNote = Commands.parallel(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().stopMotors()),
-            new Shooter_PID_Tuner(() -> shooterSpeed), // Continue to hold shooter voltage
-            new SetArm(()->armAngleDeg), // Continue to hold arm in the correct position
-            new MakeIntakeMotorSpin(9.0, 0)
-        ).withTimeout(scoringTimeoutSeconds);
-
-        // Sequence preparing then scoring
-        return Commands.sequence( 
-            CombinedCommands.forcefulTimeoutCommand(
-                preparingTimeoutSeconds,
-                driveToPositionAndPrepare
-            ),
-            scoreNote
-        );
-    }
+   
 }

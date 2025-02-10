@@ -47,6 +47,8 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
@@ -61,9 +63,8 @@ public class PhotonSubsystem extends SubsystemBase {
   //declarations
   private static PhotonSubsystem instance;
   private DoubleArrayPublisher pubSetPoint;
-  private DoublePublisher pubRange, pubYaw;
-  public DoublePublisher pubSpeakerRange, pubSpeakerYaw;
-  private IntegerPublisher pubSetTagId;
+  public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
+  private IntegerPublisher pubBestTagId;
   private StringPublisher pub3DTagsDebugMsg;
   private PhotonCamera camera1;
   private Translation2d targetPos;
@@ -73,15 +74,18 @@ public class PhotonSubsystem extends SubsystemBase {
   private LinearFilter filterY = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private int numSamples;
   private double recentTimeStamp = 0;
+  private int bestTagId;
+  private Rotation2d bestTagHeading;
+  private Rotation2d targetRobotHeading;
 
   private IntegerEntry intakeCameraInputSaveImgEntry;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
-
+ 
   public static PhotonSubsystem getInstance(){
     if (instance == null){
-      instance = new PhotonSubsystem();
+      SubsystemChecker.subsystemConstructed(SubsystemType.ArmSubsystem);
+      instance = new PhotonSubsystem();      
     }
     return instance;
   }
@@ -92,26 +96,23 @@ public class PhotonSubsystem extends SubsystemBase {
     camera1 = new PhotonCamera(PhotonConfig.apriltagCameraName);
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
-    pubSetPoint = photonTable.getDoubleArrayTopic("PhotonAprilPoint").publish(PubSubOption.periodic(0.02));
-    pubRange = photonTable.getDoubleTopic("Range").publish(PubSubOption.periodic(0.02));
-    pubYaw = photonTable.getDoubleTopic("Yaw").publish(PubSubOption.periodic(0.02));
-    pubSpeakerRange = photonTable.getDoubleTopic("SpeakerRange").publish(PubSubOption.periodic(0.02));
-    pubSpeakerYaw = photonTable.getDoubleTopic("SpeakerYaw").publish(PubSubOption.periodic(0.02));
+    pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
+    pubBestTagHeading = photonTable.getDoubleTopic("BestTagHeading (deg)").publish(PubSubOption.periodic(0.02));
+    pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
+    pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint").publish(PubSubOption.periodic(0.02));
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
     SmartDashboard.putData("command reset id",Commands.runOnce(()->reset()));
 
     reset();
 
     try {
-      aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
+      aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
-      PhotonConfig.USE_3D_TAGS = false;
-      DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. Using 2D apriltags instead of 3D.", false);
+      DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
     }
 
-    // Intake camera snapping photons
+    // Intake camera snapping photons ???
     NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.frontCameraName);
     intakeCameraInputSaveImgEntry = intakeTable.getIntegerTopic("inputSaveImgCmd").getEntry(0);
   }
@@ -130,9 +131,7 @@ public class PhotonSubsystem extends SubsystemBase {
   public void resetTagAtBootup() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // if (alliance.isEmpty() || alliance.get() == Alliance.Blue) {
-    //   reset(8);
-    // } else {
-    //   reset(4);
+    //   
     // }
     reset();
   }
@@ -164,38 +163,6 @@ public class PhotonSubsystem extends SubsystemBase {
     return new FunctionalCommand(() -> reset(), ()->{}, (interrupted) ->{}, ()->hasData(), this);
   }
 
-  //todo: 
-  //multiple tags. For now, only tag 8
-
-/**
- * this is the command for going to a specific position based off of an apriltag during teleoperated,------------------------       
- * 
- * during Auto, please use the positions with PhotonMoveToTarget
- * @param spacePositions
- * a PhotonPositions object from the config file
- * @return
- * the command to run
- */
-
- //why this command is in the subsystem?
-  public Command getAprilTagCommand(PhotonPositions spacePositions, CommandXboxController driverStick, boolean neverEnd){
-    Command moveToTargetCommands;
-    if (spacePositions.hasWaypoint) {
-      moveToTargetCommands = Commands.sequence(
-        new PhotonMoveToTarget(spacePositions.waypoint, spacePositions.direction,true, false),
-        new PhotonMoveToTarget(spacePositions.destination, spacePositions.direction, false, neverEnd)
-      );
-    } else {
-      moveToTargetCommands = new PhotonMoveToTarget(spacePositions.destination, spacePositions.direction, false, neverEnd);
-    }
-
-    return Commands.sequence(
-      // new ProxyCommand(getWaitForDataCommand(spacePositions.id)), // Proxy this command to prevent PhotonSubsystem requirement conflicting with PhotonMoveToTarget's requirements
-      new ScheduleCommand(new RumbleJoystick(driverStick, RumbleType.kBothRumble, 0.7, 1, true)),
-      new ProxyCommand(moveToTargetCommands.withName("ProxiedSwerveAprilTagCommand")) // Proxy this command to prevent SwerveSubsystem requirement conflicting with WaitForDataCommand's requirements
-    );
-  }
-
   public Translation2d getTargetPos(){
     return targetPos;
   }
@@ -204,24 +171,13 @@ public class PhotonSubsystem extends SubsystemBase {
     return targetRotation;
   }
 
+  public Rotation2d getTargetRobotHeading(){
+    return targetRobotHeading;
+  }
+
   public boolean hasData() {
     //if data is the max that the filters hold
     return(numSamples >= PhotonConfig.maxNumSamples);
-  }
-
-  private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget biggestTarget=null;
-
-    double tallest = 0;
-    for (PhotonTrackedTarget t:targets) {
-      List<TargetCorner> corners = t.getDetectedCorners();
-      double sizeY = corners.get(1).y-corners.get(3).y;
-      if (sizeY > tallest) {
-        tallest = sizeY;
-        biggestTarget = t;
-      }
-    }
-    return (biggestTarget);
   }
 
   @Override
@@ -229,8 +185,11 @@ public class PhotonSubsystem extends SubsystemBase {
 
     Pose2d fieldToTarget = null;
     
-    // Must be set by 2D or 3D mode
+    // Must be set by 2D or 3D mode;
+    //@todo: test 2D and 3D mode both
     PhotonPipelineResult result = camera1.getLatestResult();
+    //to test...
+    //PhotonPipelineResult result = camera1.getAllUnreadResults().get(0);
     if (result.getTimestampSeconds() == recentTimeStamp){
       //--System.out.println("time stamp is stale");
       return;
@@ -244,55 +203,7 @@ public class PhotonSubsystem extends SubsystemBase {
     }
 
     //if (PhotonConfig.USE_3D_TAGS) 
-    {
-      // Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update();
-      // if (optEstPose.isEmpty()) {
-      //   pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose"); 
-      //   return;
-      // }
-
-      // // Ensure the desired tag is set to 3, 4, 7 or 8
-      // if (!PhotonConfig.ALLOWED_TAGS_3D.contains(id)) {
-      //   pub3DTagsDebugMsg.accept("Desired tag set to " + id);
-      //   return;
-      // }
-
-      // // Create a list of tags seen
-      // ArrayList<Integer> tagsInFrame = new ArrayList<>();
-      // for (PhotonTrackedTarget target : optEstPose.get().targetsUsed) {
-      //   tagsInFrame.add(target.getFiducialId()); //************************************** */
-      // }
-         
-      // // Todo: add all the reef tags, human player station tags
-      // if (! ( tagsInFrame.contains(7) || tagsInFrame.contains(8))) {
-      //   pub3DTagsDebugMsg.accept("expected tags not in frame. Tags in frame: " + tagsInFrame.toString());
-      //     return;
-      // }
-
-      // Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
-      // if (tagPose.isEmpty()) {
-      //   pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
-      //   return;
-      // }
-
-      // // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
-      // Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
-      // if (odometryPose.isEmpty()) {
-      //   pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
-      //   return;
-      // }
-
-      // // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
-      // Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
-
-      // // Map the position of the tag relative to the current odometry pose with latency compensation
-      // fieldToTarget = odometryPose.get().plus(robotToTarget);
-
-      // pub3DTagsDebugMsg.accept("Got pose. Transform2d from robot to tag: " + robotToTarget.toString());
-      // end of the old stuff
-      //=================================================================================================
-      //new stuff
-     
+    {     
       //Get the best target
       PhotonTrackedTarget target = result.getBestTarget();
 
@@ -302,26 +213,32 @@ public class PhotonSubsystem extends SubsystemBase {
         return;
       }
 
-      //todo check target's ID here. Should accept all Reef's IDs and Human player station IDs.
-      //for now, any detected best tag is fine
-      // if(target.getFiducialId() != id)
-      // {
-      //   System.out.println("Best target ID: " + target.getFiducialId());
-      //   return;
-      // }
+      bestTagId = target.getFiducialId();
+      
+      //@todo: validate bestTagId based on red or blue. May not need to check red or blue
+      //if not valid tagId, return
+      Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(bestTagId);
+      Pose3d tagIdPose;
+      if (tagPose.isEmpty())
+      {
+        return;
+      }
+      else
+      {
+        tagIdPose = tagPose.get();
+        bestTagHeading = tagIdPose.getRotation().toRotation2d();
+        targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
 
-      //todo: use the best tag's ID to get its angle in the field.
-        // Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
-      // if (tagPose.isEmpty()) {
-      //   pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
-      //   return;
-      // }  
+        pubBestTagId.accept(bestTagId);
+        pubBestTagHeading.accept(bestTagHeading.getDegrees());
+        pubTargetRobotHeading.accept(targetRobotHeading.getDegrees());
+      }
 
       //get the swerve pose at the time that the result was gotten
       Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
       //for security reasons
       if (optPose.isEmpty()){
-        System.out.println("the odometryPose is empty");
+        //System.out.println("the odometryPose is empty");
         return;
       }
       else

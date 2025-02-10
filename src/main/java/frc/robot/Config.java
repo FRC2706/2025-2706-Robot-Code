@@ -161,9 +161,13 @@ public final class Config {
       -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
     //networkTableName
-    public static final String apriltagCameraName = "FrontApriltagOV9281";
+    public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
+    
+    public static final String leftReefCameraName = "";
+    public static final String rightReefCameraName = "";
+    public static final String intakeCameraName = "";
     //data max
     public static final int maxNumSamples = 10;
 
@@ -196,8 +200,8 @@ public final class Config {
       //==================================
       //reset gyro: Front facing the tag. When we see the tag, heading is 180.
       //red: right; blue: left
-      REEF_ID_8_RED(8, new Translation2d(1.0, 0.2), Rotation2d.fromDegrees(0)),
-      REEF_ID_8_BLUE(8, new Translation2d(-1.0, 0.2), Rotation2d.fromDegrees( 180)),
+      REEF_ID_8_RED(8, new Translation2d(1.0, 0.5), Rotation2d.fromDegrees(0)),
+      REEF_ID_8_BLUE(8, new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees( 180)),
 
       //HUMAN_STATION_LEFT
       //HUMAN_STATION_MID
@@ -317,7 +321,8 @@ public final class Config {
     public static enum TeleopSpeeds {
       SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
       MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
-      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
+      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
+      VISION(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;
