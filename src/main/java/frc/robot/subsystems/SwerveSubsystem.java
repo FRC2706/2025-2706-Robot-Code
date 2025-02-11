@@ -129,6 +129,8 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
+    //configure auto builder
+    //Option 1: from pathplanner GUI
     // RobotConfig config = null;
     // try {
     //   config = RobotConfig.fromGUISettings();
@@ -137,18 +139,18 @@ public class SwerveSubsystem extends SubsystemBase {
     //   e.printStackTrace();
     // }
       
-
-    //Please make sure these numbers are good. CUrrent values are dummy values.
-    DCMotor dcMotor = new DCMotor(1.0, 1.0, 1.0, 1.0, 1.0, 1);
-    ModuleConfig moduleConfig = new ModuleConfig(1.0,1.0,1.0,dcMotor,1.0,1);
+    //Option 2: 
+    //set configuration parameters
+    DCMotor dcMotor = new DCMotor(12.0, 1.0, 1.0, 1.0, 1.0, 1);
+    ModuleConfig moduleConfig = new ModuleConfig(0.049,3.0,1.20,dcMotor,50,1);
     Translation2d[] offsets = new Translation2d[4];
-    //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
+    //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. 
     offsets[0] = new Translation2d(Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//FL
     offsets[1] = new Translation2d(Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//FR
     offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
     offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-       RobotConfig config = new RobotConfig(0.1, 0.1, moduleConfig, offsets );
+    RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets );
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
