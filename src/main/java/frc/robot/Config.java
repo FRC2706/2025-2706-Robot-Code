@@ -164,8 +164,9 @@ public final class Config {
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
-    
-    public static final String leftReefCameraName = "";
+
+      
+    public static final String leftReefCameraName = "USB_CAMERA";
     public static final String rightReefCameraName = "";
     public static final String intakeCameraName = "";
     //data max
@@ -200,8 +201,8 @@ public final class Config {
       //==================================
       //reset gyro: Front facing the tag. When we see the tag, heading is 180.
       //red: right; blue: left
-      REEF_ID_8_RED(8, new Translation2d(1.0, 0.5), Rotation2d.fromDegrees(0)),
-      REEF_ID_8_BLUE(8, new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees( 180)),
+      REEF_ID_LEFT(8,new Translation2d(0.6, 0.3), Rotation2d.fromDegrees(0)),
+      REEF_ID_RIGHT(8,new Translation2d(0.6, -0.3), Rotation2d.fromDegrees( 0)),
 
       //HUMAN_STATION_LEFT
       //HUMAN_STATION_MID

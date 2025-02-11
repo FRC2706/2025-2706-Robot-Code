@@ -130,9 +130,9 @@ public class Robot2025Container extends RobotContainer {
     driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
     
     //vision-aid alignment    
-    // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_ID_LEFT))
+            .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
     /**
      * Operator Controls

@@ -78,8 +78,6 @@ public class PhotonSubsystem extends SubsystemBase {
   private Rotation2d bestTagHeading;
   private Rotation2d targetRobotHeading;
 
-  private IntegerEntry intakeCameraInputSaveImgEntry;
-
   private AprilTagFieldLayout aprilTagFieldLayout;
  
   public static PhotonSubsystem getInstance(){
@@ -93,7 +91,7 @@ public class PhotonSubsystem extends SubsystemBase {
   /** Creates a new photonAprilTag. */
   private PhotonSubsystem() {
     //name of camera, change if using multiple cameras
-    camera1 = new PhotonCamera(PhotonConfig.apriltagCameraName);
+    camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
     pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
@@ -111,10 +109,7 @@ public class PhotonSubsystem extends SubsystemBase {
       aprilTagFieldLayout = null;
       DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
     }
-
-    // Intake camera snapping photons ???
-    NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.frontCameraName);
-    intakeCameraInputSaveImgEntry = intakeTable.getIntegerTopic("inputSaveImgCmd").getEntry(0);
+  
   }
 
   public void reset() {
@@ -264,20 +259,9 @@ public class PhotonSubsystem extends SubsystemBase {
       targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
       numSamples++;
 
-    //   //publish to networktables
-    //   pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
-    // }
+      //publish to networktables
+      pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
+    
   }
 }
- 
-  public Command saveImagesIntakeCameraCommand() {
-    Timer timer = new Timer();
-    timer.start();
-    return Commands.run(() -> {
-      if (timer.hasElapsed(0.4)) {
-        timer.restart();
-        intakeCameraInputSaveImgEntry.set(intakeCameraInputSaveImgEntry.get() + 1);
-      }
-    });
-  }
 }

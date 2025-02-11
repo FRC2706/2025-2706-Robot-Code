@@ -105,8 +105,7 @@ public class CombinedCommands {
          
         return Commands.parallel(
             new MakeIntakeMotorSpin(9.0,0),
-            new SetArm(()->ArmSetPoints.INTAKE.angleDeg), // Continue to hold arm in the correct position
-            PhotonSubsystem.getInstance().saveImagesIntakeCameraCommand()
+            new SetArm(()->ArmSetPoints.INTAKE.angleDeg) // Continue to hold arm in the correct position
         );
     }
 
@@ -193,7 +192,7 @@ public class CombinedCommands {
         // Sequence 
         return Commands.sequence( 
             waitForVisionData,
-            //to add rumble here??
+            //@todo: add rumble or bling here to notify the vision data available....
             //@todo: may not need waitForAllSubsystems
             // forcefulTimeoutCommand(
             //             preparingTimeoutSeconds,
