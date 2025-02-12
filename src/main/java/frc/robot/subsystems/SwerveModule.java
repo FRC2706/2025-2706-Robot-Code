@@ -3,9 +3,10 @@ package frc.robot.subsystems;
 //import static frc.lib.lib2706.ErrorCheck.configureSpark;
 import static frc.lib.lib2706.ErrorCheck.errSpark;
 
-import com.ctre.phoenix.sensors.CANCoder; // This will be deprecated, we should migrate to Phoenix 6
-//import com.ctre.phoenix6.configs.CANcoderConfiguration;
-//import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -56,10 +57,13 @@ public class SwerveModule {
 
   private RelativeEncoder driveEncoder;
   private RelativeEncoder integratedAngleEncoder;
-  private CANCoder angleEncoder;
+  private CANcoder angleEncoder;
+  private CANcoderConfiguration angleEncoderConfig;
 
   private final SparkClosedLoopController driveController;
   private final SparkClosedLoopController angleController;
+  SparkMaxConfig driveMotorConfig;
+  SparkMaxConfig angleMotorConfig;
 
   private boolean synchronizeEncoderQueued = false;
 
@@ -70,7 +74,6 @@ public class SwerveModule {
   public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants, String ModuleName) {
     this.moduleNumber = moduleNumber;
 
-
     angleOffset = moduleConstants.angleOffset;
 
     String tableName = "SwerveChassis/SwerveModule" + ModuleName;
@@ -78,7 +81,8 @@ public class SwerveModule {
     swerveTable = NetworkTableInstance.getDefault().getTable("SwerveChassis");
   
     /* Angle Encoder Config */
-    angleEncoder = new CANCoder(moduleConstants.cancoderID);
+    angleEncoder = new CANcoder(moduleConstants.cancoderID);
+    angleEncoderConfig = new CANcoderConfiguration();
     configAngleEncoder();
 
     /* Angle Motor Config */
@@ -96,7 +100,7 @@ public class SwerveModule {
     lastAngle = getState().angle;
 
     desiredSpeedEntry = swerveModuleTable.getDoubleTopic("Desired speed (mps)").publish(PubSubOption.periodic(0.02));
-    desiredAngleEntry = swerveModuleTable.getDoubleTopic("Desired angle (deg)").publish(PubSubOption.periodic(0.02));
+    desiredAngleEntry = swerveModuleTable.getDoubleTopic("Desired angle (rad)").publish(PubSubOption.periodic(0.02));
     currentSpeedEntry = swerveModuleTable.getDoubleTopic("Current speed (mps)").publish(PubSubOption.periodic(0.02));
     currentAngleEntry = swerveModuleTable.getDoubleTopic("Current angle (rad)").publish(PubSubOption.periodic(0.02));
     speedError = swerveModuleTable.getDoubleTopic("Speed error (mps)").publish(PubSubOption.periodic(0.02));
@@ -107,7 +111,6 @@ public class SwerveModule {
     entryAngleOffset.accept(angleOffset.getDegrees());
 
     resetToAbsolute();
-    burnFlash();
 
     ErrorTrackingSubsystem.getInstance().register(angleMotor);
     ErrorTrackingSubsystem.getInstance().register(driveMotor);
@@ -141,16 +144,25 @@ public class SwerveModule {
     double absolutePosition = getCanCoder().getRadians() - angleOffset.getRadians();
     integratedAngleEncoder.setPosition(absolutePosition);
     lastAngle = getAngle();
+ 
+    System.out.println("ModuleName resetAngle (rad)"+ absolutePosition);
   }
 
   private void configAngleEncoder() {
-    angleEncoder.configFactoryDefault();
-    CANCoderUtil.setCANCoderBusUsage(angleEncoder, CCUsage.kMinimal);
-    angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
+   
+    //CANCoderUtil.setCANCoderBusUsage(angleEncoder, CCUsage.kMinimal);
+   
+    MagnetSensorConfigs magnetCfg = new MagnetSensorConfigs()
+                                    .withMagnetOffset(0)
+                                    .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive) //Config.Swerve.canCoderInvert
+                                    .withAbsoluteSensorDiscontinuityPoint(1);//Unsigned_0_to_360
+        
+    angleEncoderConfig.withMagnetSensor(magnetCfg);
+    angleEncoder.getConfigurator().apply(angleEncoderConfig);
   }
 
   private void configAngleMotor() {
-    SparkMaxConfig angleMotorConfig = new SparkMaxConfig();
+    angleMotorConfig = new SparkMaxConfig();
     angleMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     angleMotorConfig.smartCurrentLimit(Config.Swerve.angleContinuousCurrentLimit);
@@ -168,12 +180,13 @@ public class SwerveModule {
     angleMotorConfig.closedLoop.positionWrappingMinInput(0);
     angleMotorConfig.closedLoop.positionWrappingMaxInput(2 * Math.PI);
     angleMotorConfig.closedLoop.positionWrappingEnabled(true);
-    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    angleMotor.configure(angleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     angleMotor.setCANTimeout(0);
   }
 
   private void configDriveMotor() {
-    SparkMaxConfig driveMotorConfig = new SparkMaxConfig();
+    driveMotorConfig = new SparkMaxConfig();
+    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
 
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
     driveMotorConfig.inverted(Config.Swerve.driveInvert);
@@ -189,28 +202,14 @@ public class SwerveModule {
     driveMotorConfig.closedLoop.positionWrappingEnabled(true);
     driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
 
-    driveMotor.setCANTimeout(Config.CANTIMEOUT_MS);
-
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     driveEncoder.setPosition(0.0);
 
     driveMotor.setCANTimeout(0);
   }
 
-  /**
-   * Save the configurations from flash to EEPROM.
-   */
-  private void burnFlash() {
-    try {
-      Thread.sleep(200);
-    } 
-    catch (Exception e) {}
-
-    /*driveMotor.burnFlash();
-    angleMotor.burnFlash();*/ // broken in 2025
-  }
-
+ 
   /**
    * Enable/disable voltage compensation on the drive motors. 
    * 
@@ -218,14 +217,12 @@ public class SwerveModule {
    */
   public void setVoltageCompensation(boolean enable) {
     if (enable) {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .voltageCompensation(Config.Swerve.voltageComp);
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      driveMotorConfig.voltageCompensation(Config.Swerve.voltageComp);
     } else {
-      SparkMaxConfig driveMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
-              .disableVoltageCompensation();
-      driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+      driveMotorConfig.disableVoltageCompensation();
     }
+
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
   }
 
   /*
@@ -285,7 +282,7 @@ public class SwerveModule {
   }
 
   public Rotation2d getCanCoder() {
-    return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
+    return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition().getValueAsDouble()*360);
   }
 
   public SwerveModuleState getState() {

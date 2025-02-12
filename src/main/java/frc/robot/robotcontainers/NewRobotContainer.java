@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -87,7 +88,7 @@ public class NewRobotContainer extends RobotContainer {
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
 
     // Setup auto
-    m_autoRoutines = new AutoRoutines();
+    //m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
     m_analogSelectorIndex = m_autoSelector.getAnalogSelectorIndex();
 
@@ -156,6 +157,50 @@ public class NewRobotContainer extends RobotContainer {
     driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
     driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
     driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+
+    //for tuning the swerve
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // driver.y().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // driver.x().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesBackwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    // };
+    // driver.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStates270 = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    // };
+    // driver.b().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+    // ));
+
+
+
     driver.rightTrigger().whileTrue(new RotateAngleToVisionSupplier(driver, "/photonvision/" + PhotonConfig.apriltagCameraName));
     
     // Vision scoring commands with no intake, shooter, arm
@@ -188,7 +233,7 @@ driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, 
     operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
     operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
     operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
-    // Climber
+   // Climber
     operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
 
     // Eject the note from the front with start
@@ -225,7 +270,8 @@ driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, 
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
+    return new InstantCommand();
 
-    return m_autoRoutines.getAutonomousCommand(autoId);
+    // return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }

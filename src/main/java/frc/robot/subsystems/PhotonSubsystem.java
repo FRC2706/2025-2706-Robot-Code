@@ -47,6 +47,8 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
@@ -77,10 +79,10 @@ public class PhotonSubsystem extends SubsystemBase {
   private IntegerEntry intakeCameraInputSaveImgEntry;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
 
   public static PhotonSubsystem getInstance(){
     if (instance == null){
+      SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystem);
       instance = new PhotonSubsystem();
     }
     return instance;
@@ -104,7 +106,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
     try {
       aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
+      //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       PhotonConfig.USE_3D_TAGS = false;
@@ -207,8 +209,9 @@ public class PhotonSubsystem extends SubsystemBase {
   public boolean hasData() {
     //if data is the max that the filters hold
     return(numSamples >= PhotonConfig.maxNumSamples);
-  }
+  } 
 
+<<<<<<< HEAD
   @Override
   public void periodic() {
     
@@ -335,6 +338,57 @@ public class PhotonSubsystem extends SubsystemBase {
       //publish to networktables
       pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
     }
+=======
+
+  private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
+    PhotonTrackedTarget target=null;
+
+    for (PhotonTrackedTarget t:targets) {
+       int targetId = t.getFiducialId();
+            if (targetId == 7 )//|| targetId == 4)
+            {
+              //Do something with this target.. Get the Pose2d, etc.
+              //publish the yaw to the network table
+              pubSpeakerYaw.accept(t.getYaw());
+
+              target = t;
+              break;
+            }
+      
+    }
+    return (target);
+  }
+
+  private Pose2d convertToField(double range, Rotation2d yaw, Pose2d odometryPose) {
+    Rotation2d fieldOrientedTarget = yaw.rotateBy(odometryPose.getRotation());
+    Translation2d visionXY = new Translation2d(range, yaw);
+    Translation2d robotRotated = visionXY.rotateBy(PhotonConfig.cameraOffset.getRotation());
+    Translation2d robotToTargetRELATIVE = robotRotated.plus(PhotonConfig.cameraOffset.getTranslation());
+    Translation2d robotToTarget = robotToTargetRELATIVE.rotateBy(odometryPose.getRotation());
+    return new Pose2d(robotToTarget.plus(odometryPose.getTranslation()), fieldOrientedTarget);
+  }
+
+  @Override
+  public void periodic() {
+    // List<PhotonTrackedTarget> targets = camera1.getLatestResult().targets;
+    // targets.get(0).getYaw();
+    // targets.get(0).getFiducialId();
+
+    
+  
+
+    // if (fieldToTarget != null) {
+    //   //update rolling averages
+    //   targetPos = new Translation2d(
+    //       filterX.calculate(fieldToTarget.getX()),
+    //       filterY.calculate(fieldToTarget.getY()));
+    //   targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
+    //   numSamples++;
+
+    //   //publish to networktables
+    //   pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
+    // }
+>>>>>>> 903d0d5ca34cf0dea569d9689e769e323e7564d7
   }
 
   public Command saveImagesIntakeCameraCommand() {

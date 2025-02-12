@@ -382,5 +382,74 @@ public class CombinedCommands {
             //     rumble.schedule(); // Rumble the joystick to notify the driver
         }).withName("VisionScoreLeftReef");
     }
+
+        /**
+     * Score in the amp or speaker using vision and the given parameters.
+     * Uses simple programming for the intake and shooter.
+     * Handles arm, intake, shooter, swerve, and vision.
+     * 
+     * @param driverJoystick A CommandXboxController
+     * @param preparingTimeoutSeconds Safety timeout for the robot to move to the correct position, ready the arm and ready the intake
+     * @param scoringTimeoutSeconds Run shooter and intake until this timeout is reached
+     * @param armAngle Arm angle in degrees to use
+     * @param shooterVoltage Voltage of the shooter
+     * @param bluePosition PhotonPosition for the blue alliance
+     * @param redPosition PhotonPosition for the red alliance
+     */ 
+    public static Command visionScoreLeftReef(
+            CommandXboxController driverJoystick, 
+            PhotonPositions bluePosition, 
+            PhotonPositions redPosition) {
+
+        // Use a timer to not rumble if the it's only been 0.5 seconds 
+        Timer timer = new Timer();
+
+        // Bling Commands
+        Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE));
+        Command idleBling = new ProxyCommand(Commands.idle(BlingSubsystem.getINSTANCE()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withName("ProxiedIdleBling"));
+        Command turnOffBling = new ProxyCommand(new BlingCommand(BlingColour.DISABLED).withName("TurnOffBling"));
+
+        // Wait for vision data to be available
+        Command waitForVisionData = new ProxyCommand(new SelectByAllianceCommand(
+            PhotonSubsystem.getInstance().getWaitForDataCommand(), 
+            PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData"));
+
+
+        //Wait for all subsytems to get ready
+        Command waitForAllSubsytems = Commands.parallel(
+                   new WaitUntilCommand(() -> SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
+                                    && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE))
+        );
+
+        // Control all subsystems commands
+        Command controlAllSubsystems = Commands.parallel(
+            new SelectByAllianceCommand(
+                    PhotonSubsystem.getInstance().getAprilTagCommand(bluePosition, driverJoystick, true), 
+                    PhotonSubsystem.getInstance().getAprilTagCommand(redPosition, driverJoystick, true)),
+            Commands.sequence(bling, new WaitCommand(0.02), idleBling),
+            Commands.runOnce(() -> timer.restart())
+        );
+
+        // Rumble command
+        Command rumble = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 0.3, false);
+
+        double preparingTimeoutSeconds = 12;
+
+        // Sequence 
+        return Commands.sequence( 
+            waitForVisionData,
+            //@todo: may not need waitForAllSubsystems
+            // forcefulTimeoutCommand(
+            //             preparingTimeoutSeconds,
+            //             waitForAllSubsytems), 
+            controlAllSubsystems
+        ).finallyDo(() -> {
+            idleBling.cancel(); // Cancel idle bling as a safety factor
+            Commands.sequence(new WaitCommand(0.02), new ScheduleCommand(turnOffBling)).withName("DelayTurnOffBling").schedule();
+            //@todo: remove this rumble
+            // if (timer.hasElapsed(1))
+            //     rumble.schedule(); // Rumble the joystick to notify the driver
+        }).withName("VisionScoreLeftReef");
+    }
     
 }

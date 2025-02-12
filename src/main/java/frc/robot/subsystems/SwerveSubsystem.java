@@ -6,6 +6,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.MathUtil;
@@ -13,17 +14,20 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -36,6 +40,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.AdvantageUtil;
 import frc.lib.lib2706.PoseBuffer;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.lib.lib2706.UpdateSimpleFeedforward;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
@@ -99,7 +105,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private static SwerveSubsystem instance;
   public static SwerveSubsystem getInstance(){
       if(instance == null){
-          instance = new SwerveSubsystem();
+        SubsystemChecker.subsystemConstructed(SubsystemType.SwerveSubsystem);
+        instance = new SwerveSubsystem();
       }
       return instance;
   }
@@ -122,13 +129,26 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
-    RobotConfig config = null;
-    try {
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+    // RobotConfig config = null;
+    // try {
+    //   config = RobotConfig.fromGUISettings();
+    // } catch (Exception e) {
+    //   // Handle exception as needed
+    //   e.printStackTrace();
+    // }
+      
+
+    //Please make sure these numbers are good. CUrrent values are dummy values.
+    DCMotor dcMotor = new DCMotor(1.0, 1.0, 1.0, 1.0, 1.0, 1);
+    ModuleConfig moduleConfig = new ModuleConfig(1.0,1.0,1.0,dcMotor,1.0,1);
+    Translation2d[] offsets = new Translation2d[4];
+    //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
+    offsets[0] = new Translation2d(Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//FL
+    offsets[1] = new Translation2d(Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//FR
+    offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
+    offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
+
+       RobotConfig config = new RobotConfig(0.1, 0.1, moduleConfig, offsets );
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
