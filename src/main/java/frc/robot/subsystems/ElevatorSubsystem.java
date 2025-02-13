@@ -49,20 +49,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoubleEntry m_elevatorDSubs;
     private DoubleEntry m_elevatorIzSubs;
     private DoubleEntry m_elevatorFFSubs;
-    private DoubleEntry m_elevatorOffset;
     private DoublePublisher m_targetPosition;
     private DoublePublisher m_currentPosition;
 
-    // for elevator ff
-    private DoubleEntry m_elevatorMomentToVoltage;
+    public double elevatorTargetPos = 0;
+    public boolean controlOverride = false;
 
     //embedded relative encoder
     private SparkClosedLoopController m_pidControllerElevator;
-
-    private final TrapezoidProfile.Constraints m_constraints =
-            new TrapezoidProfile.Constraints(Config.ElevatorConfig.MAX_VEL, Config.ElevatorConfig.MAX_ACCEL);
-    private final ProfiledPIDController m_ProfiledPIDController =
-            new ProfiledPIDController(1.6,0.002,40, m_constraints, 0.02);
 
 
     public static ElevatorSubsystem getInstance() {
@@ -74,112 +68,89 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private ElevatorSubsystem() {
+        // Initialize elevator and other stuff
         m_elevator = new SparkMax(Config.ElevatorConfig.ELEVATOR_SPARK_CAN_ID, motorType); // creates SparkMax motor controller
         m_elevator_config = new SparkMaxConfig();
-        m_elevator_encoder = m_elevator.getEncoder();
 
+        m_elevator_encoder = m_elevator.getEncoder();
         m_pidControllerElevator = m_elevator.getClosedLoopController();
 
+
+        // Config elevator
         m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
 
-        m_elevator_config.smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT);
-        m_elevator_config.inverted(Config.ElevatorConfig.SET_INVERTED);
-        m_elevator_config.idleMode(IdleMode.kBrake);
-        m_elevator_config.voltageCompensation(6);
-        m_elevator_config.softLimit.forwardSoftLimit(Config.ElevatorConfig.elevator_up_limit);
-        m_elevator_config.softLimit.reverseSoftLimit(Config.ElevatorConfig.elevator_down_limit);
-        //m_elevator_config.softLimit.forwardSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
-        //m_elevator_config.softLimit.reverseSoftLimitEnabled(Config.ElevatorConfig.SOFT_LIMIT_ENABLE);
-        m_elevator_config.softLimit.forwardSoftLimitEnabled(false);
-        m_elevator_config.softLimit.reverseSoftLimitEnabled(false);
-        m_elevator_config.signals.primaryEncoderPositionPeriodMs(20);
-        m_elevator_config.signals.primaryEncoderVelocityPeriodMs(20);
-        //m_elevator_config.encoder.inverted(Config.ElevatorConfig.INVERT_ENCODER);
-        m_elevator_config.encoder.positionConversionFactor(Config.ElevatorConfig.elevatorPositionConversionFactor);
-        m_elevator_config.encoder.velocityConversionFactor(Config.ElevatorConfig.elevatorVelocityConversionFactor);
-        m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
-        //m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true);
-        //m_elevator_config.limitSwitch.reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
+        m_elevator_config.inverted(Config.ElevatorConfig.SET_INVERTED)
+                        .idleMode(IdleMode.kBrake)
+                                .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
+                                        .voltageCompensation(12);
 
+        // Hard limit via limit switch
+        m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
+                .forwardLimitSwitchEnabled(true);
+
+        // Soft limit
+        m_elevator_config.softLimit.reverseSoftLimit(500)
+                .reverseSoftLimitEnabled(true);
+
+
+        // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
         m_elevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(Config.ElevatorConfig.elevator_kP);
         m_elevatorISubs = ElevatorTuningTable.getDoubleTopic("I").getEntry(Config.ElevatorConfig.elevator_kI);
         m_elevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(Config.ElevatorConfig.elevator_kD);
         m_elevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(Config.ElevatorConfig.elevator_kIz);
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
-        // m_topElevatorOffset =
-        // topElevatorTuningTable.getDoubleTopic("Offset").getEntry(ElevatorConfig.top_elevator_offset);
-        m_elevatorMomentToVoltage = ElevatorTuningTable.getDoubleTopic("MomentToVoltage")
-                .getEntry(Config.ElevatorConfig.MOMENT_TO_VOLTAGE);
+
 
         m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
-        m_elevatorPSubs.setDefault(Config.ElevatorConfig.elevator_kP);
+        m_elevatorPSubs.setDefault(Config.ElevatorConfig.elevator_kPDefault);
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
         m_elevatorDSubs.setDefault(Config.ElevatorConfig.elevator_kD);
         m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
 
+
+        // Send telemetry thru networktables
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
 
         m_targetPosition = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
         m_currentPosition = ElevatorDataTable.getDoubleTopic("CurrentPosition").publish(PubSubOption.periodic(0.02));
 
 
-        updatePID0Settings();
-        updatePID1Settings();
+        // PID config
+        m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
+                .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
+                .velocityFF(0.003)
+                .outputRange(-1,1)
+                .maxMotion.maxVelocity(1000)
+                .maxAcceleration(1000)
+                .allowedClosedLoopError(0.25);
 
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        burnFlash();
         m_elevator.setCANTimeout(0);
+
+        // reset encoder
         m_elevator_encoder.setPosition(0);
 
         ErrorTrackingSubsystem.getInstance().register(m_elevator);
     }
 
-    public void updatePID0Settings() {
-        m_elevator_config.closedLoop.velocityFF(m_elevatorFFSubs.get(), ClosedLoopSlot.kSlot0);
-        m_elevator_config.closedLoop.p(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
-        m_elevator_config.closedLoop.i(m_elevatorPSubs.get(), ClosedLoopSlot.kSlot0);
-        m_elevator_config.closedLoop.d(m_elevatorDSubs.get(), ClosedLoopSlot.kSlot0);
-        m_elevator_config.closedLoop.iZone(m_elevatorIzSubs.get(), ClosedLoopSlot.kSlot0);
-        m_elevator_config.closedLoop.outputRange(Config.ElevatorConfig.min_output, Config.ElevatorConfig.max_output);
-    }
-
-    public void updatePID1Settings() {
-        m_elevator_config.closedLoop.velocityFF(ElevatorConfig.elevator_far_kFF, ClosedLoopSlot.kSlot1);
-        m_elevator_config.closedLoop.p(ElevatorConfig.elevator_far_kP, ClosedLoopSlot.kSlot1);
-        m_elevator_config.closedLoop.i(ElevatorConfig.elevator_far_kI, ClosedLoopSlot.kSlot1);
-        m_elevator_config.closedLoop.d(ElevatorConfig.elevator_far_kD, ClosedLoopSlot.kSlot1);
-        m_elevator_config.closedLoop.iZone(ElevatorConfig.elevator_far_iZone, ClosedLoopSlot.kSlot1);
-    }
-
     @Override
     public void periodic() {
+        // update networktables
         m_currentPosition.accept(m_elevator_encoder.getPosition());
+        m_targetPosition.accept(elevatorTargetPos);
+
+        if (!controlOverride) {
+            // set elevator height
+            setElevatorHeight(elevatorTargetPos);
+        }
     }
 
     public void setElevatorHeight(double height) {
-
-        // pidSlot 1 is tuned well for setpoints between 25 deg and 45 deg
-        //double angleDeg = Math.toDegrees(angle);
         ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
-        /*
-        if (angleDeg < 25) {
-            pidSlot = ClosedLoopSlot.kSlot0;
-        } else if (angleDeg >= 25 && angleDeg < 55) {
-            pidSlot = ClosedLoopSlot.kSlot1;
-        } else if (angleDeg >= 55) {
-            pidSlot = ClosedLoopSlot.kSlot0;
-        }*/
-
-        //m_pidControllerElevator.setReference((targetPos), ControlType.kPosition, 0, calculateFF(clampedAngle));
-        m_targetPosition.accept(height);
         m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
-    }
-
-    public void resetProfiledPIDController() {
-        m_ProfiledPIDController.reset(getPosition(), getVelocity());
     }
 
 
@@ -197,47 +168,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void raiseMotor() {
         m_elevator.set(1);
+        controlOverride = true;
     }
 
     public void lowerMotor() {
         m_elevator.set(-1);
+        controlOverride = true;
     }
 
     public void stopMotors() {
         m_elevator.stopMotor();
-    }
-
-    public void burnFlash() {
-        try {
-            Thread.sleep(200);
-        }
-        catch (Exception e) {}
-
-        //errSpark("Elevator burn flash", m_elevator.burnFlash());
-    }
-
-    private double calculateFF(double encoder1Rad) {
-        //double ElevatorMoment = Config.ElevatorConfig.Elevator_FORCE * (Config.ElevatorConfig.LENGTH_Elevator_TO_COG*Math.cos(encoder1Rad));
-        //return (ElevatorMoment) * m_elevatorMomentToVoltage.get();
-
-        double toTunedConst = m_elevatorMomentToVoltage.get();
-        return toTunedConst*Math.cos(encoder1Rad);
-    }
-
-    public void isAtSetpoint() {
-    }
-
-    public void setElevatorIdleMode(IdleMode mode) {
-        SparkMaxConfig m_elevator_config = new SparkMaxConfig();
-
-        m_elevator_config.idleMode(mode);
-
-        m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-    }
-
-    public void testFeedForward(double additionalVoltage) {
-        double voltage = additionalVoltage + calculateFF(getPosition());
-        m_pidControllerElevator.setReference(voltage, ControlType.kVoltage);
+        controlOverride = true;
     }
 
 }

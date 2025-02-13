@@ -28,7 +28,8 @@ public class SetElevator extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        ElevatorSubsystem.getInstance().setElevatorHeight(Math.toRadians(extensionAmt.getAsDouble()));
+        ElevatorSubsystem.getInstance().elevatorTargetPos = extensionAmt.getAsDouble();
+        ElevatorSubsystem.getInstance().controlOverride = false;
     }
 
     // Called once the command ends or is interrupted.

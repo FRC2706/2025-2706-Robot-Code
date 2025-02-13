@@ -487,7 +487,8 @@ public final class Config {
     public static final boolean SOFT_LIMIT_ENABLE = true;
 
     //PID constants
-    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.5, 1.4);
+    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.1, 1.4);
+    public static final double elevator_kPDefault = robotSpecific(2.700000, 0.0, 0.5, 1.4);
     public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0003);
     public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.9);
     public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.3);
