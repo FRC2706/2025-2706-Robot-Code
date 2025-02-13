@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 
 /** Add your docs here. */
@@ -53,7 +55,11 @@ public class IntakeSubsystem extends SubsystemBase{
     private static IntakeSubsystem instance;
     public static IntakeSubsystem getInstance() {
         if (instance == null)
+        {
+            SubsystemChecker.subsystemConstructed(SubsystemType.IntakeSubsystem);
             instance = new IntakeSubsystem();
+        }
+            
         return instance;
     }
 
@@ -86,6 +92,8 @@ public class IntakeSubsystem extends SubsystemBase{
         backSensorLongPub = intakeTable.getBooleanTopic("back sensor result").publish(PubSubOption.periodic(0.02));
 
         ErrorTrackingSubsystem.getInstance().register(m_intake);
+
+
 
         // Must be the last thing in the constructor
         //burnFlash(); // Broken in 2025
