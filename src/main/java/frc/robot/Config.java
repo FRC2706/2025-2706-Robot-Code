@@ -75,328 +75,329 @@ public final class Config {
     public static final int ARM = 19; 
     public static final int CoralDepositor_LEFT_MOTOR = 16; 
     //public static final int CoralDepositor_RIGHT_MOTOR = 22;
-    
-  }
-
-  public static final int CANTIMEOUT_MS = 100;
-
-  private static final int SIMULATION_ID = 1;
-
-  /**
-   * Returns one of the values passed based on the robot ID
-   *
-   * @param first The first value (default value)
-   * @param more  Other values that could be selected
-   * @param <T>   The type of the value
-   * @return The value selected based on the ID of the robot
-   */
-  @SafeVarargs
-  public static <T> T robotSpecific(T first, T... more) {
-    if (getRobotId() < 1 || getRobotId() > more.length) {
-      return first;
-    } else {
-      return more[getRobotId() - 1];
-    }
-  }
-
-  /**
-   * Obtain the robot id found in the robot.conf file
-   *
-   * @return The id of the robot
-   */
-  public static int getRobotId() {
-
-    if (robotId < 0) {
-      // Backup in case the FMS is attached, force to comp robot
-      if (DriverStation.isFMSAttached()) {
-        robotId = 0;
+        public static final int INTAKE = 0;
+        
       }
-
-      // Set the Id to the simulation if simulating
-      else if (RobotBase.isSimulation()) {
-        robotId = SIMULATION_ID;
-
-        // Not simulation, read the file on the roborio for it's robot id.
-      } else {
-        try (BufferedReader reader = Files.newBufferedReader(ROBOT_ID_LOC)) {
-          robotId = Integer.parseInt(reader.readLine());
-        } catch (Exception e) {
-          robotId = 0; // DEFAULT TO COMP ROBOT IF NO ID IS FOUND
+    
+      public static final int CANTIMEOUT_MS = 100;
+    
+      private static final int SIMULATION_ID = 1;
+    
+      /**
+       * Returns one of the values passed based on the robot ID
+       *
+       * @param first The first value (default value)
+       * @param more  Other values that could be selected
+       * @param <T>   The type of the value
+       * @return The value selected based on the ID of the robot
+       */
+      @SafeVarargs
+      public static <T> T robotSpecific(T first, T... more) {
+        if (getRobotId() < 1 || getRobotId() > more.length) {
+          return first;
+        } else {
+          return more[getRobotId() - 1];
         }
       }
-    }
-
-    return robotId;
-  }
-
-  /**
-   * ROBOT IDs
-   * 
-   * ID 0: Competition Robot (Crescendo) (NEEDS UPDATE ON robot.conf)
-   * ID 1: Simulation of Comp Robot (Crescendo in Simulation)
-   * ID 2: Beetle (Small Talon Tank Drive)
-   * ID 3: Poseidon (Charged Up) (NEEDS UPDATE ON robot.conf)
-   **/
-
-  /** ADD CONSTANTS BELOW THIS LINE */
-
-
-  public static final boolean swerveTuning = false; //tune swerve? Turn this to false for competition
-  public static final boolean demoEnabled = false; //disable demo mode
-
-  public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
-
-  public static final class PhotonConfig{
-    public static boolean USE_3D_TAGS = false;
-    public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
-
-    public static final double CAMERA_HEIGHT = 0.215;
-    public static final Rotation2d CAMERA_PITCH = Rotation2d.fromDegrees(33);
-    //x is forwards, y is sideways with +y being left, rotation probobly if + left too
-    public static final Pose2d cameraOffset = new Pose2d(new Translation2d(-0.1,0), Rotation2d.fromDegrees(180));
-    // public static final Pose2d cameraOffsetRed = new Pose2d(new Translation2d(-0.1, 0), Rotation2d.fromDegrees(0));
-
-    public static final Transform3d cameraTransform = new Transform3d(
-      -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
-
-    //networkTableName
-    public static final String apriltagCameraName = "FrontApriltagOV9281";
-    public static final String networkTableName = "PhotonCamera";
-    public static final String frontCameraName = "HD_USB_CAMERA";
-    //data max
-    public static final int maxNumSamples = 10;
-
-    // these are the heights for the apriltags 3, 4, 5, 6, 7, 8
-    public static final double[] APRIL_HEIGHTS = {1.32,1.32,1.22,1.22,1.32,1.32};
-    public static final double POS_TOLERANCE = 0.05; // meters //TODO: Change to 0.01
-    public static final double ANGLE_TOLERANCE = Math.toRadians(4.0);//Change this to: 1.0
-    public static final double WAYPOINT_POS_TOLERANCE = 0.2; // meters
-    public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
-    public static final double VEL_TOLERANCE = 0.1*4;
-    public static enum PhotonPositions {
-      
-      
-      RIGHT_SPEAKER_RED(4, new Translation2d(-0.937,0.937), new Translation2d(-0.637,0.637), Rotation2d.fromDegrees(-60)),
-      MIDDLE_SPEAKER_RED(4, new Translation2d(-1.3,0), new Translation2d(-0.95,0), Rotation2d.fromDegrees(0)),
-      LEFT_SPEAKER_BLUE(7, new Translation2d(0.937,0.937), new Translation2d(0.637,0.637), Rotation2d.fromDegrees(-120)),
-      MIDDLE_SPEAKER_BLUE(7, new Translation2d(1.20,0), new Translation2d(0.90,0), Rotation2d.fromDegrees(180)),
-      TEST(4, new Translation2d(-2,0), new Translation2d(-1,0), Rotation2d.fromDegrees(0)),
-      AMP_RED(5, new Translation2d(0,-0.70), new Translation2d(0,-0.5), Rotation2d.fromDegrees(90)),
-      AMP_BLUE(6, new Translation2d(0,-0.30), new Translation2d(0,0.05),  Rotation2d.fromDegrees(90)),
-
-      // COMPETITION USE
-      FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
-      FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
-
-      PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
-      PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
-
-      // NOT FULLY TESTED
-      FAR_SPEAKER_RED_SIDE_TAG(3, new Translation2d(-2.5,0), new Translation2d(-2.1,0.58), Rotation2d.fromDegrees(0)),
-      FAR_SPEAKER_BLUE_SIDE_TAG(8, new Translation2d(2.4,0), new Translation2d(2.1,-0.58 ), Rotation2d.fromDegrees(0)),
-
-      PODIUM_AMPSIDE_BLUE(7, new Translation2d(3.35, -0.65), Rotation2d.fromDegrees(-20)),
-      PODIUM_AMPSIDE_RED(4, new Translation2d(-3.35, -0.65), Rotation2d.fromDegrees(180+20)),
-
-      RIGHT_SPEAKER_BLUE(8, new Translation2d(1,-1.1), Rotation2d.fromDegrees(-55)),
-      LEFT_SPEAKER_RED(3, new Translation2d(-1,-1.1), Rotation2d.fromDegrees(180+55));
-      
-
-      // 2.2 , 33 deg
-      // FAR_SPEAKER_BLUE at new Translation2d(2.35,-0.65), arm angle of 35.8 and shooter speed at 3750
-
     
-      public final int id;
-      public final boolean hasWaypoint;
-      public final Translation2d waypoint;
-      public final Translation2d destination;
-      public final Rotation2d direction;
-  
-      PhotonPositions(int id, Translation2d waypoint, Translation2d destination, Rotation2d direction) {
-        this.id = id;
-        this.hasWaypoint = true;
-        this.waypoint = waypoint;
-        this.destination = destination;
-        this.direction = direction;
-      }
-
-      PhotonPositions(int id, Translation2d destination, Rotation2d direction) {
-        this.id = id;
-        this.hasWaypoint = false;
-        this.waypoint = null;
-        this.destination = destination;
-        this.direction = direction;
-      }
-    }  
-  }
-
-  public static final class Climber_CANID {
-     public static int CLIMBER = CANID.CLIMBER;
-  }
-
-  public static final class Swerve {
-    public static final double stickDeadband = 0.1;
-
-    public static final int pigeonID = CANID.PIGEON;
-    public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
-
-    /* Drivetrain Constants Changed */
-    public static final double trackWidth = Units.inchesToMeters(25.787);
-    public static final double wheelBase = Units.inchesToMeters(20.472);
-    public static final double wheelDiameter = Units.inchesToMeters(3.884);
-    public static final double wheelCircumference = wheelDiameter * Math.PI;
-
-    public static final double openLoopRamp = 0.25;
-    public static final double closedLoopRamp = 0.0;
-
-    //to update for L2 upgrade
-    //L1: 8.14
-    //L2: 6.75
-    public static final double driveGearRatio = (6.75 / 1.0);
-    public static final double angleGearRatio = (12.8 / 1.0);
-
-    public static final double synchTolerance = 1;
+      /**
+       * Obtain the robot id found in the robot.conf file
+       *
+       * @return The id of the robot
+       */
+      public static int getRobotId() {
     
-    public static final SwerveDriveKinematics swerveKinematics =
-        new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
-
-    /* Swerve Voltage Compensation Changed */
-    public static final double voltageComp = 11.0;
-
-    /* Swerve Current Limiting, Changed */
-    public static final int angleContinuousCurrentLimit = 30; //20
-    public static final int driveContinuousCurrentLimit = 50;
-
-    /* Angle Motor PID Values, Changed */
-    public static final double angleKP = 2.0; //1.0
-    public static final double angleKI = 0.0;
-    public static final double angleKD = 0.1; //0.0
-    public static final double angleKFF = 0.0;
-
-    /* Drive Motor PID Values, Changed*/
-    public static final double driveKP = 0.2; //0.2
-    public static final double driveKI = 0.0; 
-    public static final double driveKD = 0.0;
-    public static final double driveKFF = 0.0;
-
-    /* Drive Motor Characterization Values Changed */
-    public static final double driveKS = 0.667;
-    public static final double driveKV = 4.0;//5
-    public static final double driveKA = 0.5;
-
-    /* Drive Motor Conversion Factors */
-    public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
-    public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0;
-    public static final double angleConversionFactor = 2 * Math.PI / angleGearRatio;
-    public static final double angleVelocityConversionFactor = angleConversionFactor / 60.0;
-
-    /* Swerve ProfiledPidController values */
-    public static final double translationAllowableError = 0.01;
-    public static final double rotationAllowableError = Math.toRadians(0.7);
-
-    /* Swerve Profiling Values Changed */
-    public static enum TeleopSpeeds {
-      SLOW(0.5, 0.5 * Math.PI, 16, 12 * Math.PI),
-      MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
-      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
-
-      public final double translationalSpeed;
-      public final double angularSpeed;
-      public final double translationAccelLimit;
-      public final double angularAccelLimit;
-
-      TeleopSpeeds(double translationalSpeed, double angularSpeed, double translationAccelLimit, double angAccelLimit) {
-        this.translationalSpeed = translationalSpeed;
-        this.angularSpeed = angularSpeed;
-        this.translationAccelLimit = translationAccelLimit;
-        this.angularAccelLimit = angAccelLimit;
+        if (robotId < 0) {
+          // Backup in case the FMS is attached, force to comp robot
+          if (DriverStation.isFMSAttached()) {
+            robotId = 0;
+          }
+    
+          // Set the Id to the simulation if simulating
+          else if (RobotBase.isSimulation()) {
+            robotId = SIMULATION_ID;
+    
+            // Not simulation, read the file on the roborio for it's robot id.
+          } else {
+            try (BufferedReader reader = Files.newBufferedReader(ROBOT_ID_LOC)) {
+              robotId = Integer.parseInt(reader.readLine());
+            } catch (Exception e) {
+              robotId = 0; // DEFAULT TO COMP ROBOT IF NO ID IS FOUND
+            }
+          }
+        }
+    
+        return robotId;
       }
-    }
-
-    public static final double maxSpeed = 3.0; // meters per second
-    public static final double maxAngularVelocity = Math.PI * 3.0;
-
-    /* Neutral Modes */
-    public static final IdleMode angleNeutralMode = IdleMode.kBrake;
-    public static final IdleMode driveNeutralMode = IdleMode.kBrake;
-
-    /* Motor Inverts */
-    public static final boolean driveInvert = false;
-    public static final boolean angleInvert = false;
-
-    /* Angle Encoder Invert */
-    public static final boolean canCoderInvert = false;
-
-    /* Module Specific Constants */
-    /* Front Left Module - Module 0 Changed*/
-    public static final class Mod0 {
-      public static final int driveMotorID = CANID.SWERVE_FL_DRIVE;
-      public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
-      public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(270);
-      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
-    }
-
-    /* Front Right Module - Module 1 Changed*/
-    public static final class Mod1 {
-      public static final int driveMotorID = CANID.SWERVE_FR_DRIVE;
-      public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
-      public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(157.5);
-      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
-    }
-
-    /* Back Left Module - Module 2 Changed*/
-    public static final class Mod2 {
-      public static final int driveMotorID = CANID.SWERVE_RL_DRIVE;
-      public static final int angleMotorID = CANID.SWERVE_RL_STEERING;
-      public static final int canCoderID = CANID.SWERVE_RL_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(192);
-      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
-    }
-
-    /* Back Right Module - Module 3 Changed*/
-    public static final class Mod3 {
-      public static final int driveMotorID = CANID.SWERVE_RR_DRIVE;
-      public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
-      public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6);
-      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
-    }
-  }
-
-  public static final class AutoConstants {
-    // Changed
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-    // Changed values
-
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1.35;
-
-    // Constraint for the motion profilied robot angle controller
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-        new TrapezoidProfile.Constraints(
-        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-  }
-  public static final class BlingConstants {
-    public static int CANDLE = CANID.CANDLE;
-  }
-
-  public static final class Intake {
-    public static final int INTAKE = CANID.INTAKE;
+    
+      /**
+       * ROBOT IDs
+       * 
+       * ID 0: Competition Robot (Crescendo) (NEEDS UPDATE ON robot.conf)
+       * ID 1: Simulation of Comp Robot (Crescendo in Simulation)
+       * ID 2: Beetle (Small Talon Tank Drive)
+       * ID 3: Poseidon (Charged Up) (NEEDS UPDATE ON robot.conf)
+       **/
+    
+      /** ADD CONSTANTS BELOW THIS LINE */
+    
+    
+      public static final boolean swerveTuning = false; //tune swerve? Turn this to false for competition
+      public static final boolean demoEnabled = false; //disable demo mode
+    
+      public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
+    
+      public static final class PhotonConfig{
+        public static boolean USE_3D_TAGS = false;
+        public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
+    
+        public static final double CAMERA_HEIGHT = 0.215;
+        public static final Rotation2d CAMERA_PITCH = Rotation2d.fromDegrees(33);
+        //x is forwards, y is sideways with +y being left, rotation probobly if + left too
+        public static final Pose2d cameraOffset = new Pose2d(new Translation2d(-0.1,0), Rotation2d.fromDegrees(180));
+        // public static final Pose2d cameraOffsetRed = new Pose2d(new Translation2d(-0.1, 0), Rotation2d.fromDegrees(0));
+    
+        public static final Transform3d cameraTransform = new Transform3d(
+          -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+    
+        //networkTableName
+        public static final String apriltagCameraName = "FrontApriltagOV9281";
+        public static final String networkTableName = "PhotonCamera";
+        public static final String frontCameraName = "HD_USB_CAMERA";
+        //data max
+        public static final int maxNumSamples = 10;
+    
+        // these are the heights for the apriltags 3, 4, 5, 6, 7, 8
+        public static final double[] APRIL_HEIGHTS = {1.32,1.32,1.22,1.22,1.32,1.32};
+        public static final double POS_TOLERANCE = 0.05; // meters //TODO: Change to 0.01
+        public static final double ANGLE_TOLERANCE = Math.toRadians(4.0);//Change this to: 1.0
+        public static final double WAYPOINT_POS_TOLERANCE = 0.2; // meters
+        public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
+        public static final double VEL_TOLERANCE = 0.1*4;
+        public static enum PhotonPositions {
+          
+          
+          RIGHT_SPEAKER_RED(4, new Translation2d(-0.937,0.937), new Translation2d(-0.637,0.637), Rotation2d.fromDegrees(-60)),
+          MIDDLE_SPEAKER_RED(4, new Translation2d(-1.3,0), new Translation2d(-0.95,0), Rotation2d.fromDegrees(0)),
+          LEFT_SPEAKER_BLUE(7, new Translation2d(0.937,0.937), new Translation2d(0.637,0.637), Rotation2d.fromDegrees(-120)),
+          MIDDLE_SPEAKER_BLUE(7, new Translation2d(1.20,0), new Translation2d(0.90,0), Rotation2d.fromDegrees(180)),
+          TEST(4, new Translation2d(-2,0), new Translation2d(-1,0), Rotation2d.fromDegrees(0)),
+          AMP_RED(5, new Translation2d(0,-0.70), new Translation2d(0,-0.5), Rotation2d.fromDegrees(90)),
+          AMP_BLUE(6, new Translation2d(0,-0.30), new Translation2d(0,0.05),  Rotation2d.fromDegrees(90)),
+    
+          // COMPETITION USE
+          FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
+          FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
+    
+          PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
+          PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
+    
+          // NOT FULLY TESTED
+          FAR_SPEAKER_RED_SIDE_TAG(3, new Translation2d(-2.5,0), new Translation2d(-2.1,0.58), Rotation2d.fromDegrees(0)),
+          FAR_SPEAKER_BLUE_SIDE_TAG(8, new Translation2d(2.4,0), new Translation2d(2.1,-0.58 ), Rotation2d.fromDegrees(0)),
+    
+          PODIUM_AMPSIDE_BLUE(7, new Translation2d(3.35, -0.65), Rotation2d.fromDegrees(-20)),
+          PODIUM_AMPSIDE_RED(4, new Translation2d(-3.35, -0.65), Rotation2d.fromDegrees(180+20)),
+    
+          RIGHT_SPEAKER_BLUE(8, new Translation2d(1,-1.1), Rotation2d.fromDegrees(-55)),
+          LEFT_SPEAKER_RED(3, new Translation2d(-1,-1.1), Rotation2d.fromDegrees(180+55));
+          
+    
+          // 2.2 , 33 deg
+          // FAR_SPEAKER_BLUE at new Translation2d(2.35,-0.65), arm angle of 35.8 and shooter speed at 3750
+    
+        
+          public final int id;
+          public final boolean hasWaypoint;
+          public final Translation2d waypoint;
+          public final Translation2d destination;
+          public final Rotation2d direction;
+      
+          PhotonPositions(int id, Translation2d waypoint, Translation2d destination, Rotation2d direction) {
+            this.id = id;
+            this.hasWaypoint = true;
+            this.waypoint = waypoint;
+            this.destination = destination;
+            this.direction = direction;
+          }
+    
+          PhotonPositions(int id, Translation2d destination, Rotation2d direction) {
+            this.id = id;
+            this.hasWaypoint = false;
+            this.waypoint = null;
+            this.destination = destination;
+            this.direction = direction;
+          }
+        }  
+      }
+    
+      public static final class Climber_CANID {
+         public static int CLIMBER = CANID.CLIMBER;
+      }
+    
+      public static final class Swerve {
+        public static final double stickDeadband = 0.1;
+    
+        public static final int pigeonID = CANID.PIGEON;
+        public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
+    
+        /* Drivetrain Constants Changed */
+        public static final double trackWidth = Units.inchesToMeters(25.787);
+        public static final double wheelBase = Units.inchesToMeters(20.472);
+        public static final double wheelDiameter = Units.inchesToMeters(3.884);
+        public static final double wheelCircumference = wheelDiameter * Math.PI;
+    
+        public static final double openLoopRamp = 0.25;
+        public static final double closedLoopRamp = 0.0;
+    
+        //to update for L2 upgrade
+        //L1: 8.14
+        //L2: 6.75
+        public static final double driveGearRatio = (6.75 / 1.0);
+        public static final double angleGearRatio = (12.8 / 1.0);
+    
+        public static final double synchTolerance = 1;
+        
+        public static final SwerveDriveKinematics swerveKinematics =
+            new SwerveDriveKinematics(
+                new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
+                new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
+                new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+                new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+    
+        /* Swerve Voltage Compensation Changed */
+        public static final double voltageComp = 11.0;
+    
+        /* Swerve Current Limiting, Changed */
+        public static final int angleContinuousCurrentLimit = 30; //20
+        public static final int driveContinuousCurrentLimit = 50;
+    
+        /* Angle Motor PID Values, Changed */
+        public static final double angleKP = 2.0; //1.0
+        public static final double angleKI = 0.0;
+        public static final double angleKD = 0.1; //0.0
+        public static final double angleKFF = 0.0;
+    
+        /* Drive Motor PID Values, Changed*/
+        public static final double driveKP = 0.2; //0.2
+        public static final double driveKI = 0.0; 
+        public static final double driveKD = 0.0;
+        public static final double driveKFF = 0.0;
+    
+        /* Drive Motor Characterization Values Changed */
+        public static final double driveKS = 0.667;
+        public static final double driveKV = 4.0;//5
+        public static final double driveKA = 0.5;
+    
+        /* Drive Motor Conversion Factors */
+        public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
+        public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0;
+        public static final double angleConversionFactor = 2 * Math.PI / angleGearRatio;
+        public static final double angleVelocityConversionFactor = angleConversionFactor / 60.0;
+    
+        /* Swerve ProfiledPidController values */
+        public static final double translationAllowableError = 0.01;
+        public static final double rotationAllowableError = Math.toRadians(0.7);
+    
+        /* Swerve Profiling Values Changed */
+        public static enum TeleopSpeeds {
+          SLOW(0.5, 0.5 * Math.PI, 16, 12 * Math.PI),
+          MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
+          DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
+    
+          public final double translationalSpeed;
+          public final double angularSpeed;
+          public final double translationAccelLimit;
+          public final double angularAccelLimit;
+    
+          TeleopSpeeds(double translationalSpeed, double angularSpeed, double translationAccelLimit, double angAccelLimit) {
+            this.translationalSpeed = translationalSpeed;
+            this.angularSpeed = angularSpeed;
+            this.translationAccelLimit = translationAccelLimit;
+            this.angularAccelLimit = angAccelLimit;
+          }
+        }
+    
+        public static final double maxSpeed = 3.0; // meters per second
+        public static final double maxAngularVelocity = Math.PI * 3.0;
+    
+        /* Neutral Modes */
+        public static final IdleMode angleNeutralMode = IdleMode.kBrake;
+        public static final IdleMode driveNeutralMode = IdleMode.kBrake;
+    
+        /* Motor Inverts */
+        public static final boolean driveInvert = false;
+        public static final boolean angleInvert = false;
+    
+        /* Angle Encoder Invert */
+        public static final boolean canCoderInvert = false;
+    
+        /* Module Specific Constants */
+        /* Front Left Module - Module 0 Changed*/
+        public static final class Mod0 {
+          public static final int driveMotorID = CANID.SWERVE_FL_DRIVE;
+          public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
+          public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(270);
+          public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+              canCoderID, angleOffset);
+        }
+    
+        /* Front Right Module - Module 1 Changed*/
+        public static final class Mod1 {
+          public static final int driveMotorID = CANID.SWERVE_FR_DRIVE;
+          public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
+          public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(157.5);
+          public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+              canCoderID, angleOffset);
+        }
+    
+        /* Back Left Module - Module 2 Changed*/
+        public static final class Mod2 {
+          public static final int driveMotorID = CANID.SWERVE_RL_DRIVE;
+          public static final int angleMotorID = CANID.SWERVE_RL_STEERING;
+          public static final int canCoderID = CANID.SWERVE_RL_CANCODER;
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(192);
+          public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+              canCoderID, angleOffset);
+        }
+    
+        /* Back Right Module - Module 3 Changed*/
+        public static final class Mod3 {
+          public static final int driveMotorID = CANID.SWERVE_RR_DRIVE;
+          public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
+          public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6);
+          public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+              canCoderID, angleOffset);
+        }
+      }
+    
+      public static final class AutoConstants {
+        // Changed
+        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    
+        // Changed values
+    
+        public static final double kPXController = 1;
+        public static final double kPYController = 1;
+        public static final double kPThetaController = 1.35;
+    
+        // Constraint for the motion profilied robot angle controller
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+            new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+      }
+      public static final class BlingConstants {
+        public static int CANDLE = CANID.CANDLE;
+      }
+    
+      public static final class Intake {
+        public static final int INTAKE = CANID.INTAKE;
     public static final byte Sensor = 0;//its the same but lighter, so dtw 
     public static final byte centerSensor = 2;//its the same but lighter, so dtw 
     public static final byte backSensor = 1;//its the same but lighter, so dtw 
@@ -532,8 +533,8 @@ public static enum ArmSetPoints {
 
   public static final boolean tuningMode = true;
   public static final class ShooterConstants{
-    public static final byte MOTOR_ID = CANID.SHOOTER;
-    public static final byte MOTOR_ID2 = CANID.SHOOTER2;
+   // public static final byte MOTOR_ID = CANID.SHOOTER;
+   // public static final byte MOTOR_ID2 = CANID.SHOOTER2;
     public static final double kP = 0.0002,
                                kI = 0.0,
                                kD = 0.0,

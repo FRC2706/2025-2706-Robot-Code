@@ -89,8 +89,8 @@ public class CoralDepositorSubsystem extends SubsystemBase {
         //burnFlash(); // Broken in 2025
     }
 
-    public void setVoltage(double voltage){
-        leftMotor.setVoltage(voltage);
+    public void set(double voltage){
+        leftMotor.set(voltage);
     }
 
     public void stop(){
