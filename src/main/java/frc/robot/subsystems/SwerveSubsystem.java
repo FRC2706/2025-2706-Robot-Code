@@ -136,8 +136,8 @@ public class SwerveSubsystem extends SubsystemBase {
       
 
     //Please make sure these numbers are good. CUrrent values are dummy values.
-    DCMotor dcMotor = new DCMotor(1.0, 1.0, 1.0, 1.0, 1.0, 1);
-    ModuleConfig moduleConfig = new ModuleConfig(0.049,3.0,1.0,dcMotor,1.0,1);
+    DCMotor dcMotor = new DCMotor(12.0, 1.0, 1.0, 1.0, 1.0, 1);
+    ModuleConfig moduleConfig = new ModuleConfig(0.049,3.0,1.20,dcMotor,50,1);
     Translation2d[] offsets = new Translation2d[4];
     //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
     offsets[0] = new Translation2d(Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//FL
@@ -145,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
     offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
     offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-       RobotConfig config = new RobotConfig(74.088, 6.883, moduleConfig, offsets );
+       RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets );
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
