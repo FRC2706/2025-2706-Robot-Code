@@ -42,8 +42,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.CoralDepositorCommand;
-import frc.robot.subsystems.CoralDepositorControl;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

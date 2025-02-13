@@ -5,11 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralDepositorControl;
+import frc.robot.subsystems.CoralDepositorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class CoralDepositorCommand extends Command {
-    private CoralDepositorControl coralDepositorControl;
+    private CoralDepositorSubsystem coralDepositorSubsystem;
     private boolean direction;
     private boolean bUseSensor;
   /** Creates a new IntakeControl. */
@@ -23,12 +23,10 @@ public class CoralDepositorCommand extends Command {
       */
     public CoralDepositorCommand(boolean feedNote) {
       this.direction = feedNote;
-      coralDepositorControl = CoralDepositorControl.getInstance();
+      coralDepositorSubsystem = CoralDepositorSubsystem.getInstance();
 
     // Use addRequirements() here to declare subsystem dependencies.
-    if (coralDepositorControl != null) {
-      addRequirements(coralDepositorControl);
-    }
+    coralDepositorSubsystem = CoralDepositorSubsystem.getInstance();
   }
 
   // Called when the command is initially scheduled.
@@ -39,24 +37,25 @@ public class CoralDepositorCommand extends Command {
   @Override
   public void execute() {
     if (direction == true) 
-      coralDepositorControl.setVoltage(4.0);
+      coralDepositorSubsystem.setVoltage(4.0);
     else 
-      coralDepositorControl.setVoltage(-2.0);
+      coralDepositorSubsystem.setVoltage(-2.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  coralDepositorControl.stop();
+  coralDepositorSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (direction)
+    return false;
+  /*  if (direction)
       // return intakeSubsystem.isSensor7True() == false;
       return false;
     else
-      return coralDepositorControl.isSensorActive() == false;
+      return coralDepositorSubsystem.isSensorActive() == false;*/
   }
 }

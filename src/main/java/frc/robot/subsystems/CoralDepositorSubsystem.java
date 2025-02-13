@@ -9,7 +9,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.CoralDepositorControl;
+import frc.robot.subsystems.CoralDepositorSubsystem;
 import frc.robot.Config;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -20,8 +20,8 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 
-public class CoralDepositorControl extends SubsystemBase {
-    private CoralDepositorControl coralDepositor;
+public class CoralDepositorSubsystem extends SubsystemBase {
+    private CoralDepositorSubsystem coralDepositor;
     private boolean direction;
     private DigitalInput sensor;
     private Debouncer sensorDebouncer;
@@ -29,10 +29,10 @@ public class CoralDepositorControl extends SubsystemBase {
     private boolean sensorResult;
     private StringPublisher statesPub;
 
-    private static CoralDepositorControl instance;
-    public static CoralDepositorControl getInstance() {
+    private static CoralDepositorSubsystem instance;
+    public static CoralDepositorSubsystem getInstance() {
         if (instance == null)
-            instance = new CoralDepositorControl();
+            instance = new CoralDepositorSubsystem();
         return instance;
     } 
 
@@ -40,46 +40,28 @@ public class CoralDepositorControl extends SubsystemBase {
     private SparkMax leftMotor;
     //private SparkMax rightMotor;
 
-    /** Creates a new CoralDepositorControl. */
-    public CoralDepositorControl(boolean feedNote) {
-        this.direction = feedNote;
-        coralDepositor = CoralDepositorControl.getInstance();
+    /** Creates a new CoralDepositorSubsystem. */
+    public CoralDepositorSubsystem() {
+
         
         DigitalInput sensor = new DigitalInput(Config.Intake.Sensor);
         sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
         
         // Initialize left and right motors
         leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
-        //rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
 
-        // Configure motors
-        /*SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
-        leftMotorConfig.inverted(false);
+    /*     leftMotorConfig.inverted(false);
         leftMotorConfig.idleMode(IdleMode.kBrake);
         leftMotorConfig.smartCurrentLimit(40);
         leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-        */
-
-        // This code below may or may not be deleted
-        SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig();
-        leftMotorConfig.inverted(true);
-        leftMotorConfig.smartCurrentLimit(70);
-        leftMotorConfig.idleMode(IdleMode.kBrake);
-        leftMotorConfig.voltageCompensation(10);
-        leftMotor.configure(leftMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-    }
         
-
         
-      /*   SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
+         SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
         rightMotorConfig.inverted(true);
         rightMotorConfig.idleMode(IdleMode.kBrake);
         rightMotorConfig.smartCurrentLimit(40);
-        rightMotorConfig.voltageCompensation(10);
-        rightMotor.configure(rightMotorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-    }  */
-//  This code below may or not also be deleted 
-     private CoralDepositorControl() {
+        rightMotorConfig.voltageCompensation(10); */
+
         System.out.println("[Init]Creating Coral Depositor");
         leftMotor = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
         SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
@@ -112,7 +94,7 @@ public class CoralDepositorControl extends SubsystemBase {
     }
 
     public void stop(){
-        leftMotor.stopMotor();
+        leftMotor.stopMotor(); //add right motor after testing
     }
 
     public boolean isSensorActive() {
