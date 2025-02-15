@@ -164,23 +164,26 @@ public class CombinedCommands {
         Timer timer = new Timer();
 
         // Bling Commands
-        Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE));
+        Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE).withName("bling"));
         Command idleBling = new ProxyCommand(Commands.idle(BlingSubsystem.getINSTANCE()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withName("ProxiedIdleBling"));
         Command turnOffBling = new ProxyCommand(new BlingCommand(BlingColour.DISABLED).withName("TurnOffBling"));
 
         // Wait for vision data to be available
-        Command waitForVisionData = new ProxyCommand(new SelectByAllianceCommand(
-            PhotonSubsystem.getInstance().getWaitForDataCommand(), 
-            PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData"));
+        //@todo: not proxy command
+        //PhotonSubsystem
+        Command waitForVisionData = new ProxyCommand(PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData");
+        //Command waitForVisionData = PhotonSubsystem.getInstance().getWaitForDataCommand();
      
             
         //Wait for all subsytems to get ready
+        //SwerveSubsystem
         Command waitForAllSubsytems = Commands.parallel(
                    new WaitUntilCommand(() -> SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
                                     && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE))
         );
   
-        Command moveToTargetCommands = new PhotonMoveToTarget(position.destination, false, false, true);
+        //require ServeSubsystem and PhotonSubsystem
+        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(position.destination, false, false, true)).withName("moveToTargetCommands");
    
         // Rumble commands
         Command rumbleDriverBefore = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 1, true);
@@ -197,13 +200,17 @@ public class CombinedCommands {
             // forcefulTimeoutCommand(
             //             preparingTimeoutSeconds,
             //             waitForAllSubsytems), 
+
+            
             Commands.parallel(moveToTargetCommands,
-                              Commands.sequence(bling, new WaitCommand(0.02), idleBling))
+                              Commands.sequence(bling, new WaitCommand(0.02), idleBling)
+                              )
+                             
         ).finallyDo(() -> {
             idleBling.cancel(); // Cancel idle bling as a safety factor
             Commands.sequence(new WaitCommand(0.02), new ScheduleCommand(turnOffBling)).withName("DelayTurnOffBling").schedule();
             rumbleDriverAfter.schedule();
-            rumbleOpAfter.schedule();
+            // rumbleOpAfter.schedule();
          }).withName("VisionScoreLeftReef");
     }
     

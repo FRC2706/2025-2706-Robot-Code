@@ -95,12 +95,19 @@ public class PhotonMoveToTarget extends Command {
     if (shouldNeverEnd) {
       return false;
     }
-    
-    if (isWaypoint){
-      return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
-    } else {
-      return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
-          && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE);
+    else
+    {
+      //if no vision data, stop
+      return (PhotonSubsystem.getInstance().hasData()==false);
     }
+    
+    // if (isWaypoint){
+    //   return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
+    // } else {
+    //   return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
+    //       && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE);
+    // }
+
+    
   }
 }

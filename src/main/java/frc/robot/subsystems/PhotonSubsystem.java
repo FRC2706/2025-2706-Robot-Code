@@ -26,6 +26,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.IntegerArrayPublisher;
@@ -65,6 +67,8 @@ public class PhotonSubsystem extends SubsystemBase {
   private DoubleArrayPublisher pubSetPoint;
   public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
   private IntegerPublisher pubBestTagId;
+  private BooleanPublisher pubHasData;
+  private BooleanSubscriber hasTarget;
   private StringPublisher pub3DTagsDebugMsg;
   private PhotonCamera camera1;
   private Translation2d targetPos;
@@ -92,12 +96,15 @@ public class PhotonSubsystem extends SubsystemBase {
   private PhotonSubsystem() {
     //name of camera, change if using multiple cameras
     camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
+    
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
     pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
     pubBestTagHeading = photonTable.getDoubleTopic("BestTagHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
-    pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint").publish(PubSubOption.periodic(0.02));
+    pubHasData =  photonTable.getBooleanTopic("hasData").publish(PubSubOption.periodic(0.02));
+    hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.leftReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
+    pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint/fieldToTarget").publish(PubSubOption.periodic(0.02));
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
     SmartDashboard.putData("command reset id",Commands.runOnce(()->reset()));
 
@@ -154,9 +161,16 @@ public class PhotonSubsystem extends SubsystemBase {
    * @return
    * the command
    */
+
+  //use photonvision subsystem filter
   public Command getWaitForDataCommand(){
     return new FunctionalCommand(() -> reset(), ()->{}, (interrupted) ->{}, ()->hasData(), this);
   }
+
+  // Directly use Photonvision: hasTarget. 
+  // public Command getWaitForDataCommand(){
+  //   return new FunctionalCommand(() -> {}, ()->{}, (interrupted) ->{}, ()->hasTarget.get(false), this);
+  // }
 
   public Translation2d getTargetPos(){
     return targetPos;
@@ -187,6 +201,7 @@ public class PhotonSubsystem extends SubsystemBase {
     //PhotonPipelineResult result = camera1.getAllUnreadResults().get(0);
     if (result.getTimestampSeconds() == recentTimeStamp){
       //--System.out.println("time stamp is stale");
+      numSamples --;
       return;
     }
     recentTimeStamp = result.getTimestampSeconds();
@@ -194,6 +209,7 @@ public class PhotonSubsystem extends SubsystemBase {
     if(result.hasTargets()==false)
     { 
      // System.out.println("result does not have any target");
+      numSamples --;
       return;
     }
 
@@ -204,7 +220,8 @@ public class PhotonSubsystem extends SubsystemBase {
 
       if (target == null)
       {
-        System.out.println("Best target is null");
+        //System.out.println("Best target is null");
+        numSamples --;
         return;
       }
 
@@ -216,6 +233,11 @@ public class PhotonSubsystem extends SubsystemBase {
       Pose3d tagIdPose;
       if (tagPose.isEmpty())
       {
+        //reset to default values
+        pubBestTagId.accept(-1);
+        pubBestTagHeading.accept(-1);
+        pubTargetRobotHeading.accept(-1);
+        numSamples --;
         return;
       }
       else
@@ -234,6 +256,7 @@ public class PhotonSubsystem extends SubsystemBase {
       //for security reasons
       if (optPose.isEmpty()){
         //System.out.println("the odometryPose is empty");
+        numSamples --;
         return;
       }
       else
@@ -263,5 +286,10 @@ public class PhotonSubsystem extends SubsystemBase {
       pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
     
   }
+  else{
+    numSamples--;
+  }
+
+  pubHasData.accept(hasData());
 }
 }

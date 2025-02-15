@@ -166,7 +166,7 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_CAMERA";
+    public static final String leftReefCameraName = "USB_Camera";
     public static final String rightReefCameraName = "";
     public static final String intakeCameraName = "";
     //data max
@@ -201,9 +201,14 @@ public final class Config {
       //==================================
       //reset gyro: Front facing the tag. When we see the tag, heading is 180.
       //red: right; blue: left
-      REEF_ID_LEFT(8,new Translation2d(0.6, 0.3), Rotation2d.fromDegrees(0)),
-      REEF_ID_RIGHT(8,new Translation2d(0.6, -0.3), Rotation2d.fromDegrees( 0)),
 
+      //y: 0.5: to the right of the target. 
+      //red or blue? reset gyro = 180 --> red
+      //REEF_LEFT(8,new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees(0)),
+
+      //blue: reset gyro = 0
+      REEF_LEFT(8,new Translation2d(1.0, 0.2), Rotation2d.fromDegrees(0)),
+ 
       //HUMAN_STATION_LEFT
       //HUMAN_STATION_MID
       //HUMAN_STATION_RIGHT
@@ -323,7 +328,7 @@ public final class Config {
       SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
       MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
       DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
-      VISION(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
+      VISION(0.2, 0.2 * Math.PI, 1, 2 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;
