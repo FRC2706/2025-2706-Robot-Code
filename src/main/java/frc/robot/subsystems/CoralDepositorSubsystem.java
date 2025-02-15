@@ -78,7 +78,7 @@ public class CoralDepositorSubsystem extends SubsystemBase {
                         .voltageCompensation(10);
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        rightMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         sensor = new DigitalInput(Config.Intake.Sensor);
 
