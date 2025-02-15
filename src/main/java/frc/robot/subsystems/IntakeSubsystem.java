@@ -75,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase{
         m_intake.configure(m_intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
-        frontSensor = new DigitalInput(Config.Intake.frontSensor);
+        frontSensor = new DigitalInput(Config.Intake.Sensor);
         centerSensor = new DigitalInput(Config.Intake.centerSensor);
         backSensor = new DigitalInput(Config.Intake.backSensor);
 
@@ -131,10 +131,14 @@ public class IntakeSubsystem extends SubsystemBase{
         m_intake.setVoltage(voltage);
     }
 
-    public void stop(){
-        m_intake.stopMotor();
+    public void stop() 
+    {
+      m_intake.stopMotor();
     }
 
+  
+
+    
     /*---------------------------Commands---------------------------*/
 
     @Override

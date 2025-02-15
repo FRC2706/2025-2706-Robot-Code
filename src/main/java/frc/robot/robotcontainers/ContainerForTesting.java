@@ -27,6 +27,7 @@ import frc.robot.Robot;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
+import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
@@ -128,9 +129,6 @@ public class ContainerForTesting extends RobotContainer {
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
     // Arm
-      operator.y().onTrue(new SetArm(()->armAngleDeg.get())).onFalse(new SetArm(()->-0.1)); // Amp
-      operator.x().whileTrue(new Shooter_PID_Tuner(()->4000))//()->shooterTargetRPM.get()))
-                  .onFalse(Commands.run(()->shooter.setVoltage(0)));
       operator.a().whileTrue(Commands.run(()->shooter.setVoltage(12)))
                   .onFalse(Commands.run(()->shooter.setVoltage(0)));
       operator.rightBumper().onTrue(new MakeIntakeMotorSpin(9.0, 0)).onFalse(new MakeIntakeMotorSpin(0.0, 0));

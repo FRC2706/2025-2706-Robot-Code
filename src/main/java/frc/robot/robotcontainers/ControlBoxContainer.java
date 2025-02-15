@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -52,44 +53,21 @@ import frc.robot.subsystems.SwerveSubsystem;
  * (including subsystems, commands, and button mappings) should be declared
  * here.
  */
-public class Robot2025Container extends RobotContainer {
+public class ControlBoxContainer extends RobotContainer {
   /* Controllers */
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
   private final CommandXboxController testJoystick = new CommandXboxController(2);
 
-  /* Create Subsystems in a specific order */
-  private final SwerveSubsystem s_Swerve = SwerveSubsystem.getInstance();
- 
-  /* Auto */
-  private AutoRoutines m_autoRoutines;
-  private AutoSelector m_autoSelector;
-  private int m_analogSelectorIndex;
- 
-  /* Default Command */
-  private Command m_swerveDefaultCommand;
-
-  private TunableNumber shooterTargetRPM = new TunableNumber("Shooter/Target RPM", 0);
-  private TunableNumber shooterDesiredVoltage = new TunableNumber("Shooter/desired Voltage", 0);
-  private TunableNumber armAngleDeg = new TunableNumber("Arm/ArmTuning/setAngleDeg", 5.0);
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public Robot2025Container() {
-    /*  Setup default commands */
-    m_swerveDefaultCommand = new TeleopSwerve(driver);
-    s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
 
-    // Setup auto
-    m_autoRoutines = new AutoRoutines();
-    m_autoSelector = new AutoSelector();
-    m_analogSelectorIndex = m_autoSelector.getAnalogSelectorIndex();
-
-    System.out.println("Analog Selector Index: " + m_analogSelectorIndex);
-
-    configureButtonBindings();
-  }
+    public ControlBoxContainer() {
+        configureButtonBindings();
+    }
+    
+  
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
@@ -157,9 +135,6 @@ public class Robot2025Container extends RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    int autoId = m_autoSelector.getAutoId();
-    System.out.println("*********************** Auto Id"+autoId);
-
-    return m_autoRoutines.getAutonomousCommand(autoId);
+    return new InstantCommand();
   }
 }
