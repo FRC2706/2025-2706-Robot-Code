@@ -11,15 +11,34 @@
           }
         },
         {
-          "type": "wait",
+          "type": "parallel",
           "data": {
-            "waitTime": 2.0
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "purpleBling"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "centerReverse"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "disableBLING"
           }
         }
       ]

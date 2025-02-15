@@ -33,6 +33,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.BlingCommand;
+import frc.robot.commands.BlingCommand.BlingColour;
 
 public class AutoRoutines extends SubsystemBase {
     
@@ -78,10 +80,21 @@ public class AutoRoutines extends SubsystemBase {
     }
 
     public void registerCommandsToPathplanner() {
-        // NamedCommands.registerCommand("MakeIntakeMotorSpin", new SequentialCommandGroup(
-        //     new MakeIntakeMotorSpin(3.0,2), // Move arm to intake setpoint
-        //     new WaitCommand(1)
-        // ));
+         NamedCommands.registerCommand("purpleBling", new BlingCommand(BlingColour.PURPLE));
+         NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
+         NamedCommands.registerCommand("blueBling", new BlingCommand(BlingColour.BLUE));
+         NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
+         NamedCommands.registerCommand("yellowBling", new BlingCommand(BlingColour.YELLOW));
+         NamedCommands.registerCommand("rainbowBling", new BlingCommand(BlingColour.RAINBOW));
+         NamedCommands.registerCommand("fireBling", new BlingCommand(BlingColour.FIRE));
+         NamedCommands.registerCommand("rgbfadeBling", new BlingCommand(BlingColour.RGBFADE));
+         NamedCommands.registerCommand("whiteSBling", new BlingCommand(BlingColour.WHITESTROBE));
+         NamedCommands.registerCommand("redSBling", new BlingCommand(BlingColour.REDSTROBE));
+         NamedCommands.registerCommand("yellowSBling", new BlingCommand(BlingColour.YELLOWSTROBE));
+         NamedCommands.registerCommand("blueSBling", new BlingCommand(BlingColour.BLUESTROBE));
+         NamedCommands.registerCommand("purpleSBling", new BlingCommand(BlingColour.PURPLESTROBE));
+         NamedCommands.registerCommand("disableBLING", new BlingCommand(BlingColour.DISABLED));
+
     }
 
     public Command getAutonomousCommand(int selectAuto) {
