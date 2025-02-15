@@ -126,17 +126,18 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
-    // RobotConfig config = null;
-    // try {
-    //   config = RobotConfig.fromGUISettings();
-    // } catch (Exception e) {
-    //   // Handle exception as needed
-    //   e.printStackTrace();
-    // }
+     RobotConfig config = null;
+     try {
+       config = RobotConfig.fromGUISettings();
+     } catch (Exception e) {
+       // Handle exception as needed
+      e.printStackTrace();
+     }
       
 
     //Please make sure these numbers are good. CUrrent values are dummy values.
-    DCMotor dcMotor = new DCMotor(12.0, 1.0, 1.0, 1.0, 1.0, 1);
+    // nominalVoltageVolts,  stallTorqueNewtonMeters,  stallCurrentAmps,  freeCurrentAmps, double freeSpeedRadPerSec, int numMotors
+   /* DCMotor dcMotor = new DCMotor(12.0, 1.0, 1.0, 1.0, 1.0, 1);
     ModuleConfig moduleConfig = new ModuleConfig(0.049,3.0,1.20,dcMotor,50,1);
     Translation2d[] offsets = new Translation2d[4];
     //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
@@ -145,7 +146,7 @@ public class SwerveSubsystem extends SubsystemBase {
     offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
     offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-       RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets );
+       RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets ); */
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
