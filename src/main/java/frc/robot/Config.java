@@ -69,12 +69,12 @@ public final class Config {
     public static final int SWERVE_FL_CANCODER = 12; 
     public static final int SWERVE_FR_CANCODER = 13; 
     public static final int SWERVE_RL_CANCODER = 14;
-    public static final int SWERVE_RR_CANCODER = 15;
+    public static final int SWERVE_RR_CANCODER = 15; 
     
     //mechanism CAN IDs
-    public static final int ARM = 19; 
-    public static final int CoralDepositor_LEFT_MOTOR = 16; 
-    //public static final int CoralDepositor_RIGHT_MOTOR = 22;
+    public static final int ARM = 20;  // change back to 19 later
+    public static final int CoralDepositor_LEFT_MOTOR = 19; 
+    public static final int CoralDepositor_RIGHT_MOTOR = 16;
         public static final int INTAKE = 0;
         
       }
@@ -547,5 +547,7 @@ public static enum ArmSetPoints {
                                kMinOutput = -1.0,
                                maxRPM = 5700.0,
                                subwooferRPM = 2750;
+    public static final int MOTOR_ID = 0;
+    public static final int MOTOR_ID2 = 0;
   }
 }

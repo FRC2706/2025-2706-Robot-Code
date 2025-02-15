@@ -39,6 +39,7 @@ public class CoralDepositorSubsystem extends SubsystemBase {
     // Left and right motor controllers
     private SparkMax leftMotor;
     //private SparkMax rightMotor;
+    private SparkMax rightMotor;
 
     /** Creates a new CoralDepositorSubsystem. */
     public CoralDepositorSubsystem() {
@@ -49,7 +50,7 @@ public class CoralDepositorSubsystem extends SubsystemBase {
         
         // Initialize left and right motors
         leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
-
+        rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
     /*     leftMotorConfig.inverted(false);
         leftMotorConfig.idleMode(IdleMode.kBrake);
         leftMotorConfig.smartCurrentLimit(40);
@@ -69,9 +70,15 @@ public class CoralDepositorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(70)
                         .idleMode(IdleMode.kBrake)
                         .voltageCompensation(10);
+        rightMotor = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
+        SparkMaxConfig rightMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
+                        .inverted(true)
+                        .smartCurrentLimit(70)
+                        .idleMode(IdleMode.kBrake)
+                        .voltageCompensation(10);
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+        rightMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         sensor = new DigitalInput(Config.Intake.Sensor);
 
@@ -83,6 +90,7 @@ public class CoralDepositorSubsystem extends SubsystemBase {
         sensorPub = intakeTable.getBooleanTopic("sensor result").publish(PubSubOption.periodic(0.02));
         
         ErrorTrackingSubsystem.getInstance().register(leftMotor);
+        ErrorTrackingSubsystem.getInstance().register(rightMotor);
         //ErrorTrackingSubsystem.getInstance().register(rightMotor);
 
         // Must be the last thing in the constructor
@@ -91,10 +99,12 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
     public void set(double voltage){
         leftMotor.set(voltage);
+        rightMotor.set(voltage);
     }
 
     public void stop(){
-        leftMotor.stopMotor(); //add right motor after testing
+        leftMotor.stopMotor(); 
+        rightMotor.stopMotor();
     }
 
     public boolean isSensorActive() {
