@@ -40,6 +40,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.AdvantageUtil;
 import frc.lib.lib2706.PoseBuffer;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.lib.lib2706.UpdateSimpleFeedforward;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
@@ -103,7 +105,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private static SwerveSubsystem instance;
   public static SwerveSubsystem getInstance(){
       if(instance == null){
-          instance = new SwerveSubsystem();
+        SubsystemChecker.subsystemConstructed(SubsystemType.SwerveSubsystem);
+        instance = new SwerveSubsystem();
       }
       return instance;
   }

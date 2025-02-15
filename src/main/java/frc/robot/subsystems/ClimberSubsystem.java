@@ -11,6 +11,8 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -37,6 +39,8 @@ public class ClimberSubsystem extends SubsystemBase {
     {
       m_climber = null;
     }
+
+    SubsystemChecker.subsystemConstructed(SubsystemType.ClimberSubsystem);
 
   }
 

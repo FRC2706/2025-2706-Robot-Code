@@ -46,6 +46,8 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
@@ -81,10 +83,10 @@ public class PhotonSubsystem extends SubsystemBase {
   private IntegerEntry intakeCameraInputSaveImgEntry;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  private PhotonPoseEstimator photonPoseEstimator;
 
   public static PhotonSubsystem getInstance(){
     if (instance == null){
+      SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystem);
       instance = new PhotonSubsystem();
     }
     return instance;
@@ -118,7 +120,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
     try {
       aprilTagFieldLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
-      photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
+      //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       PhotonConfig.USE_3D_TAGS = false;
@@ -216,37 +218,8 @@ public class PhotonSubsystem extends SubsystemBase {
   public boolean hasData() {
     //if data is the max that the filters hold
     return(numSamples >= PhotonConfig.maxNumSamples);
-  }
+  } 
 
-  private double range(double y) {
-    y = Math.toRadians(y);
-    y += PhotonConfig.CAMERA_PITCH.getRadians();
-
-    int id_array = id - 3;
-
-    if (id_array < 0) {
-      return 0;
-    }else if(id_array>= Config.PhotonConfig.APRIL_HEIGHTS.length){
-      return 0;
-    }
-
-    return (Config.PhotonConfig.APRIL_HEIGHTS[id_array]-PhotonConfig.CAMERA_HEIGHT)/Math.tan(y);
-  }
-
-  private PhotonTrackedTarget biggestTarget(List<PhotonTrackedTarget> targets) {
-    PhotonTrackedTarget biggestTarget=null;
-
-    double tallest = 0;
-    for (PhotonTrackedTarget t:targets) {
-      List<TargetCorner> corners = t.getDetectedCorners();
-      double sizeY = corners.get(1).y-corners.get(3).y;
-      if (sizeY > tallest) {
-        tallest = sizeY;
-        biggestTarget = t;
-      }
-    }
-    return (biggestTarget);
-  }
 
   private PhotonTrackedTarget getSpeakerTarget(List<PhotonTrackedTarget> targets) {
     PhotonTrackedTarget target=null;
@@ -282,157 +255,20 @@ public class PhotonSubsystem extends SubsystemBase {
     // targets.get(0).getYaw();
     // targets.get(0).getFiducialId();
 
-    pubSetTagId.accept(id);
-    pub3DTargetTags.accept(
-        "Sees Target 3: " + aprilTagsId.get(0) + 
-        ", Sees Target 4: " + aprilTagsId.get(1) + 
-        ", Sees Target 7: " + aprilTagsId.get(2) + 
-        ", Sees Target 8: " + aprilTagsId.get(3));
-    // Must be set by 2D or 3D mode
-    Pose2d fieldToTarget = null;
     
-    if (PhotonConfig.USE_3D_TAGS) {
-      PhotonPipelineResult result = camera1.getLatestResult();
-      Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update(result);
-      if (optEstPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose");
-        return;
-      }
+  
 
-      // Ensure the desired tag is set to 3, 4, 7 or 8
-      if (!PhotonConfig.ALLOWED_TAGS_3D.contains(id)) {
-        pub3DTagsDebugMsg.accept("Desired tag set to " + id);
-        return;
-      }
+    // if (fieldToTarget != null) {
+    //   //update rolling averages
+    //   targetPos = new Translation2d(
+    //       filterX.calculate(fieldToTarget.getX()),
+    //       filterY.calculate(fieldToTarget.getY()));
+    //   targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
+    //   numSamples++;
 
-      // Create a list of tags seen
-      ArrayList<Integer> tagsInFrame = new ArrayList<>();
-      for (PhotonTrackedTarget target : optEstPose.get().targetsUsed) {
-        tagsInFrame.add(target.getFiducialId()); //************************************** */
-      }
-         
-      // Only procede if tag 3 and 4 or 7 and 8 are seen in the same frame
-      if (! ((tagsInFrame.contains(3) && tagsInFrame.contains(4)) || (tagsInFrame.contains(7) && tagsInFrame.contains(8)))) {
-        pub3DTagsDebugMsg.accept("3&4 or 7&8 not in frame. Tags in frame: " + tagsInFrame.toString());
-          return;
-      }
-      aprilTagsId.add(0, tagsInFrame.contains(3));
-      aprilTagsId.add(1, tagsInFrame.contains(4));
-      aprilTagsId.add(2, tagsInFrame.contains(7));
-      aprilTagsId.add(3, tagsInFrame.contains(8));
-          //pub3DTagIdsArray.accept(tagsInFrame.toArray());
-      
-
-
-      Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(id);
-      if (tagPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("Cannot get apriltag pose");
-        return;
-      }
-
-      // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
-      Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
-      if (odometryPose.isEmpty()) {
-        pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
-        return;
-      }
-
-      // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
-      Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
-
-      // Map the position of the tag relative to the current odometry pose with latency compensation
-      fieldToTarget = odometryPose.get().plus(robotToTarget);
-
-      pub3DTagsDebugMsg.accept("Got pose. Transform2d from robot to tag: " + robotToTarget.toString());
-      
-    } else {
-      // This method will be called once per scheduler run
-      var result = camera1.getLatestResult();
-      if (result.getTimestampSeconds() == recentTimeStamp){
-        return;
-      }
-
-      recentTimeStamp = result.getTimestampSeconds();
-      if (result.hasTargets()){
-        //get the swerve pose at the time that the result was gotten
-        Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
-        //for security reasons
-        if (optPose.isEmpty()){
-          return;
-        }
-        Pose2d odometryPose = optPose.get();
-
-        PhotonTrackedTarget target = null;
-        PhotonTrackedTarget speakerTarget = null;
-
-        List<PhotonTrackedTarget> allTargets = result.getTargets();
-        if (allTargets.size()==0){
-          return;
-        }
-
-        speakerTarget = getSpeakerTarget(allTargets);
-        if(speakerTarget == null)
-        {
-          System.out.println("speakerTarget is null");
-        }
-
-        if (id == -1){
-          target = biggestTarget(allTargets);
-
-          if (target == null) {
-            return;
-          }
-          id = target.getFiducialId();
-        } 
-        else
-        {
-          for (PhotonTrackedTarget t:allTargets){
-            if (t.getFiducialId() == id){
-            target = t;
-            break;
-            }
-          }
-          if (target == null){
-            return;
-          }
-        }
-
-        
-        // if (camera.hasTargets())
-        // {
-        //   List<PhotonTrackedTarget>targets = camer.getTargets();
-        //   
-        // } // end hasTarget
-
-        //get tag info
-        //calculate yaw
-        Rotation2d yaw = Rotation2d.fromDegrees(target.getYaw()*-1);
-        //calculate range
-        double range = (range(target.getPitch()));
-        if (range < 6 && range > 1.5){
-          double va = (range-1.5)/10;
-
-          range*=(1-va);
-        }
-        //convert to field quordinates
-        fieldToTarget = convertToField(range, yaw, odometryPose);
-
-        pubRange.accept(range);
-        pubYaw.accept(yaw.getDegrees());
-      }
-    }
-
-    if (fieldToTarget != null) {
-      //update rolling averages
-      targetPos = new Translation2d(
-          filterX.calculate(fieldToTarget.getX()),
-          filterY.calculate(fieldToTarget.getY()));
-      targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
-      numSamples++;
-
-      //publish to networktables
-      pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
-    }
+    //   //publish to networktables
+    //   pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
+    // }
   }
 
   public Command saveImagesIntakeCameraCommand() {
