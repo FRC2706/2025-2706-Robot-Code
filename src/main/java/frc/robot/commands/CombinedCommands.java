@@ -183,7 +183,7 @@ public class CombinedCommands {
         );
   
         //require ServeSubsystem and PhotonSubsystem
-        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(position.destination, false, false, true)).withName("moveToTargetCommands");
+        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(position.destination, false, false, false)).withName("moveToTargetCommands");
    
         // Rumble commands
         Command rumbleDriverBefore = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 1, true);

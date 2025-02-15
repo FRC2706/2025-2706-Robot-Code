@@ -189,6 +189,11 @@ public class PhotonSubsystem extends SubsystemBase {
     return(numSamples >= PhotonConfig.maxNumSamples);
   }
 
+  public boolean hasTarget()
+  {
+    return hasTarget.get();
+  }
+
   @Override
   public void periodic() {
 

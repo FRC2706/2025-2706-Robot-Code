@@ -8,6 +8,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Config.PhotonConfig;
@@ -20,6 +21,8 @@ public class PhotonMoveToTarget extends Command {
   boolean centerTarget;
   boolean isWaypoint;
   boolean shouldNeverEnd;
+
+  private Timer m_timer = new Timer();
 
 /**
  * Command for moving to the target currently selected in the PhotonSubsystem. Without a desired heading, the robot turns so that the camera faces the target.
@@ -59,6 +62,9 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
+
+    m_timer.restart();
+    m_timer.reset();
   }
 
 
@@ -98,15 +104,20 @@ public class PhotonMoveToTarget extends Command {
     else
     {
       //if no vision data, stop
-      return (PhotonSubsystem.getInstance().hasData()==false);
+      return (PhotonSubsystem.getInstance().hasTarget()==false 
+      || SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
+      || m_timer.hasElapsed(0.4));
     }
+    
     
     // if (isWaypoint){
     //   return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
     // } else {
     //   return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
-    //       && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE);
+    //       && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE)
+    //       && (PhotonSubsystem.getInstance().hasData()==false);
     // }
+  
 
     
   }
