@@ -13,8 +13,8 @@ import frc.robot.Robot;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.SetElevator;
-import frc.robot.commands.ControlElevator;
 import frc.robot.commands.BlingCommand.BlingColour;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.DiffTalonSubsystem;
 
 /**
@@ -49,11 +49,11 @@ public class BeetleContainer extends RobotContainer {
 
     // go up
     operator.y()
-            .whileTrue(new ControlElevator(2))
-            .onFalse(new ControlElevator(0));
+            .whileTrue(ElevatorSubsystem.getInstance().raiseMotorCommand())
+            .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
     operator.a()
-            .whileTrue(new ControlElevator(1))
-            .onFalse(new ControlElevator(0));
+            .whileTrue(ElevatorSubsystem.getInstance().lowerMotorCommand())
+            .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
 
     DiffTalonSubsystem.getInstance().setDefaultCommand(
         new ArcadeDrive(driver, XboxController.Axis.kLeftY.value, XboxController.Axis.kRightX.value));

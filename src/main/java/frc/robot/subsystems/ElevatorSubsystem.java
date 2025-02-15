@@ -24,6 +24,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.lib2706.ProfiledPIDFFController;
 import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
@@ -166,19 +167,33 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
 
-    public void raiseMotor() {
-        m_elevator.set(1);
-        controlOverride = true;
+    // Commands to manually set the motor.
+    public Command raiseMotorCommand() {
+        return this.runOnce(
+                () -> {
+                    m_elevator.set(1);
+                    controlOverride = true;
+                }
+        );
     }
 
-    public void lowerMotor() {
-        m_elevator.set(-1);
-        controlOverride = true;
+    public Command lowerMotorCommand() {
+        return this.runOnce(
+                () -> {
+                    m_elevator.set(-1);
+                    controlOverride = true;
+                }
+        );
     }
 
-    public void stopMotors() {
-        m_elevator.stopMotor();
-        controlOverride = true;
+    public Command stopMotorCommand() {
+        return this.runOnce(
+                () -> {
+                    m_elevator.stopMotor();
+                    controlOverride = true;
+                }
+        );
     }
+
 
 }
