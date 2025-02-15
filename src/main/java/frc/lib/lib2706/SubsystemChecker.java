@@ -53,6 +53,11 @@ public class SubsystemChecker {
         SubsystemType.BlingSubsystem,
     };
 
+      // RobotID: 2, Half-scale talon differential drive robot, Beetle
+      private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+       
+    };
+
     // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
     private static SubsystemType[] mergonautId3 = new SubsystemType[] {
         SubsystemType.DiffTalonSubsystem,  // Chassis
