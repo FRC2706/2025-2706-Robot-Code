@@ -99,8 +99,8 @@ public class ArmSubsystem extends SubsystemBase {
           // direction of the steering motor in the MAXSwerve Module.
           .inverted(Config.ArmConfig.INVERT_ENCODER)
           .positionConversionFactor(Config.ArmConfig.armPositionConversionFactor) // radians
-          .velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor) // radians per second
-          .zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); 
+          .velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor); // radians per second
+          //??????.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); //this config is invalid and crash the code
 
     m_arm_config
           .closedLoop
@@ -140,9 +140,9 @@ public class ArmSubsystem extends SubsystemBase {
     updatePID0Settings();
     updatePID1Settings();
 
-    m_arm.configure(m_arm_config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     
-    burnFlash();
+    //burnFlash();
     m_arm.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_arm);
