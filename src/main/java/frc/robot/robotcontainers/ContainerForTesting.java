@@ -129,8 +129,6 @@ public class ContainerForTesting extends RobotContainer {
      * KingstonV1: https://drive.google.com/file/d/18HyIpIeW08CC6r6u-Z74xBWRv9opHnoZ
      */
     // Arm
-      operator.y().onTrue(new CoralDepositorCommand(true)); // Amp
-      operator.x().onTrue(new CoralDepositorCommand(false));
       operator.a().whileTrue(Commands.run(()->shooter.setVoltage(12)))
                   .onFalse(Commands.run(()->shooter.setVoltage(0)));
       operator.rightBumper().onTrue(new MakeIntakeMotorSpin(9.0, 0)).onFalse(new MakeIntakeMotorSpin(0.0, 0));
