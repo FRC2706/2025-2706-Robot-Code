@@ -23,6 +23,7 @@ public class SubsystemChecker {
         RelaySubsystem,
         BlingSubsystem,
         PhotonSubsystem,
+        CoralDepositorSubsystem,
         
     };
 
@@ -53,13 +54,15 @@ public class SubsystemChecker {
         SubsystemType.BlingSubsystem,
     };
 
-    // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
-    private static SubsystemType[] mergonautId3 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem,  // Chassis
+    // RobotID: 3, Half-scale talon differential drive robot, Beetle
+    private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        SubsystemType.CoralDepositorSubsystem,
     };
 
+
+
     // Use robotSpecific to know what robot is currently running the code
-    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, mergonautId3);
+    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);
 
     /**
      * Check if the subsystem is allowed for the robot this is deployed onto
