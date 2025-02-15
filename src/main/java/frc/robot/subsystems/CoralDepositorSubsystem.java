@@ -79,7 +79,6 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         sensor = new DigitalInput(Config.Intake.Sensor);
 
         sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
