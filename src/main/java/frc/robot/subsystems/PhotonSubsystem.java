@@ -65,6 +65,7 @@ public class PhotonSubsystem extends SubsystemBase {
   //declarations
   private static PhotonSubsystem instance;
   private DoubleArrayPublisher pubSetPoint;
+  private DoubleArrayPublisher pubNewSetPoint;
   public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
   private IntegerPublisher pubBestTagId;
   private BooleanPublisher pubHasData;
@@ -73,6 +74,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private PhotonCamera camera1;
   private Translation2d targetPos;
   private Rotation2d targetRotation;
+  private Translation2d newTargetPos;
   private LinearFilter filteryaw = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterX = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterY = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
@@ -104,7 +106,8 @@ public class PhotonSubsystem extends SubsystemBase {
     pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubHasData =  photonTable.getBooleanTopic("hasData").publish(PubSubOption.periodic(0.02));
     hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.leftReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
-    pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint/fieldToTarget").publish(PubSubOption.periodic(0.02));
+    pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint(fieldToTarget)").publish(PubSubOption.periodic(0.02));
+    pubNewSetPoint = photonTable.getDoubleArrayTopic("SetPoint(new)").publish(PubSubOption.periodic(0.02));
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
     SmartDashboard.putData("command reset id",Commands.runOnce(()->reset()));
 
@@ -180,6 +183,9 @@ public class PhotonSubsystem extends SubsystemBase {
     return targetRotation;
   }
 
+  public Translation2d getNewTargetPos() {
+    return newTargetPos;
+  }
   public Rotation2d getTargetRobotHeading(){
     return targetRobotHeading;
   }
@@ -202,11 +208,13 @@ public class PhotonSubsystem extends SubsystemBase {
     // Must be set by 2D or 3D mode;
     //@todo: test 2D and 3D mode both
     PhotonPipelineResult result = camera1.getLatestResult();
-    //to test...
+    //@todo: to test...
     //PhotonPipelineResult result = camera1.getAllUnreadResults().get(0);
+    if (result == null)
+      return;
+      
     if (result.getTimestampSeconds() == recentTimeStamp){
       //--System.out.println("time stamp is stale");
-      numSamples --;
       return;
     }
     recentTimeStamp = result.getTimestampSeconds();
@@ -214,7 +222,6 @@ public class PhotonSubsystem extends SubsystemBase {
     if(result.hasTargets()==false)
     { 
      // System.out.println("result does not have any target");
-      numSamples --;
       return;
     }
 
@@ -226,7 +233,6 @@ public class PhotonSubsystem extends SubsystemBase {
       if (target == null)
       {
         //System.out.println("Best target is null");
-        numSamples --;
         return;
       }
 
@@ -242,7 +248,6 @@ public class PhotonSubsystem extends SubsystemBase {
         pubBestTagId.accept(-1);
         pubBestTagHeading.accept(-1);
         pubTargetRobotHeading.accept(-1);
-        numSamples --;
         return;
       }
       else
@@ -261,7 +266,6 @@ public class PhotonSubsystem extends SubsystemBase {
       //for security reasons
       if (optPose.isEmpty()){
         //System.out.println("the odometryPose is empty");
-        numSamples --;
         return;
       }
       else
@@ -287,14 +291,19 @@ public class PhotonSubsystem extends SubsystemBase {
       targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
       numSamples++;
 
+      if (numSamples == PhotonConfig.maxNumSamples)
+      {
+        //save the set piont
+        newTargetPos = targetPos;
+
+      }
+
       //publish to networktables
       pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
+      pubNewSetPoint.accept(new double[]{newTargetPos.getX(), newTargetPos.getY(), -1});
     
   }
-  else{
-    numSamples--;
-  }
-
+  
   pubHasData.accept(hasData());
 }
 }

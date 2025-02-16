@@ -207,7 +207,7 @@ public final class Config {
       //REEF_LEFT(8,new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees(0)),
 
       //blue: reset gyro = 0
-      REEF_LEFT(8,new Translation2d(-0.6, 0.0), Rotation2d.fromDegrees(0)),
+      REEF_LEFT(8,new Translation2d(-0.8, 0.0), Rotation2d.fromDegrees(0)),
  
       //HUMAN_STATION_LEFT
       //HUMAN_STATION_MID

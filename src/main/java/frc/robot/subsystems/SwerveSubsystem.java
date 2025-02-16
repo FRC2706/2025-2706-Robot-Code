@@ -368,6 +368,10 @@ public class SwerveSubsystem extends SubsystemBase {
         && Math.abs(MathUtil.angleModulus(currentRotation - desiredRotation)) < angleTol;
   }
 
+  public boolean isAtTargetPose(Translation2d targetPos)
+  {
+    return (Math.abs(currentX - targetPos.getX()) < PhotonConfig.POS_TOLERANCE && Math.abs(currentY - targetPos.getY()) < PhotonConfig.POS_TOLERANCE);
+  }
   /**
    * Get a pose at the given timestamp. 
    * Returns an empty Optional if the buffer is empty or doesn't go back far enough.

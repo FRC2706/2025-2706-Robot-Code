@@ -71,7 +71,9 @@ public class PhotonMoveToTarget extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
+    //Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
+    Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
+
     Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
     Rotation2d targetRobotHeading = PhotonSubsystem.getInstance().getTargetRobotHeading();
 
@@ -92,6 +94,7 @@ public class PhotonMoveToTarget extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_timer.stop();
   }
 
   
@@ -105,9 +108,12 @@ public class PhotonMoveToTarget extends Command {
     {
       //if no vision data, stop
       return (PhotonSubsystem.getInstance().hasTarget()==false 
-      || SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
-      || m_timer.hasElapsed(0.4));
+      || SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getTargetPos()) 
+      || m_timer.hasElapsed(1.5)
+      );
     }
+
+    //Note: if isAtTargetPose() works, may not need to hasTarget().
     
     
     // if (isWaypoint){
