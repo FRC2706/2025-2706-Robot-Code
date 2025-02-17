@@ -85,6 +85,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private Rotation2d targetRobotHeading;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
+  //private PhotonPoseEstimator photonPoseEstimator;
  
   public static PhotonSubsystem getInstance(){
     if (instance == null){
@@ -115,6 +116,9 @@ public class PhotonSubsystem extends SubsystemBase {
 
     try {
       aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+
+      //@todo: update cameraTransform
+      //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.cameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
@@ -212,7 +216,7 @@ public class PhotonSubsystem extends SubsystemBase {
     //PhotonPipelineResult result = camera1.getAllUnreadResults().get(0);
     if (result == null)
       return;
-      
+
     if (result.getTimestampSeconds() == recentTimeStamp){
       //--System.out.println("time stamp is stale");
       return;
@@ -226,6 +230,7 @@ public class PhotonSubsystem extends SubsystemBase {
     }
 
     //if (PhotonConfig.USE_3D_TAGS) 
+    //====================
     {     
       //Get the best target
       PhotonTrackedTarget target = result.getBestTarget();
@@ -261,6 +266,8 @@ public class PhotonSubsystem extends SubsystemBase {
         pubTargetRobotHeading.accept(targetRobotHeading.getDegrees());
       }
 
+      ////New option
+     {
       //get the swerve pose at the time that the result was gotten
       Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
       //for security reasons
@@ -272,7 +279,8 @@ public class PhotonSubsystem extends SubsystemBase {
       {
         Pose2d odometryPose = optPose.get();
 
-        Transform3d robotToTarget3d = PhotonConfig.cameraTransform.plus(target.getBestCameraToTarget());
+        //@todo: need to update cameraTransform for the new camera location
+        Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
         Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
         // Map the position of the tag relative to the current odometry pose with latency compensation
@@ -280,9 +288,39 @@ public class PhotonSubsystem extends SubsystemBase {
 
         pub3DTagsDebugMsg.accept("Transform2d from robot to tag: " + robotToTarget.toString());
       } 
-   
+    }
+
+     //previous poseEstimation option
+    //********************************/
+    // {
+    //   Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update(result);
+    //   if (optEstPose.isEmpty()) {
+    //     pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose"); 
+    //     return;
+    //   }      
+    //   // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
+    //   Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
+    //   if (odometryPose.isEmpty()) {
+    //     pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
+    //     return;
+    //   }
+    //   else
+    //   {
+    //       // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
+    //     Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
+
+    //     // Map the position of the tag relative to the current odometry pose with latency compensation
+    //     fieldToTarget = odometryPose.get().plus(robotToTarget);
+    //     pub3DTagsDebugMsg.accept("Transform2d from robot to tag:" + robotToTarget.toString());
+
+    //   }
+    // }
+
+
     } 
-    
+ 
+
+
     if (fieldToTarget != null) {
       //update rolling averages
       targetPos = new Translation2d(

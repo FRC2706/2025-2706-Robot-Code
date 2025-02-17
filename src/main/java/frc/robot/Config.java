@@ -160,6 +160,10 @@ public final class Config {
     public static final Transform3d  cameraTransform = new Transform3d(
       -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
+    //@todo:
+    public static final Transform3d  leftReefCameraTransform = new Transform3d(
+        -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+
     //networkTableName
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
