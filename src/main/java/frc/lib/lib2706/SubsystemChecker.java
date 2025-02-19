@@ -55,7 +55,7 @@ public class SubsystemChecker {
 
       // RobotID: 3, ControlBox
       private static SubsystemType[] ControlBox3 = new SubsystemType[] {
-       
+        SubsystemType.BlingSubsystem,
     };
 
     // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut

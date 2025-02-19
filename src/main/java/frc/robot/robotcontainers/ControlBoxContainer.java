@@ -72,6 +72,8 @@ public class ControlBoxContainer extends RobotContainer {
    * created via the {@link CommandXboxController} or other ways.
    */
   private void configureButtonBindings() { 
+
+    operator.x().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
     
   }
 
