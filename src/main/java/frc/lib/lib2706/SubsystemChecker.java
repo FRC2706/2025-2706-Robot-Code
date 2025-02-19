@@ -53,7 +53,7 @@ public class SubsystemChecker {
         SubsystemType.BlingSubsystem,
     };
 
-      // RobotID: 2, Half-scale talon differential drive robot, Beetle
+      // RobotID: 3, ControlBox
       private static SubsystemType[] ControlBox3 = new SubsystemType[] {
        
     };
@@ -64,7 +64,7 @@ public class SubsystemChecker {
     };
 
     // Use robotSpecific to know what robot is currently running the code
-    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, mergonautId3);
+    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);
 
     /**
      * Check if the subsystem is allowed for the robot this is deployed onto
