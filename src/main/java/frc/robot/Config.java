@@ -153,18 +153,22 @@ public final class Config {
 
     public static final double CAMERA_HEIGHT = 0.215;
     public static final Rotation2d CAMERA_PITCH = Rotation2d.fromDegrees(33);
-    //x is forwards, y is sideways with +y being left, rotation probobly if + left too
+    //x is forwards, y is sideways wi th +y being left, rotation probobly if + left too
     public static final Pose2d cameraOffset = new Pose2d(new Translation2d(-0.1,0), Rotation2d.fromDegrees(180));
     // public static final Pose2d cameraOffsetRed = new Pose2d(new Translation2d(-0.1, 0), Rotation2d.fromDegrees(0));
 
-    public static final Transform3d  cameraTransform = new Transform3d(
-      -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+    //robotToCamera: Apollo original camera
+    // public static final Transform3d  cameraTransform = new Transform3d(
+    //   -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
-    //@todo:
+      //-0.71/2 + 0.02 =-0.355+0.02 = -0.335
+      //-(0.865/2 - 0.095) = 0.3375
+    //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
 
-    //networkTableName
+   
+    //networkTableName 
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
