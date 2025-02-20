@@ -64,13 +64,13 @@ public class CoralDepositorSubsystem extends SubsystemBase {
         rightMotorConfig.voltageCompensation(10); */
 
         System.out.println("[Init]Creating Coral Depositor");
-        leftMotor = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
+        leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
         SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
                         .inverted(true)
                         .smartCurrentLimit(70)
                         .idleMode(IdleMode.kBrake)
                         .voltageCompensation(10);
-        rightMotor = new SparkMax(Config.Intake.INTAKE, MotorType.kBrushless);
+        rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
         SparkMaxConfig rightMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
                         .inverted(true)
                         .smartCurrentLimit(70)
