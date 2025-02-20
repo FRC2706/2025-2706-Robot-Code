@@ -23,10 +23,11 @@ public class CoralDepositorCommand extends Command {
       */
     public CoralDepositorCommand(boolean feedNote) {
       this.direction = feedNote;
-      coralDepositorSubsystem = CoralDepositorSubsystem.getInstance();
+
 
     // Use addRequirements() here to declare subsystem dependencies.
-    coralDepositorSubsystem = CoralDepositorSubsystem.getInstance();
+    coralDepositorSubsystem = CoralDepositorSubsystem.getInstance(); 
+    addRequirements(coralDepositorSubsystem);
   }
 
   // Called when the command is initially scheduled.

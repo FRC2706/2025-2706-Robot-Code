@@ -45,12 +45,12 @@ public class CoralDepositorSubsystem extends SubsystemBase {
     public CoralDepositorSubsystem() {
 
         
-        DigitalInput sensor = new DigitalInput(Config.Intake.Sensor);
-        sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+        //DigitalInput sensor = new DigitalInput(Config.Intake.Sensor);
+        //sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
         
         // Initialize left and right motors
-        leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
-        rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
+        //leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
+        //rightMotor = new SparkMax(Config.CANID.CoralDepositor_RIGHT_MOTOR, MotorType.kBrushless);
     /*     leftMotorConfig.inverted(false);
         leftMotorConfig.idleMode(IdleMode.kBrake);
         leftMotorConfig.smartCurrentLimit(40);
@@ -79,9 +79,9 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        sensor = new DigitalInput(Config.Intake.Sensor);
+        //sensor = new DigitalInput(Config.Intake.Sensor);
 
-        sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+        //sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
         
 
         NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
@@ -98,7 +98,7 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
     public void set(double voltage){
         leftMotor.set(voltage);
-        rightMotor.set(voltage);
+        rightMotor.set(-voltage);
     }
 
     public void stop(){

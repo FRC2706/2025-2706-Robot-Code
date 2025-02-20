@@ -126,8 +126,8 @@ public class ControlBoxContainer extends RobotContainer {
     // Climber
     //operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
     //Manipulator
-    operator.y().onTrue(new CoralDepositorCommand(true)); 
-    operator.x().onTrue(new CoralDepositorCommand(false));
+    operator.y().whileTrue(new CoralDepositorCommand(true)); 
+    operator.x().whileTrue(new CoralDepositorCommand(false));
   }
 
   /**
