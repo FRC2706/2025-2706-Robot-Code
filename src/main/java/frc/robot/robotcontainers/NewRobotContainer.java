@@ -195,9 +195,9 @@ public class NewRobotContainer extends RobotContainer {
        
     //operator.leftTrigger(0.3).whileTrue(
     //operator.leftBumper()
-      .whileTrue(CombinedCommands.armIntake())
-      .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
-      .onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
+      //.whileTrue(CombinedCommands.armIntake())
+      //.onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
+      //.onFalse(new MakeIntakeMotorSpin(9.0,0).withTimeout(1).until(() -> intake.isBackSensorActive()));
 
     //right trigger for shooter with speaker RPM
     //operator.rightTrigger(0.3).whileTrue(CombinedCommands.simpleShootNoteSpeaker(0.4));
@@ -205,10 +205,7 @@ public class NewRobotContainer extends RobotContainer {
     // Shoot note with leftBumper
     // operator.rightBumper().whileTrue(CombinedCommands.simpleShootNoteSpeaker(1))
     //                       .onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
-    operator.leftTrigger(0.1).whileTrue(new CoralIntake(
-      () -> operator.getLeftTriggerAxis(),
-      () -> operator.getRightTriggerAxis()
-    ));
+
      // operator.rightBumper().onTrue(new SubwooferShot(
       //operator.rightBumper(), 
      // ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg, 
