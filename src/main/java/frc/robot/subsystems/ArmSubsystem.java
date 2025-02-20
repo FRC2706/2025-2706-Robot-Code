@@ -7,6 +7,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -92,13 +93,25 @@ public class ArmSubsystem extends SubsystemBase {
     m_arm_config.signals.primaryEncoderVelocityPeriodMs(20);
 
     m_absEncoder = m_arm.getAbsoluteEncoder();
-    m_arm_config.absoluteEncoder.inverted(Config.ArmConfig.INVERT_ENCODER);
-    m_arm_config.absoluteEncoder.positionConversionFactor(Config.ArmConfig.armPositionConversionFactor);
-    m_arm_config.absoluteEncoder.velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor);
-    m_arm_config.absoluteEncoder.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset));
-    m_arm_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
+    m_arm_config
+          .absoluteEncoder
+          // Invert the turning encoder, since the output shaft rotates in the opposite
+          // direction of the steering motor in the MAXSwerve Module.
+          .inverted(Config.ArmConfig.INVERT_ENCODER)
+          .positionConversionFactor(Config.ArmConfig.armPositionConversionFactor) // radians
+          .velocityConversionFactor(Config.ArmConfig.armVelocityConversionFactor); // radians per second
+          //??????.zeroOffset(Math.toRadians(Config.ArmConfig.armAbsEncoderOffset)); //this config is invalid and crash the code
 
-    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    m_arm_config
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Enable PID wrap around for the turning motor. This will allow the PID
+          // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+          // to 10 degrees will go through 0 rather than the other direction which is a
+          // longer route.
+          .positionWrappingEnabled(true)
+          .positionWrappingInputRange(0, Config.ArmConfig.armPositionConversionFactor);
+
 
     NetworkTable ArmTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
     m_armPSubs = ArmTuningTable.getDoubleTopic("P").getEntry(Config.ArmConfig.arm_kP);
@@ -127,14 +140,16 @@ public class ArmSubsystem extends SubsystemBase {
     updatePID0Settings();
     updatePID1Settings();
 
-    burnFlash();
+    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    
+    //burnFlash();
     m_arm.setCANTimeout(0);
 
     ErrorTrackingSubsystem.getInstance().register(m_arm);
   }
 
   public void updatePID0Settings() {
-    SparkMaxConfig m_arm_config = new SparkMaxConfig();
+    
     m_arm_config.closedLoop.velocityFF(m_armFFSubs.get(), ClosedLoopSlot.kSlot0);
     m_arm_config.closedLoop.p(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
     m_arm_config.closedLoop.i(m_armPSubs.get(), ClosedLoopSlot.kSlot0);
@@ -142,19 +157,15 @@ public class ArmSubsystem extends SubsystemBase {
     m_arm_config.closedLoop.iZone(m_armIzSubs.get(), ClosedLoopSlot.kSlot0);
     m_arm_config.closedLoop.outputRange(Config.ArmConfig.min_output, Config.ArmConfig.max_output);
 
-    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
-  public void updatePID1Settings() {
-    SparkMaxConfig m_arm_config = new SparkMaxConfig();
+  public void updatePID1Settings() { 
     m_arm_config.closedLoop.velocityFF(ArmConfig.arm_far_kFF, ClosedLoopSlot.kSlot1);
     m_arm_config.closedLoop.p(ArmConfig.arm_far_kP, ClosedLoopSlot.kSlot1);
     m_arm_config.closedLoop.i(ArmConfig.arm_far_kI, ClosedLoopSlot.kSlot1);
     m_arm_config.closedLoop.d(ArmConfig.arm_far_kD, ClosedLoopSlot.kSlot1);
     m_arm_config.closedLoop.iZone(ArmConfig.arm_far_iZone, ClosedLoopSlot.kSlot1);
 
-
-    m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
   @Override
@@ -209,6 +220,7 @@ public class ArmSubsystem extends SubsystemBase {
       } 
       catch (Exception e) {}
 
+      m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
       //errSpark("Arm burn flash", m_arm.burnFlash());
     }
 
@@ -224,11 +236,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setArmIdleMode(IdleMode mode) {
-      SparkMaxConfig m_arm_config = new SparkMaxConfig();
-
+  
       m_arm_config.idleMode(mode);
 
-      m_arm.configure(m_arm_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public void testFeedForward(double additionalVoltage) {

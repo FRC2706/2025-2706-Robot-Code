@@ -7,7 +7,7 @@
     "mavenUrls": [
         "https://3015rangerrobotics.github.io/pathplannerlib/repo"
     ],
-    "jsonUrl": "https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json",
+    "jsonUrl": "https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib2024.json",
     "javaDependencies": [
         {
             "groupId": "com.pathplanner.lib",
