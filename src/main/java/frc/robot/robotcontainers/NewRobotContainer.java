@@ -13,8 +13,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
@@ -39,10 +41,12 @@ import frc.robot.commands.SubwooferShot;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
+import frc.robot.subsystems.BlingSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,6 +66,7 @@ public class NewRobotContainer extends RobotContainer {
   private final SwerveSubsystem s_Swerve = SwerveSubsystem.getInstance();
   private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+  private final BlingSubsystem blingSubsystem = BlingSubsystem.getINSTANCE();
 
   /* Auto */
   private AutoRoutines m_autoRoutines;
@@ -266,8 +271,8 @@ public class NewRobotContainer extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-    return new InstantCommand();
-
-    // return m_autoRoutines.getAutonomousCommand(autoId);
+    //CommandScheduler.getInstance().schedule(Commands.sequence(new BlingCommand(BlingColour.PURPLE), new WaitCommand(5), new BlingCommand(BlingColour.DISABLED)));
+    //return new InstantCommand();
+    return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }

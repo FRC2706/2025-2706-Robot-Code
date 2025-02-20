@@ -33,27 +33,68 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.BlingCommand;
+import frc.robot.commands.BlingCommand.BlingColour;
 
 public class AutoRoutines extends SubsystemBase {
     
     // PathPlannerPath speakerPath = PathPlannerPath.fromPathFile("Speaker Path");
    
-                        
+    PathPlannerAuto //fourNoteAuto,
+                    // twoNoteAuto,
+                    // threeNoteAuto,
+                    //twoNoteLeftAuto,
+                    //twoNoteCenter,
+                    //threeNoteCenterSourceSideNote,
+                    //threeNoteCenterAmpSideNote,
+                    //oneNoteSourceSide,
+                    Right_R_CD,
+                    Right_R_CD_R,
+                    RIGHTCenter_R_CD,
+                    RIGHTCenter_R_CD_R,
+                    LEFTCenter_R_CD,
+                    LEFTCenter_R_CD_R,
+                    Left_R_CD,
+                    Left_R_CD_R,
+                    centerMove;
+                    //twoNoteSourceSide;
     
 
     public AutoRoutines() {
         registerCommandsToPathplanner();
 
+        Right_R_CD = new PathPlannerAuto("rightReefCd");
+        Right_R_CD_R = new PathPlannerAuto("rightReefCdReef");
+        Left_R_CD = new PathPlannerAuto("leftReefCd");
+        Left_R_CD_R = new PathPlannerAuto("leftReefCdReef");
+        RIGHTCenter_R_CD = new PathPlannerAuto("rightCenterReefCd");
+        RIGHTCenter_R_CD_R = new PathPlannerAuto("rightCenterReefCdReef");
+        LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
+        LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
+        centerMove = new PathPlannerAuto("centerMove");
+
+         
         // twoNoteAuto = new PathPlannerAuto("twoNoteSpeaker");
         // threeNoteAuto = new PathPlannerAuto("threeNoteSpeaker");
        
     }
 
     public void registerCommandsToPathplanner() {
-        // NamedCommands.registerCommand("MakeIntakeMotorSpin", new SequentialCommandGroup(
-        //     new MakeIntakeMotorSpin(3.0,2), // Move arm to intake setpoint
-        //     new WaitCommand(1)
-        // ));
+         NamedCommands.registerCommand("purpleBling", new BlingCommand(BlingColour.PURPLE));
+         NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
+         NamedCommands.registerCommand("blueBling", new BlingCommand(BlingColour.BLUE));
+         NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
+         NamedCommands.registerCommand("yellowBling", new BlingCommand(BlingColour.YELLOW));
+         NamedCommands.registerCommand("rainbowBling", new BlingCommand(BlingColour.RAINBOW));
+         NamedCommands.registerCommand("fireBling", new BlingCommand(BlingColour.FIRE));
+         NamedCommands.registerCommand("rgbfadeBling", new BlingCommand(BlingColour.RGBFADE));
+         NamedCommands.registerCommand("whiteSBling", new BlingCommand(BlingColour.WHITESTROBE));
+         NamedCommands.registerCommand("redSBling", new BlingCommand(BlingColour.REDSTROBE));
+         NamedCommands.registerCommand("yellowSBling", new BlingCommand(BlingColour.YELLOWSTROBE));
+         NamedCommands.registerCommand("blueSBling", new BlingCommand(BlingColour.BLUESTROBE));
+         NamedCommands.registerCommand("purpleSBling", new BlingCommand(BlingColour.PURPLESTROBE));
+         NamedCommands.registerCommand("disableBLING", new BlingCommand(BlingColour.DISABLED));
+
     }
 
     public Command getAutonomousCommand(int selectAuto) {
@@ -61,29 +102,37 @@ public class AutoRoutines extends SubsystemBase {
             case 0:
             default: 
                 return null;
-        //     case 1:
-        //         return twoNoteLeftAuto;
-        //     case 2:
-        //         return fourNoteAuto;
-        //     case 3:
-        //         return oneNoteSourceSide;
-        //     case 4:
-        //         return twoNoteSourceSide;
-        //     case 5:
-        //         return threeNoteCenterSourceSideNote;
-        //     case 6:
-        //     case 7:
-        //         var alliance = DriverStation.getAlliance();
+            case 1:
+                return centerMove;
+            case 2:
+                return Right_R_CD_R;
+            case 3:
+                return RIGHTCenter_R_CD;
+            case 4:
+                return RIGHTCenter_R_CD_R;
+            case 5:
+                return LEFTCenter_R_CD;
+            case 6:
+                return LEFTCenter_R_CD_R;
+            case 7:
+                return Left_R_CD;
+            case 8:
+                return Left_R_CD_R;
+            case 9: 
+                return Right_R_CD;
+            case 10: 
+            case 11:
+                var alliance = DriverStation.getAlliance();
 
-        //         // Default to blue alliance
-        //         if (alliance.isEmpty()) {
-        //         DriverStation.reportWarning("Unable to detect alliance color.", false);
-        //             return new InstantCommand();
-        //         }
-        //         return Commands.sequence(
-        //             SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(0, 0, SwerveSubsystem.rotateForAlliance(Rotation2d.fromDegrees(0)))),
-        //             SwerveSubsystem.getInstance().getDriveToPoseCommand(new Pose2d((alliance.get() == DriverStation.Alliance.Blue)? 2.5 : -2.5, 0, SwerveSubsystem.rotateForAlliance(Rotation2d.fromDegrees(0))))
-        //         );
+                 // Default to blue alliance
+                 if (alliance.isEmpty()) {
+                 DriverStation.reportWarning("Unable to detect alliance color.", false);
+                     return new InstantCommand();
+                 }
+                 return Commands.sequence(
+                     SwerveSubsystem.getInstance().setOdometryCommand(new Pose2d(0, 0, SwerveSubsystem.rotateForAlliance(Rotation2d.fromDegrees(0)))),
+                     SwerveSubsystem.getInstance().getDriveToPoseCommand(new Pose2d((alliance.get() == DriverStation.Alliance.Blue)? 2.5 : -2.5, 0, SwerveSubsystem.rotateForAlliance(Rotation2d.fromDegrees(0))))
+                 );
          }
     }
 

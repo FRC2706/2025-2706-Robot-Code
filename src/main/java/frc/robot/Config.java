@@ -161,7 +161,7 @@ public final class Config {
       -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
     //networkTableName
-    public static final String apriltagCameraName = "FrontApriltagOV9281";
+    public static final String apriltagCameraName = "USB_Camera";
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
     //data max
@@ -260,10 +260,10 @@ public final class Config {
     
     public static final SwerveDriveKinematics swerveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+            new Translation2d(wheelBase / 2.0, trackWidth / 2.0), //FL
+            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0), //FR
+            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0), //BL
+            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0)); //BR
 
     /* Swerve Voltage Compensation Changed */
     public static final double voltageComp = 11.0;
