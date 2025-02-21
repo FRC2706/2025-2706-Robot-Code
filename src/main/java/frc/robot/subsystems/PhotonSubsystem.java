@@ -74,7 +74,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private PhotonCamera camera1;
   private Translation2d targetPos;
   private Rotation2d targetRotation;
-  private Translation2d newTargetPos;
+  private Translation2d newTargetPos = new Translation2d();
   private LinearFilter filteryaw = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterX = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterY = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
@@ -211,9 +211,14 @@ public class PhotonSubsystem extends SubsystemBase {
     
     // Must be set by 2D or 3D mode;
     //@todo: test 2D and 3D mode both
-    PhotonPipelineResult result = camera1.getLatestResult();
+   // PhotonPipelineResult result = camera1.getLatestResult();
     //@todo: to test...
-    //PhotonPipelineResult result = camera1.getAllUnreadResults().get(0);
+    List<PhotonPipelineResult> listResult = camera1.getAllUnreadResults();
+    if (listResult.isEmpty() == true)
+    {
+      return;
+    }
+    PhotonPipelineResult result = listResult.get(0);
     if (result == null)
       return;
 
@@ -259,7 +264,8 @@ public class PhotonSubsystem extends SubsystemBase {
       {
         tagIdPose = tagPose.get();
         bestTagHeading = tagIdPose.getRotation().toRotation2d();
-        targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
+        //--targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
+        targetRobotHeading = bestTagHeading;
 
         pubBestTagId.accept(bestTagId);
         pubBestTagHeading.accept(bestTagHeading.getDegrees());
@@ -338,7 +344,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
       //publish to networktables
       pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
-      pubNewSetPoint.accept(new double[]{newTargetPos.getX(), newTargetPos.getY(), -1});
+      pubNewSetPoint.accept(new double[]{newTargetPos.getX(), newTargetPos.getY(), -1.0});
     
   }
   

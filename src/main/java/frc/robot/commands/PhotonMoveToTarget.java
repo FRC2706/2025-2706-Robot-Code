@@ -64,15 +64,15 @@ public class PhotonMoveToTarget extends Command {
     SwerveSubsystem.getInstance().resetDriveToPose();
 
     m_timer.restart();
-    m_timer.reset();
+    //m_timer.reset();
   }
 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
-    Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
+    Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
+    //Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
 
     Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
     Rotation2d targetRobotHeading = PhotonSubsystem.getInstance().getTargetRobotHeading();
@@ -109,7 +109,7 @@ public class PhotonMoveToTarget extends Command {
       //if no vision data, stop
       return (PhotonSubsystem.getInstance().hasTarget()==false 
       || SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getTargetPos()) 
-      || m_timer.hasElapsed(1.5)
+     // || m_timer.hasElapsed(1.5)
       );
     }
 
