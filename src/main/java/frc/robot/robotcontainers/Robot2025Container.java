@@ -128,11 +128,58 @@ public class Robot2025Container extends RobotContainer {
     driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
     driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
     driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+
+
+    //for tuning the swerve
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // driver.y().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // driver.x().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesBackwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    // };
+    // driver.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStates270 = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    // };
+    // driver.b().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+    // ));
+
+
+
+
+
     
     //vision-aid alignment    
-    // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT))
+            .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+            .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
     /**
      * Operator Controls

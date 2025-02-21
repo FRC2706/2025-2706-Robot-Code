@@ -148,22 +148,35 @@ public final class Config {
   public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
 
   public static final class PhotonConfig{
-    public static boolean USE_3D_TAGS = false;
+    public static boolean USE_3D_TAGS = true;
     public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
 
     public static final double CAMERA_HEIGHT = 0.215;
     public static final Rotation2d CAMERA_PITCH = Rotation2d.fromDegrees(33);
-    //x is forwards, y is sideways with +y being left, rotation probobly if + left too
+    //x is forwards, y is sideways wi th +y being left, rotation probobly if + left too
     public static final Pose2d cameraOffset = new Pose2d(new Translation2d(-0.1,0), Rotation2d.fromDegrees(180));
     // public static final Pose2d cameraOffsetRed = new Pose2d(new Translation2d(-0.1, 0), Rotation2d.fromDegrees(0));
 
-    public static final Transform3d cameraTransform = new Transform3d(
-      -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+    //robotToCamera: Apollo original camera
+    // public static final Transform3d  cameraTransform = new Transform3d(
+    //   -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
-    //networkTableName
-    public static final String apriltagCameraName = "FrontApriltagOV9281";
+      //-0.71/2 + 0.02 =-0.355+0.02 = -0.335
+      //-(0.865/2 - 0.095) = 0.3375
+    //@todo: new 148 deg camera, measured for Apollo
+    public static final Transform3d  leftReefCameraTransform = new Transform3d(
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+
+   
+    //networkTableName 
+    public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
+
+      
+    public static final String leftReefCameraName = "USB_Camera";
+    public static final String rightReefCameraName = "";
+    public static final String intakeCameraName = "";
     //data max
     public static final int maxNumSamples = 10;
 
@@ -188,6 +201,26 @@ public final class Config {
       // COMPETITION USE
       FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
       FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
+
+      //to remove id
+      //REEF_LEFT
+      //REFF_RIGHT
+      
+      //==================================
+      //reset gyro: Front facing the tag. When we see the tag, heading is 180.
+      //red: right; blue: left
+
+      //y: 0.5: to the right of the target. 
+      //red or blue? reset gyro = 180 --> red
+      //REEF_LEFT(8,new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees(0)),
+
+      //blue: reset gyro = 0
+      //--REEF_LEFT(8,new Translation2d(-1.0, 0.0), Rotation2d.fromDegrees(0)),
+      REEF_LEFT(8,new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)),
+ 
+      //HUMAN_STATION_LEFT
+      //HUMAN_STATION_MID
+      //HUMAN_STATION_RIGHT
 
       PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
       PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
@@ -301,9 +334,10 @@ public final class Config {
 
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
-      SLOW(0.5, 0.5 * Math.PI, 16, 12 * Math.PI),
+      SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
       MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
-      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
+      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
+      VISION(0.2, 0.2 * Math.PI, 1, 2 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;
