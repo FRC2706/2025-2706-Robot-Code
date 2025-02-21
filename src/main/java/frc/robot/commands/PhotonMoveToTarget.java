@@ -62,9 +62,10 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
-
     m_timer.restart();
-    //m_timer.reset();
+
+    // m_timer.start();
+    // m_timer.reset();
   }
 
 
@@ -109,7 +110,7 @@ public class PhotonMoveToTarget extends Command {
       //if no vision data, stop
       return (PhotonSubsystem.getInstance().hasTarget()==false 
       || SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getTargetPos()) 
-     // || m_timer.hasElapsed(1.5)
+      || m_timer.hasElapsed(1.5)
       );
     }
 
