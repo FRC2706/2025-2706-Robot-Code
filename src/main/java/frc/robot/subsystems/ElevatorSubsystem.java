@@ -5,13 +5,16 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkLimitSwitchSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -35,6 +38,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   //elevator motor controller
   private final SparkMax m_elevator;  
+  //limit switch
+  private final SparkLimitSwitch m_elevatorSwitch;
   //elevator motor configuration
   private SparkMaxConfig m_elevator_config;
   //PID close loop controller
@@ -74,6 +79,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {
     m_elevator = new SparkMax(elevatorCanID, motorType); // creates SparkMax motor controller
+    m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
+
     m_elevator_config = new SparkMaxConfig(); //create configuration of the motor controller
 
     m_pidController = m_elevator.getClosedLoopController();
@@ -84,7 +91,8 @@ public class ElevatorSubsystem extends SubsystemBase {
                      .idleMode(IdleMode.kBrake)
                      .smartCurrentLimit(50)
                      .voltageCompensation(12);
-    
+
+      
     //set up the network entry
     NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
     m_ElevatorPSubs = ElevatorTuningTable.getDoubleTopic("P").getEntry(0.1 );
@@ -109,6 +117,8 @@ public class ElevatorSubsystem extends SubsystemBase {
                                           .maxAcceleration(1000)
                                           .allowedClosedLoopError(0.25);
 
+   m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
+                               .reverseLimitSwitchType(Type.kNormallyOpen);
 
     //encoder configuration
     // double r = 0.02; //unit meter
