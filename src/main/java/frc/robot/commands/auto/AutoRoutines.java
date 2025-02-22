@@ -71,8 +71,9 @@ public class AutoRoutines extends SubsystemBase {
 
     public void registerCommandsToPathplanner() {
          NamedCommands.registerCommand("purpleBling", new BlingCommand(BlingColour.PURPLE));
-         NamedCommands.registerCommand("greenBling", new BlingCommand(BlingColour.GREEN));
+         NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
+    }
 
     public Command getAutonomousCommand(int selectAuto) {
         switch (selectAuto) {
