@@ -75,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase{
         m_intake.configure(m_intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
-        frontSensor = new DigitalInput(Config.Intake.Sensor);
+        frontSensor = new DigitalInput(Config.Intake.frontSensor);
         centerSensor = new DigitalInput(Config.Intake.centerSensor);
         backSensor = new DigitalInput(Config.Intake.backSensor);
 

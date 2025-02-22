@@ -27,7 +27,6 @@ import frc.robot.Robot;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
-import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
