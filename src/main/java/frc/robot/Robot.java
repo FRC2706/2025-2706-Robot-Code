@@ -23,7 +23,9 @@ import frc.robot.commands.SetArm;
 import frc.robot.commands.Shooter_PID_Tuner;
 import frc.robot.robotcontainers.BeetleContainer;
 import frc.robot.robotcontainers.ContainerForTesting;
+import frc.robot.robotcontainers.ControlBoxContainer;
 import frc.robot.robotcontainers.NewRobotContainer;
+import frc.robot.robotcontainers.Robot2025Container;
 import frc.robot.robotcontainers.RobotContainer;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
@@ -62,13 +64,18 @@ public class Robot extends TimedRobot {
     switch (Config.getRobotId()) {
       case 0:
         // m_robotContainer = new ContainerForTesting(); break; // testing
-        m_robotContainer = new NewRobotContainer(); break; //competition
-        
+        m_robotContainer = new Robot2025Container(); break; //competition
+
+      case 1:
+        m_robotContainer = new NewRobotContainer(); break; //Apollo
       case 2:
         m_robotContainer = new BeetleContainer(); break; //beetle
+
+        case 3:
+        m_robotContainer = new ControlBoxContainer(); break; //ControlBox
        
       default:
-        m_robotContainer = new NewRobotContainer();
+        m_robotContainer = new Robot2025Container();
         DriverStation.reportError(
             String.format("ISSUE WITH CONSTRUCTING THE ROBOT CONTAINER. \n " +
                           "NewRobotContainer constructed by default. RobotID: %d", Config.getRobotId()), 
@@ -90,10 +97,7 @@ public class Robot extends TimedRobot {
 
     if (Config.getRobotId() == 0 )
     {
-    testingCommandList.add("ArmToVisionShot", new SetArm(() -> ArmSetPoints.CENTER_VISION_SHOT.angleDeg).withName("ArmToCenterVisionShot"));
-    testingCommandList.add("ArmToIntaking", new SetArm(() -> ArmSetPoints.INTAKE.angleDeg).withName("ArmToIntake"));
-    testingCommandList.add("ShooterFastSpeed", new Shooter_PID_Tuner(() -> 4000).withName("ShooterFastSpeed"));
-    testingCommandList.add("ShooterStop", Commands.runOnce(() -> ShooterSubsystem.getInstance().stop(), ShooterSubsystem.getInstance()).withName("ShooterStop"));
+      //@todo: add...
     }
   }
 
@@ -129,9 +133,15 @@ public class Robot extends TimedRobot {
     if (Config.getRobotId() == 0)
     {
       SwerveSubsystem.getInstance().setVoltageCompensation(true);
+      PhotonSubsystem.getInstance().resetTagAtBootup();
+    }
+    else if ( Config.getRobotId() == 1)
+    {
+      SwerveSubsystem.getInstance().setVoltageCompensation(true);
       ArmSubsystem.getInstance().resetProfiledPIDController();
       PhotonSubsystem.getInstance().resetTagAtBootup();
     }
+
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -157,9 +167,14 @@ public class Robot extends TimedRobot {
 
     if( Config.getRobotId()==0)
     {
-    SwerveSubsystem.getInstance().setVoltageCompensation(false);
-    ArmSubsystem.getInstance().resetProfiledPIDController();
-    PhotonSubsystem.getInstance().resetTagAtBootup();
+      SwerveSubsystem.getInstance().setVoltageCompensation(false);
+      PhotonSubsystem.getInstance().resetTagAtBootup();
+    }
+    else if (Config.getRobotId()==1)
+    {
+      SwerveSubsystem.getInstance().setVoltageCompensation(false);
+      ArmSubsystem.getInstance().resetProfiledPIDController();
+      PhotonSubsystem.getInstance().resetTagAtBootup();
     }
   }
 
