@@ -53,7 +53,7 @@ public final class Config {
 
   public static class CANID {
     public static int PIGEON = robotSpecific(16, -1, 27, 30);
-    public static final int CANDLE = robotSpecific(25,-1,15,15);
+    public static final int CANDLE = robotSpecific(25,-1,15,25);
     public static final int CLIMBER = robotSpecific(18, 4, -1 ,-1);
 
     //swerve CAN IDs
