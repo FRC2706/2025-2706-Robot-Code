@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   //@todo: add the switch...
 
   //@todo: elevator CAN ID
-  int elevatorCanID = 22;
+  int elevatorCanID = 15;
 
   // network table entry
   private final String m_tuningTable = "Elevator/ElevatorTuning";
