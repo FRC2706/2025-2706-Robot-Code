@@ -191,9 +191,6 @@ public class ContainerForTesting extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-    new BlingCommand(BlingColour.PURPLE);
-    new WaitCommand(5);
-    new BlingCommand(BlingColour.DISABLED);
     return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }

@@ -66,7 +66,6 @@ public class NewRobotContainer extends RobotContainer {
   private final SwerveSubsystem s_Swerve = SwerveSubsystem.getInstance();
   private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
-  private final BlingSubsystem blingSubsystem = BlingSubsystem.getINSTANCE();
 
   /* Auto */
   private AutoRoutines m_autoRoutines;
@@ -271,8 +270,6 @@ public class NewRobotContainer extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
-    //CommandScheduler.getInstance().schedule(Commands.sequence(new BlingCommand(BlingColour.PURPLE), new WaitCommand(5), new BlingCommand(BlingColour.DISABLED)));
-    //return new InstantCommand();
     return m_autoRoutines.getAutonomousCommand(autoId);
   }
 }

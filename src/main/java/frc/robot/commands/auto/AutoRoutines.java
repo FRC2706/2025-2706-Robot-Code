@@ -40,14 +40,7 @@ public class AutoRoutines extends SubsystemBase {
     
     // PathPlannerPath speakerPath = PathPlannerPath.fromPathFile("Speaker Path");
    
-    PathPlannerAuto //fourNoteAuto,
-                    // twoNoteAuto,
-                    // threeNoteAuto,
-                    //twoNoteLeftAuto,
-                    //twoNoteCenter,
-                    //threeNoteCenterSourceSideNote,
-                    //threeNoteCenterAmpSideNote,
-                    //oneNoteSourceSide,
+    PathPlannerAuto 
                     Right_R_CD,
                     Right_R_CD_R,
                     RIGHTCenter_R_CD,
@@ -57,7 +50,6 @@ public class AutoRoutines extends SubsystemBase {
                     Left_R_CD,
                     Left_R_CD_R,
                     centerMove;
-                    //twoNoteSourceSide;
     
 
     public AutoRoutines() {
@@ -74,8 +66,6 @@ public class AutoRoutines extends SubsystemBase {
         centerMove = new PathPlannerAuto("centerMove");
 
          
-        // twoNoteAuto = new PathPlannerAuto("twoNoteSpeaker");
-        // threeNoteAuto = new PathPlannerAuto("threeNoteSpeaker");
        
     }
 
