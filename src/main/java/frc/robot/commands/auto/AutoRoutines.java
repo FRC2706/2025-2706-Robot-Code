@@ -81,21 +81,8 @@ public class AutoRoutines extends SubsystemBase {
 
     public void registerCommandsToPathplanner() {
          NamedCommands.registerCommand("purpleBling", new BlingCommand(BlingColour.PURPLE));
-         NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
-         NamedCommands.registerCommand("blueBling", new BlingCommand(BlingColour.BLUE));
+         NamedCommands.registerCommand("greenBling", new BlingCommand(BlingColour.GREEN));
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
-         NamedCommands.registerCommand("yellowBling", new BlingCommand(BlingColour.YELLOW));
-         NamedCommands.registerCommand("rainbowBling", new BlingCommand(BlingColour.RAINBOW));
-         NamedCommands.registerCommand("fireBling", new BlingCommand(BlingColour.FIRE));
-         NamedCommands.registerCommand("rgbfadeBling", new BlingCommand(BlingColour.RGBFADE));
-         NamedCommands.registerCommand("whiteSBling", new BlingCommand(BlingColour.WHITESTROBE));
-         NamedCommands.registerCommand("redSBling", new BlingCommand(BlingColour.REDSTROBE));
-         NamedCommands.registerCommand("yellowSBling", new BlingCommand(BlingColour.YELLOWSTROBE));
-         NamedCommands.registerCommand("blueSBling", new BlingCommand(BlingColour.BLUESTROBE));
-         NamedCommands.registerCommand("purpleSBling", new BlingCommand(BlingColour.PURPLESTROBE));
-         NamedCommands.registerCommand("disableBLING", new BlingCommand(BlingColour.DISABLED));
-
-    }
 
     public Command getAutonomousCommand(int selectAuto) {
         switch (selectAuto) {
