@@ -43,6 +43,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.Config.ElevatorSetPoints;
+import frc.robot.subsystems.ElevatorSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -73,8 +76,16 @@ public class ControlBoxContainer extends RobotContainer {
    */
   private void configureButtonBindings() { 
 
-    operator.x().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+    //operator.x().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
     
+    //for elevator prototype
+    operator.y().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L1)); // L1
+    operator.b().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L2)); // L2
+    operator.a().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L3)); // L3
+    operator.x().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.L4)); //L4
+    operator.start().onTrue(ElevatorSubsystem.getInstance().setElevatorSetpointCommand(ElevatorSetPoints.IDLE));
+
+
   }
 
   /**
