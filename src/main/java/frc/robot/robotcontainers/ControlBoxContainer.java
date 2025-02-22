@@ -29,6 +29,7 @@ import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralIntake;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.RotateAngleToVisionSupplier;
@@ -43,6 +44,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralIntake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,8 +66,6 @@ public class ControlBoxContainer extends RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public ControlBoxContainer() {
-    
-    
     configureButtonBindings();
   }
 
@@ -74,6 +76,8 @@ public class ControlBoxContainer extends RobotContainer {
   private void configureButtonBindings() { 
 
     operator.x().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+    operator.a().whileTrue(new CoralIntake(0.3,-0.3));
+    operator.b().whileTrue(new CoralIntake(-0.3,0.3));
     
   }
 

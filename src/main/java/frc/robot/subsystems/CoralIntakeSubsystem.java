@@ -39,15 +39,15 @@ public class CoralIntakeSubsystem extends SubsystemBase {
   }
 
   //@todo: the CAN IDs
-  int leftMotorCanID = -1;
-  int rightMotorCanID = -1;
+  int leftMotorCanID = 16;
+  int rightMotorCanID = 19;
 
   /** Creates a new CoralIntakeSubsystem. */
   public CoralIntakeSubsystem() {
     m_leftMotor = new SparkMax(leftMotorCanID, motorType); // creates SparkMax left motor controller
     m_leftMotor_config = new SparkMaxConfig(); //create configuration of the left motor controller
 
-    m_rightMotor = new SparkMax(leftMotorCanID, motorType); // creates SparkMax right motor controller
+    m_rightMotor = new SparkMax(rightMotorCanID, motorType); // creates SparkMax right motor controller
     m_rightMotor_config = new SparkMaxConfig(); //create configuration of the right motor controller
 
     //configure the left motor controller
@@ -59,15 +59,33 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     m_leftMotor_config.smartCurrentLimit(20);
     m_leftMotor_config.voltageCompensation(6);
 
-    //@todo: to add encoder and PIDs
+    
 
     m_leftMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
 
-    //@todo: to add burn flash 
+  
 
     m_leftMotor.setCANTimeout(0);
 
-    //@todo: to add configure the right motor controller
+
+
+    //configure rigth motor controller
+    m_rightMotor.setCANTimeout(Config.CANTIMEOUT_MS);
+    
+    m_rightMotor_config.inverted(Config.ArmConfig.SET_INVERTED);
+    m_rightMotor_config.idleMode(IdleMode.kBrake);
+     
+    m_rightMotor_config.smartCurrentLimit(20);
+    m_rightMotor_config.voltageCompensation(6);
+
+    //@todo: to add encoder and PIDs
+
+    m_rightMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+
+    //@todo: to add burn flash 
+
+    m_rightMotor.setCANTimeout(0);
+
   }
 
   public void startIntakePercent(double leftPercentOutput, double rightPercentOutput){

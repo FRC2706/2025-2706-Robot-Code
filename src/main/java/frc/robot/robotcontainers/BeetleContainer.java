@@ -14,6 +14,7 @@ import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
+import frc.robot.commands.CoralIntake;
 import frc.robot.subsystems.DiffTalonSubsystem;
 
 /**

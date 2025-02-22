@@ -23,6 +23,8 @@ public class SubsystemChecker {
         RelaySubsystem,
         BlingSubsystem,
         GripperSubsystem,
+        PhotonSubsystem,
+        CoralIntakeSubsystem,
     };
 
     /**
@@ -50,12 +52,13 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
-        SubsystemType.CoralIntakeSubsystem,
+        
     };
 
       // RobotID: 3, ControlBox
       private static SubsystemType[] ControlBox3 = new SubsystemType[] {
         SubsystemType.BlingSubsystem,
+        SubsystemType.CoralIntakeSubsystem,
     };
 
     // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
