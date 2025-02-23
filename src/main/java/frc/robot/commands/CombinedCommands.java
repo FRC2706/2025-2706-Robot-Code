@@ -161,7 +161,7 @@ public class CombinedCommands {
             PhotonPositions position) {
 
         // Use a timer to not rumble if the it's only been 0.5 seconds 
-        Timer timer = new Timer();
+       // Timer timer = new Timer();
 
         // Bling Commands
         Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE).withName("bling"));
@@ -183,7 +183,7 @@ public class CombinedCommands {
         );
   
         //require ServeSubsystem and PhotonSubsystem
-        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(position.destination, false, false, false)).withName("moveToTargetCommands");
+        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(false, false, false)).withName("moveToTargetCommands");
    
         // Rumble commands
         Command rumbleDriverBefore = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 1, true);

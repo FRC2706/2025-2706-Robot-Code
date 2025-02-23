@@ -68,12 +68,14 @@ public class PhotonSubsystem extends SubsystemBase {
   private DoubleArrayPublisher pubNewSetPoint;
   public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
   private IntegerPublisher pubBestTagId;
+  private DoubleArrayPublisher pubTargetOffset;
   private BooleanPublisher pubHasData;
   private BooleanSubscriber hasTarget;
   private StringPublisher pub3DTagsDebugMsg;
   private PhotonCamera camera1;
   private Translation2d targetPos;
   private Rotation2d targetRotation;
+  private Translation2d targetOffset;
   private Translation2d newTargetPos = new Translation2d();
   private LinearFilter filteryaw = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
   private LinearFilter filterX = LinearFilter.movingAverage(PhotonConfig.maxNumSamples);
@@ -103,6 +105,7 @@ public class PhotonSubsystem extends SubsystemBase {
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
     pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
+    pubTargetOffset = photonTable.getDoubleArrayTopic("TargetOffset").publish(PubSubOption.periodic(0.02));
     pubBestTagHeading = photonTable.getDoubleTopic("BestTagHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubHasData =  photonTable.getBooleanTopic("hasData").publish(PubSubOption.periodic(0.02));
@@ -190,8 +193,13 @@ public class PhotonSubsystem extends SubsystemBase {
   public Translation2d getNewTargetPos() {
     return newTargetPos;
   }
+
   public Rotation2d getTargetRobotHeading(){
     return targetRobotHeading;
+  }
+
+  public Translation2d getTargetOffset() {
+    return targetOffset;
   }
 
   public boolean hasData() {
@@ -247,6 +255,9 @@ public class PhotonSubsystem extends SubsystemBase {
       }
 
       bestTagId = target.getFiducialId();
+      targetOffset = Config.PhotonConfig.targetOffsetMap.get(bestTagId);
+      pubBestTagId.accept(bestTagId);
+      pubTargetOffset.accept(new double[]{targetOffset.getX(), targetOffset.getY()});
       
       //@todo: validate bestTagId based on red or blue. May not need to check red or blue
       //if not valid tagId, return
@@ -255,7 +266,6 @@ public class PhotonSubsystem extends SubsystemBase {
       if (tagPose.isEmpty())
       {
         //reset to default values
-        pubBestTagId.accept(-1);
         pubBestTagHeading.accept(-1);
         pubTargetRobotHeading.accept(-1);
         return;
@@ -264,12 +274,16 @@ public class PhotonSubsystem extends SubsystemBase {
       {
         tagIdPose = tagPose.get();
         bestTagHeading = tagIdPose.getRotation().toRotation2d();
-        //--targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
+  
+        //due to the camera is at the back
         targetRobotHeading = bestTagHeading;
 
-        pubBestTagId.accept(bestTagId);
+       //for red tags: no need to add 180
+       //--targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
+       //targetRobotHeading = bestTagHeading;
         pubBestTagHeading.accept(bestTagHeading.getDegrees());
         pubTargetRobotHeading.accept(targetRobotHeading.getDegrees());
+       
       }
 
       ////New option

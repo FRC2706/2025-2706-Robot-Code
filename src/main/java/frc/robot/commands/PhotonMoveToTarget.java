@@ -22,7 +22,7 @@ public class PhotonMoveToTarget extends Command {
   boolean isWaypoint;
   boolean shouldNeverEnd;
 
-  private Timer m_timer = new Timer();
+  //private Timer m_timer = new Timer();
 
 /**
  * Command for moving to the target currently selected in the PhotonSubsystem. Without a desired heading, the robot turns so that the camera faces the target.
@@ -31,10 +31,9 @@ public class PhotonMoveToTarget extends Command {
  * @param _isWaypoint
  * whether or not to use the larger tolerences meant for stop-and-go waypoints
  */
-  public PhotonMoveToTarget(Translation2d _targetOffset, boolean _isWaypoint, boolean neverEnd) {
+  public PhotonMoveToTarget(boolean _isWaypoint, boolean neverEnd) {
     addRequirements(SwerveSubsystem.getInstance());
     addRequirements(PhotonSubsystem.getInstance());
-    targetOffset = _targetOffset;
     centerTarget=true;
     isWaypoint=_isWaypoint;
     shouldNeverEnd = neverEnd;
@@ -48,10 +47,9 @@ public class PhotonMoveToTarget extends Command {
  * @param _isWaypoint
  * whether or not to use the larger tolerences meant for stop-and-go waypoints
  */
-  public PhotonMoveToTarget(Translation2d _targetOffset, boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
+  public PhotonMoveToTarget(boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
     addRequirements(SwerveSubsystem.getInstance());
     addRequirements(PhotonSubsystem.getInstance());
-    targetOffset = _targetOffset;
     centerTarget=_centerTarget;
     isWaypoint=_isWaypoint;
     shouldNeverEnd = neverEnd;
@@ -62,7 +60,9 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
-    m_timer.restart();
+    targetOffset = PhotonSubsystem.getInstance().getTargetOffset();
+
+    //m_timer.restart();
 
     // m_timer.start();
     // m_timer.reset();
@@ -72,8 +72,8 @@ public class PhotonMoveToTarget extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
-    //Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
+    //+++Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
+    Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
 
     Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
     Rotation2d targetRobotHeading = PhotonSubsystem.getInstance().getTargetRobotHeading();
@@ -95,28 +95,35 @@ public class PhotonMoveToTarget extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_timer.stop();
+    //m_timer.stop();
+
+    //stop swever?
+
   }
 
   
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (shouldNeverEnd) {
-      return false;
-    }
-    else
+    // if (shouldNeverEnd) {
+    //   return false;
+    // }
+    // else
     {
       //if no vision data, stop
-      return (PhotonSubsystem.getInstance().hasTarget()==false 
-      || SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getTargetPos()) 
-      || m_timer.hasElapsed(1.5)
-      );
+      // return (PhotonSubsystem.getInstance().hasTarget()==false 
+      // ||  SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos())
+      // );
+       
+       return false;
+    
+      //two options here:
+      //+++SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos());
+      //++++SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getTargetPos())
     }
 
     //Note: if isAtTargetPose() works, may not need to hasTarget().
-    
-    
+        
     // if (isWaypoint){
     //   return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
     // } else {
@@ -124,8 +131,6 @@ public class PhotonMoveToTarget extends Command {
     //       && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE)
     //       && (PhotonSubsystem.getInstance().hasData()==false);
     // }
-  
-
-    
+      
   }
 }

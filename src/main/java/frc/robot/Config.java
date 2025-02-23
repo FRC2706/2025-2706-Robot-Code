@@ -5,7 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.spark.SparkBase;
@@ -23,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.lib3512.config.SwerveModuleConstants;
+
 
 public final class Config {
   /**
@@ -187,9 +191,30 @@ public final class Config {
     public static final double WAYPOINT_POS_TOLERANCE = 0.2; // meters
     public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
     public static final double VEL_TOLERANCE = 0.1*4;
-    public static enum PhotonPositions {
-      
-      
+
+    public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
+      //all left position. For right, opposite y
+      //left and right: between center of robot and aprilTag
+      //blue reef
+      put(17, new Translation2d(1.0, 0));
+      put(18, new Translation2d(1.0, -0.3)); //tested
+      put(19, new Translation2d(1.0, 0));
+      put(20, new Translation2d(1.0, 0));
+      put(21, new Translation2d(-1.0, -0.3)); //tested
+      put(22, new Translation2d(1.0, 0));
+      //red reef
+      put(6, new Translation2d(1.0, 0));
+      put(7, new Translation2d(-1.0, -0.3)); //tested
+      put(8, new Translation2d(1.0, 0));
+      put(9, new Translation2d(1.0, 0));
+      put(10, new Translation2d(1.0, 0));
+      put(11, new Translation2d(1.0, 0));
+      //blue human station
+
+      //red human station
+   }};
+
+    public static enum PhotonPositions {     
       RIGHT_SPEAKER_RED(4, new Translation2d(-0.937,0.937), new Translation2d(-0.637,0.637), Rotation2d.fromDegrees(-60)),
       MIDDLE_SPEAKER_RED(4, new Translation2d(-1.3,0), new Translation2d(-0.95,0), Rotation2d.fromDegrees(0)),
       LEFT_SPEAKER_BLUE(7, new Translation2d(0.937,0.937), new Translation2d(0.637,0.637), Rotation2d.fromDegrees(-120)),
@@ -202,22 +227,6 @@ public final class Config {
       FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
       FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
 
-      //to remove id
-      //REEF_LEFT
-      //REFF_RIGHT
-      
-      //==================================
-      //reset gyro: Front facing the tag. When we see the tag, heading is 180.
-      //red: right; blue: left
-
-      //y: 0.5: to the right of the target. 
-      //red or blue? reset gyro = 180 --> red
-      //REEF_LEFT(8,new Translation2d(-1.0, 0.5), Rotation2d.fromDegrees(0)),
-
-      //blue: reset gyro = 0
-      //--REEF_LEFT(8,new Translation2d(-1.0, 0.0), Rotation2d.fromDegrees(0)),
-      REEF_LEFT(8,new Translation2d(1.0, 0.0), Rotation2d.fromDegrees(0)),
- 
       //HUMAN_STATION_LEFT
       //HUMAN_STATION_MID
       //HUMAN_STATION_RIGHT
