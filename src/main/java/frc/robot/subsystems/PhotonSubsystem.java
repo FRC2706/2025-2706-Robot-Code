@@ -226,7 +226,7 @@ public class PhotonSubsystem extends SubsystemBase {
     {
       return;
     }
-    PhotonPipelineResult result = listResult.get(0);
+    PhotonPipelineResult result = listResult.get(listResult.size() - 1);
     if (result == null)
       return;
 
