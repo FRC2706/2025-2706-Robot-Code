@@ -20,10 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
 import frc.lib.lib2706.XBoxControllerUtil;
 import frc.robot.Config;
-import frc.robot.Config.ArmSetPoints;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
-import frc.robot.Config.Swerve.TeleopSpeeds;
 import frc.robot.Robot;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
@@ -38,8 +36,10 @@ import frc.robot.commands.RumbleJoystick;
 import frc.robot.commands.SetArm;
 import frc.robot.commands.SubwooferShot;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -86,6 +86,18 @@ public class ControlBoxContainer extends RobotContainer {
     //Manipulator
     operator.y().whileTrue(new CoralDepositorCommand(true)); 
     operator.x().whileTrue(new CoralDepositorCommand(false));
+
+    // ELEVATOR PROTOTYPE
+    operator.a().onTrue(new SetElevator(()->50));
+    operator.b().onTrue(new SetElevator(()->0));
+
+    // // go up
+    // operator.y()
+    //         .whileTrue(ElevatorSubsystem.getInstance().raiseMotorCommand())
+    //         .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
+    // operator.a()
+    //         .whileTrue(ElevatorSubsystem.getInstance().lowerMotorCommand())
+    //         .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
 
   }
 

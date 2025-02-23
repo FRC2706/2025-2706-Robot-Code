@@ -166,6 +166,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return m_elevator.getEncoder().getVelocity();
     }
 
+    public void stopMotor() {
+      m_elevator.stopMotor();
+    }
+
 
     // Commands to manually set the motor.
     public Command raiseMotorCommand() {
