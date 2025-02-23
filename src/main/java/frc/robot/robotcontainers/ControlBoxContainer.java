@@ -66,16 +66,15 @@ public class ControlBoxContainer extends RobotContainer {
     public ControlBoxContainer() {
         configureButtonBindings();
     }
-    
-  
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the {@link CommandXboxController} or other ways.
    */
   private void configureButtonBindings() { 
-    // Set bling to for some events....
 
+    // Set bling to for some events....
+    operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
     // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
     //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
@@ -87,6 +86,7 @@ public class ControlBoxContainer extends RobotContainer {
     //Manipulator
     operator.y().whileTrue(new CoralDepositorCommand(true)); 
     operator.x().whileTrue(new CoralDepositorCommand(false));
+
   }
 
   /**

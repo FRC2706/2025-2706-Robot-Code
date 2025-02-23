@@ -24,7 +24,9 @@ public class SubsystemChecker {
         BlingSubsystem,
         PhotonSubsystem,
         CoralDepositorSubsystem,
-        
+        ElevatorSubsystem,
+        PhotonSubsystem
+
     };
 
     /**
@@ -33,6 +35,11 @@ public class SubsystemChecker {
     // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
+        SubsystemType.ArmSubsystem,
+        //SubsystemType.ElevatorSubsystem,
+        SubsystemType.RelaySubsystem,
+        SubsystemType.VisionNTSubsystem,
+        SubsystemType.GripperSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
     };
@@ -51,6 +58,12 @@ public class SubsystemChecker {
     private static SubsystemType[] beetleId2 = new SubsystemType[] {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
+        SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
+    };
+
+      // RobotID: 3, ControlBox
+      private static SubsystemType[] ControlBox3 = new SubsystemType[] {
         SubsystemType.BlingSubsystem,
     };
 

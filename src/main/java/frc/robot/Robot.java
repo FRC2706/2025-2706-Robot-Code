@@ -70,8 +70,10 @@ public class Robot extends TimedRobot {
         m_robotContainer = new NewRobotContainer(); break; //Apollo
       case 2:
         m_robotContainer = new BeetleContainer(); break; //beetle
+
       case 3:
         System.out.println("ITS DEFINITELY ROBOT ID 3!!!");
+
         m_robotContainer = new ControlBoxContainer(); break; //ControlBox
        
       default:
