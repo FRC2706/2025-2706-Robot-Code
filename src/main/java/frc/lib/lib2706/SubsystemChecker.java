@@ -22,8 +22,10 @@ public class SubsystemChecker {
         ArmSubsystem,
         RelaySubsystem,
         BlingSubsystem,
-        PhotonSubsystem,
-        
+        GripperSubsystem,
+        ElevatorSubsystem,
+        PhotonSubsystem
+       
     };
 
     /**
@@ -32,6 +34,11 @@ public class SubsystemChecker {
     // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
+        SubsystemType.ArmSubsystem,
+        //SubsystemType.ElevatorSubsystem,
+        SubsystemType.RelaySubsystem,
+        SubsystemType.VisionNTSubsystem,
+        SubsystemType.GripperSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
     };
@@ -51,6 +58,7 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
     };
 
       // RobotID: 3, ControlBox
