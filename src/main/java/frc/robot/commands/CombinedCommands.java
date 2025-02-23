@@ -157,8 +157,7 @@ public class CombinedCommands {
      */ 
     public static Command visionScoreLeftReef(
             CommandXboxController driverJoystick, 
-            CommandXboxController operatorJoystick, 
-            PhotonPositions position) {
+            CommandXboxController operatorJoystick) {
 
         // Use a timer to not rumble if the it's only been 0.5 seconds 
        // Timer timer = new Timer();

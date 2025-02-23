@@ -187,7 +187,7 @@ public class Robot2025Container extends RobotContainer {
     //================================================
     driver.leftTrigger()
     .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
-            CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT).withTimeout(0.9)))
+            CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
     .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
 
