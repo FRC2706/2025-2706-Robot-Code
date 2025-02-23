@@ -339,8 +339,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
     } 
  
-
-
     if (fieldToTarget != null) {
       //update rolling averages
       targetPos = new Translation2d(
