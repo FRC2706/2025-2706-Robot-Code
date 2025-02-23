@@ -25,6 +25,9 @@ public class SubsystemChecker {
         GripperSubsystem,
         PhotonSubsystem,
         CoralIntakeSubsystem,
+        CoralDepositorSubsystem,
+        ElevatorSubsystem,
+
     };
 
     /**
@@ -33,6 +36,11 @@ public class SubsystemChecker {
     // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
+        SubsystemType.ArmSubsystem,
+        //SubsystemType.ElevatorSubsystem,
+        SubsystemType.RelaySubsystem,
+        SubsystemType.VisionNTSubsystem,
+        SubsystemType.GripperSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
     };
@@ -52,7 +60,8 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
-        
+        SubsystemType.ElevatorSubsystem,
+
     };
 
       // RobotID: 3, ControlBox
@@ -61,10 +70,12 @@ public class SubsystemChecker {
         SubsystemType.CoralIntakeSubsystem,
     };
 
-    // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
-    private static SubsystemType[] mergonautId3 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem,  // Chassis
+    // RobotID: 3, ControlBox
+    private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        SubsystemType.CoralDepositorSubsystem,
     };
+
+
 
     // Use robotSpecific to know what robot is currently running the code
     private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);

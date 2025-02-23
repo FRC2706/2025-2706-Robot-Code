@@ -6,6 +6,11 @@
 package frc.robot.robotcontainers;
 
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,6 +34,7 @@ import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.CoralIntake;
+import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.RotateAngleToVisionSupplier;
@@ -44,6 +50,8 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.Config.AutoConstants;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -73,7 +81,7 @@ public class Robot2025Container extends RobotContainer {
   private TunableNumber shooterTargetRPM = new TunableNumber("Shooter/Target RPM", 0);
   private TunableNumber shooterDesiredVoltage = new TunableNumber("Shooter/desired Voltage", 0);
   private TunableNumber armAngleDeg = new TunableNumber("Arm/ArmTuning/setAngleDeg", 5.0);
-
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -81,7 +89,7 @@ public class Robot2025Container extends RobotContainer {
     /*  Setup default commands */
     m_swerveDefaultCommand = new TeleopSwerve(driver);
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
-
+    
     // Setup auto
     m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
@@ -150,8 +158,7 @@ public class Robot2025Container extends RobotContainer {
     // operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
     // Climber
     //operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
- 
-  
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

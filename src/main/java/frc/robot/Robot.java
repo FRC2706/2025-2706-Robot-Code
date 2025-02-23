@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   private void createRobotContainer() {
     // Instantiate the RobotContainer based on the Robot ID.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-
+    System.out.println(Config.getRobotId());
     switch (Config.getRobotId()) {
       case 0:
         // m_robotContainer = new ContainerForTesting(); break; // testing
@@ -71,7 +71,9 @@ public class Robot extends TimedRobot {
       case 2:
         m_robotContainer = new BeetleContainer(); break; //beetle
 
-        case 3:
+      case 3:
+        System.out.println("ITS DEFINITELY ROBOT ID 3!!!");
+
         m_robotContainer = new ControlBoxContainer(); break; //ControlBox
        
       default:
