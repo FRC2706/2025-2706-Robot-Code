@@ -22,10 +22,11 @@ public class SubsystemChecker {
         ArmSubsystem,
         RelaySubsystem,
         BlingSubsystem,
-        GripperSubsystem,
+        PhotonSubsystem,
+        CoralDepositorSubsystem,
         ElevatorSubsystem,
         PhotonSubsystem
-       
+
     };
 
     /**
@@ -66,10 +67,12 @@ public class SubsystemChecker {
         SubsystemType.BlingSubsystem,
     };
 
-    // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
-    private static SubsystemType[] mergonautId3 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem,  // Chassis
+    // RobotID: 3, ControlBox
+    private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        SubsystemType.CoralDepositorSubsystem,
     };
+
+
 
     // Use robotSpecific to know what robot is currently running the code
     private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);

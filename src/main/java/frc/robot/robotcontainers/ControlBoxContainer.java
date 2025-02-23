@@ -29,6 +29,7 @@ import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.RotateAngleToVisionSupplier;
@@ -57,15 +58,14 @@ public class ControlBoxContainer extends RobotContainer {
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
   private final CommandXboxController testJoystick = new CommandXboxController(2);
- 
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public ControlBoxContainer() {
-    
-    
-    configureButtonBindings();
-  }
+
+    public ControlBoxContainer() {
+        configureButtonBindings();
+    }
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
@@ -73,8 +73,20 @@ public class ControlBoxContainer extends RobotContainer {
    */
   private void configureButtonBindings() { 
 
-    operator.x().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
-    
+    // Set bling to for some events....
+    operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+    // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+    //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    // new Trigger(() -> intake.isBackSensorLongActive() && DriverStation.isTeleopEnabled()).onTrue(Commands.parallel(
+    //         new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
+    //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
+      
+
+    //Manipulator
+    operator.y().whileTrue(new CoralDepositorCommand(true)); 
+    operator.x().whileTrue(new CoralDepositorCommand(false));
+
   }
 
   /**

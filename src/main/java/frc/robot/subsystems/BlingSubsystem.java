@@ -25,8 +25,8 @@ public class BlingSubsystem extends SubsystemBase {
   private static BlingSubsystem INSTANCE = null;
 
   /**
-   * Creates a new Bling.
-   */
+   * Creates a new Bling. */
+   
   private BlingSubsystem() {
     if (Config.BlingConstants.CANDLE != -1) {
       SubsystemChecker.subsystemConstructed(SubsystemType.BlingSubsystem);
@@ -103,4 +103,4 @@ public class BlingSubsystem extends SubsystemBase {
     candle.animate(animation);
   }
 
-}
+} 
