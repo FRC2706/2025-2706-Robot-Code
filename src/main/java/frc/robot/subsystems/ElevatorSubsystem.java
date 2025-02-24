@@ -226,7 +226,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (bBrakeOn == true)
       {
         //servoBrake.setAngle(90);
-        servoBrake.set(-0.5);
+        servoBrake.set(0);
       }
       else
       {
