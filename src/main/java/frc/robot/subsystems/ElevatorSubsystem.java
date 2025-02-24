@@ -18,8 +18,10 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
@@ -61,6 +63,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoubleEntry m_elevatorFFSubs;
     private DoublePublisher m_targetPositionPub;
     private DoublePublisher m_currentPositionPub;
+    private BooleanPublisher m_switchPressedPub;
 
     //elevator target position
     public double elevatorTargetPos = 0;
@@ -85,8 +88,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_pidControllerElevator = m_elevator.getClosedLoopController();
 
         //@todo: forware or reverse?
-        m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
-       // m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
+        m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
+        //m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
 
         // Config elevator
         m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
@@ -125,6 +128,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
         m_targetPositionPub = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
         m_currentPositionPub = ElevatorDataTable.getDoubleTopic("CurrentPosition").publish(PubSubOption.periodic(0.02));
+        m_switchPressedPub = ElevatorDataTable.getBooleanTopic("IsSwitchPressed").publish(PubSubOption.periodic(0.02));
 
         // PID config
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
@@ -150,11 +154,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         // update networktables
         m_currentPositionPub.accept(m_elevator_encoder.getPosition());
-
         m_targetPositionPub.accept(elevatorTargetPos);
+        m_switchPressedPub.accept(m_elevatorSwitch.isPressed());
 
         //to reset position when the switch is hit
-        //resetEncoderPosition();
+        if(m_elevatorSwitch.isPressed() == true)
+          resetEncoderPosition();
 
     }
 
