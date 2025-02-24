@@ -71,12 +71,13 @@ public final class Config {
     public static final int SWERVE_RL_CANCODER = 14;
     public static final int SWERVE_RR_CANCODER = 15;
     
-    //mechanism CAN IDs   
+    //mechanism CAN IDs for 2025   
     public static final int CoralDepositor_LEFT_MOTOR = 19; 
     public static final int CoralDepositor_RIGHT_MOTOR = 16;
     public static final int ELEVATOR = 15; // temp can number for testing
+    //intake left and right
     
-    //Apollo
+    //Apollo 2024
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;

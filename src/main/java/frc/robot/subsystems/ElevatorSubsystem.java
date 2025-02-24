@@ -47,6 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //limit switch
     private final SparkLimitSwitch m_elevatorSwitch;
+    private Boolean bWasResetbyLimit;
 
     //Servo for brake
     Servo servoBrake;
@@ -90,6 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         //@todo: forware or reverse?
         m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
         //m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
+        bWasResetbyLimit = false;
 
         // Config elevator
         m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
@@ -157,12 +159,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_targetPositionPub.accept(elevatorTargetPos);
         m_switchPressedPub.accept(m_elevatorSwitch.isPressed());
 
-        //to reset position when the switch is hit
-        if(m_elevatorSwitch.isPressed() == true)
-          resetEncoderPosition();
+        resetEncoderbyLimit();
 
     }
 
+    public void resetEncoderbyLimit()
+    {
+      //to reset position when the switch is hit
+      if(bWasResetbyLimit == false && m_elevatorSwitch.isPressed() == true)
+      {
+        resetEncoderPosition();
+        bWasResetbyLimit = true;
+      }
+      else if (m_elevatorSwitch.isPressed() == false)
+      {
+        bWasResetbyLimit = false;
+      }
+
+    }
     public void setElevatorHeight(double height) {
         ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
         m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
@@ -209,11 +223,13 @@ public class ElevatorSubsystem extends SubsystemBase {
       //@todo: the range of servo?
       if (bBrakeOn == true)
       {
-        servoBrake.setAngle(90);
+        //servoBrake.setAngle(90);
+        servoBrake.set(-0.5);
       }
       else
       {
-        servoBrake.setAngle(0);
+        //servoBrake.setAngle(0);
+        servoBrake.set(+0.5);
       }
     }
 
