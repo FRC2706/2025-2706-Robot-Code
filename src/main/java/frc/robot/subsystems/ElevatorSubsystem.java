@@ -108,9 +108,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         //         .reverseLimitSwitchType(Type.kNormallyOpen);
 
         // Soft limit of position
-        //@todo: to determine the value and reverse or forward limit
-        m_elevator_config.softLimit.reverseSoftLimit(500)
-                .reverseSoftLimitEnabled(true);
+        //@todo: to determine the value and reverse or forward limit, then enable them
+        m_elevator_config.softLimit.reverseSoftLimit(0)
+                                   .reverseSoftLimitEnabled(false)
+                                   .forwardSoftLimit(500)
+                                   .forwardSoftLimitEnabled(false);
 
         // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
