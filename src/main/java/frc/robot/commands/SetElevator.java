@@ -8,41 +8,63 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Config.ElevatorSetPoints;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class SetElevator extends Command {
-    private DoubleSupplier extensionAmt;
+    private ElevatorSetPoints setPos;
+    ElevatorSubsystem elevatorSubsystem;
+    Timer m_timer = new Timer();
 
     /** Creates a new SetArm. */
-    public SetElevator(DoubleSupplier extensionAmt) {
-        this.extensionAmt = extensionAmt;
+    public SetElevator(ElevatorSetPoints setPos) {
+        this.setPos = setPos;
+        
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(ElevatorSubsystem.getInstance());
+        elevatorSubsystem = ElevatorSubsystem.getInstance();
+        addRequirements(elevatorSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        elevatorSubsystem.setServoBrake(false);
+        elevatorSubsystem.setTargetPos(setPos.position);
+
+        m_timer.start();
+        m_timer.reset();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        ElevatorSubsystem.getInstance().elevatorTargetPos = extensionAmt.getAsDouble();
-        ElevatorSubsystem.getInstance().controlOverride = false;
+        elevatorSubsystem.setElevatorHeight(setPos.position);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        ElevatorSubsystem.getInstance().stopMotor();
+        elevatorSubsystem.stopMotor();
+        elevatorSubsystem.setServoBrake(true);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        //keep running motor
-        return false;
+        //check the set position AND timer
+        //@todo: check the timeout value
+        if (elevatorSubsystem.isAtTargetPos() == true 
+            || m_timer.hasElapsed(1.5))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+       
     }
 }
 

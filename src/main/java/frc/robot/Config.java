@@ -74,12 +74,14 @@ public final class Config {
     //mechanism CAN IDs   
     public static final int CoralDepositor_LEFT_MOTOR = 19; 
     public static final int CoralDepositor_RIGHT_MOTOR = 16;
+    public static final int ELEVATOR = 15; // temp can number for testing
     
+    //Apollo
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
-    public static final int ELEVATOR = 15; // temp can number for testing
+
   }
     
       public static final int CANTIMEOUT_MS = 100;
@@ -478,41 +480,36 @@ public final class Config {
 
     public static final int CURRENT_LIMIT = 80;
 
-    public static final double shiftEncoderRange = 10;
-
-
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
     public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
 
-
     //soft limit constant for the elevator
-    public static final float elevator_up_limit = (float) Math.toRadians(MAX_ELEVATOR_EXTENSION + shiftEncoderRange);
-    public static final float elevator_down_limit = (float) Math.toRadians(MIN_ELEVATOR_EXTENSION + shiftEncoderRange);
+    public static final float elevator_up_limit = (float) Math.toRadians(MAX_ELEVATOR_EXTENSION);
+    public static final float elevator_down_limit = (float) Math.toRadians(MIN_ELEVATOR_EXTENSION);
     public static final boolean SOFT_LIMIT_ENABLE = true;
 
     //PID constants
-    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.1, 1.4);
-    public static final double elevator_kPDefault = robotSpecific(2.700000, 0.0, 0.5, 1.4);
-    public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0003);
-    public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.9);
-    public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.3);
-    public static final double elevator_kFF = 0.013;
+    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.5, 0.5);
+    public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0);
+    public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.0);
+    public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.0);
+    public static final double elevator_kFF = 0.003;
     public static final double min_output = -1;
     public static final double max_output = 1;
 
-    //PID constants for far shots
-    public static final double elevator_far_kP = 6.0;
-    public static final double elevator_far_kI = 0;
-    public static final double elevator_far_kD = 6.0;
-    public static final double elevator_far_kFF = 0.06;
-    public static final double elevator_far_iZone = Math.toRadians(1.5);
+    //PID constants 
+    // public static final double elevator_far_kP = 6.0;
+    // public static final double elevator_far_kI = 0;
+    // public static final double elevator_far_kD = 6.0;
+    // public static final double elevator_far_kFF = 0.06;
+    // public static final double elevator_far_iZone = Math.toRadians(1.5);
 
     //ff calculations
     public static final double gravitationalConstant = 389.0886; //inches/s/s which is equal to 9.81 m/s/s
     public static final double ELEVATOR_FORCE = 11.29 *gravitationalConstant; //11.29 lb
-
     public static final double LENGTH_ELEVATOR_TO_COG = 14.56;
 
+    //@todo: TBD
     public static final double ELEVATOR_ENCODER_GEAR_RATIO = 1;
 
     //elevator position unit: inches
@@ -524,6 +521,26 @@ public final class Config {
     public static final double MAX_ACCEL = Math.PI * 1.5;
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
+
+    public static final double ELEVATOR_POS_TH = 10;
+
+  }
+
+  public static enum ElevatorSetPoints {
+    //@todo: to be calibrated
+    IDLE(0), 
+    FEEDER(60.0),
+    L1(25.0),
+    L2(50.0),
+    L3(75.0), 
+    L4(100.0),
+    NET(90.0); 
+  
+    public final double position;
+  
+    ElevatorSetPoints(double setPosition) {
+      position = setPosition;
+    }
   }
 
 public static enum ArmSetPoints {

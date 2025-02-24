@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralDepositorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class CoralDepositorCommand extends Command {
     private CoralDepositorSubsystem coralDepositorSubsystem;
@@ -21,13 +20,12 @@ public class CoralDepositorCommand extends Command {
       * @return 
       * @return
       */
-    public CoralDepositorCommand(boolean feedNote) {
-      this.direction = feedNote;
+    public CoralDepositorCommand(boolean feedCoral) {
+      direction = feedCoral;
 
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    coralDepositorSubsystem = CoralDepositorSubsystem.getInstance(); 
-    addRequirements(coralDepositorSubsystem);
+      // Use addRequirements() here to declare subsystem dependencies.
+      coralDepositorSubsystem = CoralDepositorSubsystem.getInstance(); 
+      addRequirements(coralDepositorSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -38,25 +36,23 @@ public class CoralDepositorCommand extends Command {
   @Override
   public void execute() {
     if (direction == true) 
-      coralDepositorSubsystem.set(1.0);
+      coralDepositorSubsystem.setVoltage(1.0);
     else 
-      coralDepositorSubsystem.set(-1.0);
+      coralDepositorSubsystem.setVoltage(-1.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  coralDepositorSubsystem.stop();
+    coralDepositorSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
-  /*  if (direction)
-      // return intakeSubsystem.isSensor7True() == false;
-      return false;
-    else
-      return coralDepositorSubsystem.isSensorActive() == false;*/
+ 
+   //use the sensor to stop
+    //return coralDepositorSubsystem.isSensorActive() == false;
   }
 }

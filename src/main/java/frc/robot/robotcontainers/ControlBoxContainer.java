@@ -6,6 +6,8 @@
 package frc.robot.robotcontainers;
 
 
+import static frc.lib.lib2706.ErrorCheck.errSpark;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -74,7 +76,8 @@ public class ControlBoxContainer extends RobotContainer {
   private void configureButtonBindings() { 
 
     // Set bling to for some events....
-    operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+    //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+
     // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
     //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
@@ -83,21 +86,15 @@ public class ControlBoxContainer extends RobotContainer {
     //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
       
 
-    //Manipulator
-    operator.y().whileTrue(new CoralDepositorCommand(true)); 
-    operator.x().whileTrue(new CoralDepositorCommand(false));
+    //Depositor
+    // operator.y().whileTrue(new CoralDepositorCommand(true)); 
+    // operator.x().whileTrue(new CoralDepositorCommand(false));
 
     // ELEVATOR PROTOTYPE
-    operator.a().onTrue(new SetElevator(()->50));
-    operator.b().onTrue(new SetElevator(()->0));
-
-    // // go up
-    // operator.y()
-    //         .whileTrue(ElevatorSubsystem.getInstance().raiseMotorCommand())
-    //         .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
-    // operator.a()
-    //         .whileTrue(ElevatorSubsystem.getInstance().lowerMotorCommand())
-    //         .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
 
   }
 
