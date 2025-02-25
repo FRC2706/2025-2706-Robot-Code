@@ -37,7 +37,7 @@ import frc.robot.Config.ElevatorConfig;
 public class ElevatorSubsystem extends SubsystemBase {
     private static ElevatorSubsystem instance = null; // static object that contains all movement controls
 
-    private static final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
+    private final MotorType motorType = MotorType.kBrushless; // defines brushless motortype
     private final SparkMax m_elevator; // bottom SparkMax motor controller
     private SparkMaxConfig m_elevator_config;
 
@@ -65,6 +65,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoublePublisher m_targetPositionPub;
     private DoublePublisher m_currentPositionPub;
     private BooleanPublisher m_switchPressedPub;
+    private BooleanPublisher m_servoBrakeOnPub;
 
     //elevator target position
     public double elevatorTargetPos = 0;
@@ -89,23 +90,23 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_pidControllerElevator = m_elevator.getClosedLoopController();
 
         //@todo: forware or reverse?
-        m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
-        //m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
+       // m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
+        m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
         bWasResetbyLimit = false;
 
         // Config elevator
-        m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
+        //m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
 
-        m_elevator_config.inverted(Config.ElevatorConfig.SET_INVERTED)
+        m_elevator_config.inverted(false)
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
         // Hard limit via limit switch
-        m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
-                .forwardLimitSwitchEnabled(true); 
-        // m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
-        //         .reverseLimitSwitchType(Type.kNormallyOpen);
+        // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
+        //         .forwardLimitSwitchEnabled(true); 
+        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
+                .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
         //@todo: to determine the value and reverse or forward limit, then enable them
@@ -123,7 +124,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
 
         m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
-        m_elevatorPSubs.setDefault(Config.ElevatorConfig.elevator_kP);
+        m_elevatorPSubs.setDefault(2.5);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
         m_elevatorDSubs.setDefault(Config.ElevatorConfig.elevator_kD);
         m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
@@ -133,6 +134,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_targetPositionPub = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
         m_currentPositionPub = ElevatorDataTable.getDoubleTopic("CurrentPosition").publish(PubSubOption.periodic(0.02));
         m_switchPressedPub = ElevatorDataTable.getBooleanTopic("IsSwitchPressed").publish(PubSubOption.periodic(0.02));
+        m_servoBrakeOnPub = ElevatorDataTable.getBooleanTopic("IsBrakeOn").publish(PubSubOption.periodic(0.02));
 
         // PID config
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
@@ -146,7 +148,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        m_elevator.setCANTimeout(0);
+        //m_elevator.setCANTimeout(0);
 
         // reset encoder
         m_elevator_encoder.setPosition(0);
@@ -183,6 +185,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
         m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
 
+    }
+
+    public boolean isLimitSwitchPressed()
+    {
+      return m_elevatorSwitch.isPressed();
+    }
+
+    public void setVoltage(double voltage)
+    {
+      m_elevator.setVoltage(voltage);
     }
 
     //return positon
@@ -225,13 +237,15 @@ public class ElevatorSubsystem extends SubsystemBase {
       //@todo: the range of servo?
       if (bBrakeOn == true)
       {
-        //servoBrake.setAngle(90);
-        servoBrake.set(0);
+        servoBrake.setAngle(90);
+        //servoBrake.set(0);
+        m_servoBrakeOnPub.accept(true);
       }
       else
       {
-        //servoBrake.setAngle(0);
-        servoBrake.set(+0.5);
+        servoBrake.setAngle(0);
+        //servoBrake.set(+0.5);
+        m_servoBrakeOnPub.accept(false);
       }
     }
 

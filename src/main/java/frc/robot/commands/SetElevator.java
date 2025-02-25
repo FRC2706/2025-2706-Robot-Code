@@ -55,7 +55,7 @@ public class SetElevator extends Command {
         //check the set position AND timer
         //@todo: check the timeout value
         if (elevatorSubsystem.isAtTargetPos() == true 
-            || m_timer.hasElapsed(1.5))
+            || m_timer.hasElapsed(2.5))
         {
             return true;
         }

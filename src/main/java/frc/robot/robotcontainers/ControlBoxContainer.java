@@ -32,6 +32,7 @@ import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
+import frc.robot.commands.ResetElevator;
 import frc.robot.commands.RotateAngleToVisionSupplier;
 import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.RumbleJoystick;
@@ -93,9 +94,10 @@ public class ControlBoxContainer extends RobotContainer {
     // ELEVATOR PROTOTYPE
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
 
+    operator.start().whileTrue(new ResetElevator() );
   }
 
   /**

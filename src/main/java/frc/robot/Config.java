@@ -523,18 +523,18 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 10;
+    public static final double ELEVATOR_POS_TH = 3;
 
   }
 
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
-    IDLE(0), 
+    RESET(-1), 
     FEEDER(60.0),
-    L1(25.0),
-    L2(50.0),
-    L3(75.0), 
-    L4(100.0),
+    L1(50.0),
+    L2(70.0),
+    L3(90.0), 
+    L4(110.0),
     NET(90.0); 
   
     public final double position;
