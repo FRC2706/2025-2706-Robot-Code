@@ -22,10 +22,11 @@ public class SubsystemChecker {
         ArmSubsystem,
         RelaySubsystem,
         BlingSubsystem,
+        GripperSubsystem,
         PhotonSubsystem,
+        CoralIntakeSubsystem,
         CoralDepositorSubsystem,
         ElevatorSubsystem,
-        PhotonSubsystem
 
     };
 
@@ -60,11 +61,13 @@ public class SubsystemChecker {
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.ElevatorSubsystem,
+
     };
 
       // RobotID: 3, ControlBox
       private static SubsystemType[] ControlBox3 = new SubsystemType[] {
         SubsystemType.BlingSubsystem,
+        SubsystemType.CoralIntakeSubsystem,
     };
 
     // RobotID: 3, ControlBox

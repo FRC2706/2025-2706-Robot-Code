@@ -33,6 +33,7 @@ import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralIntake;
 import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
@@ -48,7 +49,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.CoralIntakeSubsystem;
 import frc.robot.Config.AutoConstants;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -87,7 +90,6 @@ public class Robot2025Container extends RobotContainer {
     m_swerveDefaultCommand = new TeleopSwerve(driver);
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
     
-
     // Setup auto
     m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
@@ -131,11 +133,14 @@ public class Robot2025Container extends RobotContainer {
     //Sync Swerve
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
+
+  }
+
     // Commands that take control of the rotation stick
-    driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
-    driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
-    driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
-    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+    //driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
+    //driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
+    //driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
+    //driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
     
     //vision-aid alignment    
     // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
@@ -153,10 +158,7 @@ public class Robot2025Container extends RobotContainer {
     // operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
     // Climber
     //operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
-    //Manipulator
-    operator.y().onTrue(new CoralDepositorCommand(true)); 
-    operator.x().onTrue(new CoralDepositorCommand(false));
-  }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

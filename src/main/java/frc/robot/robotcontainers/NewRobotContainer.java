@@ -242,6 +242,7 @@ public class NewRobotContainer extends RobotContainer {
 
 
     //operator.leftTrigger(0.3).whileTrue(
+
     operator.leftBumper()
             .whileTrue(CombinedCommands.armIntake())
             .onFalse(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg))
@@ -259,6 +260,7 @@ public class NewRobotContainer extends RobotContainer {
             ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg,
             m_subwooferShotRpm,
             m_subwooferShotRpmTrigger));
+
   }
 
   /**
