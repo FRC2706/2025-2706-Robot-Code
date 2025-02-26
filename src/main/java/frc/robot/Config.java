@@ -69,21 +69,26 @@ public final class Config {
     public static final int SWERVE_FL_CANCODER = 12; 
     public static final int SWERVE_FR_CANCODER = 13; 
     public static final int SWERVE_RL_CANCODER = 14;
-    public static final int SWERVE_RR_CANCODER = 15; 
+    public static final int SWERVE_RR_CANCODER = 15;
     
-    //mechanism CAN IDs   
+    //mechanism CAN IDs for 2025   
     public static final int CoralDepositor_LEFT_MOTOR = 19; 
     public static final int CoralDepositor_RIGHT_MOTOR = 16;
+    public static final int ELEVATOR = 15; // temp can number for testing
+    //intake left and right
     
+    //Apollo 2024
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
-    public static final int ELEVATOR = 15; // temp can number for testing
+
+  }
     
       public static final int CANTIMEOUT_MS = 100;
     
       private static final int SIMULATION_ID = 1;
+
     
       /**
        * Returns one of the values passed based on the robot ID
@@ -132,11 +137,6 @@ public final class Config {
         return robotId;
       }
 
-    }
-
-    return robotId;
-  }
-
   /**
    * ROBOT IDs
    * 
@@ -168,7 +168,7 @@ public final class Config {
       -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
     //networkTableName
-    public static final String apriltagCameraName = "USB_Camera";
+    public static final String apriltagCameraName = "FrontApriltagOV9281";
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
     //data max
@@ -208,30 +208,33 @@ public final class Config {
 
       RIGHT_SPEAKER_BLUE(8, new Translation2d(1,-1.1), Rotation2d.fromDegrees(-55)),
       LEFT_SPEAKER_RED(3, new Translation2d(-1,-1.1), Rotation2d.fromDegrees(180+55));
-
       
-          PhotonPositions(int id, Translation2d waypoint, Translation2d destination, Rotation2d direction) {
-            this.id = id;
-            this.hasWaypoint = true;
-            this.waypoint = waypoint;
-            this.destination = destination;
-            this.direction = direction;
-          }
+
+      // 2.2 , 33 deg
+      // FAR_SPEAKER_BLUE at new Translation2d(2.35,-0.65), arm angle of 35.8 and shooter speed at 3750
+
     
-          PhotonPositions(int id, Translation2d destination, Rotation2d direction) {
-            this.id = id;
-            this.hasWaypoint = false;
-            this.waypoint = null;
-            this.destination = destination;
-            this.direction = direction;
-          }
-        }  
-      }
-    
-      public static final class Climber_CANID {
-         public static int CLIMBER = CANID.CLIMBER;
+      public final int id;
+      public final boolean hasWaypoint;
+      public final Translation2d waypoint;
+      public final Translation2d destination;
+      public final Rotation2d direction;
+  
+      PhotonPositions(int id, Translation2d waypoint, Translation2d destination, Rotation2d direction) {
+        this.id = id;
+        this.hasWaypoint = true;
+        this.waypoint = waypoint;
+        this.destination = destination;
+        this.direction = direction;
       }
 
+      PhotonPositions(int id, Translation2d destination, Rotation2d direction) {
+        this.id = id;
+        this.hasWaypoint = false;
+        this.waypoint = null;
+        this.destination = destination;
+        this.direction = direction;
+      }
     }  
   }
 
@@ -319,33 +322,89 @@ public final class Config {
         this.angularSpeed = angularSpeed;
         this.translationAccelLimit = translationAccelLimit;
         this.angularAccelLimit = angAccelLimit;
+      }
+    }
 
-      }
-    
-      public static final class AutoConstants {
-        // Changed
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-    
-        // Changed values
-    
-        public static final double kPXController = 1;
-        public static final double kPYController = 1;
-        public static final double kPThetaController = 1.35;
-    
-        // Constraint for the motion profilied robot angle controller
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-            new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-      }
-      public static final class BlingConstants {
-        public static int CANDLE = CANID.CANDLE;
-      }
-    
-      public static final class Intake {
-        public static final int INTAKE = CANID.INTAKE;
+    public static final double maxSpeed = 3.0; // meters per second
+    public static final double maxAngularVelocity = Math.PI * 3.0;
+
+    /* Neutral Modes */
+    public static final IdleMode angleNeutralMode = IdleMode.kBrake;
+    public static final IdleMode driveNeutralMode = IdleMode.kBrake;
+
+    /* Motor Inverts */
+    public static final boolean driveInvert = false;
+    public static final boolean angleInvert = false;
+
+    /* Angle Encoder Invert */
+    public static final boolean canCoderInvert = false;
+
+    /* Module Specific Constants */
+    /* Front Left Module - Module 0 Changed*/
+    public static final class Mod0 {
+      public static final int driveMotorID = CANID.SWERVE_FL_DRIVE;
+      public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
+      public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(270);
+      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+          canCoderID, angleOffset);
+    }
+
+    /* Front Right Module - Module 1 Changed*/
+    public static final class Mod1 {
+      public static final int driveMotorID = CANID.SWERVE_FR_DRIVE;
+      public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
+      public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(157.5);
+      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+          canCoderID, angleOffset);
+    }
+
+    /* Back Left Module - Module 2 Changed*/
+    public static final class Mod2 {
+      public static final int driveMotorID = CANID.SWERVE_RL_DRIVE;
+      public static final int angleMotorID = CANID.SWERVE_RL_STEERING;
+      public static final int canCoderID = CANID.SWERVE_RL_CANCODER;
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(192);
+      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+          canCoderID, angleOffset);
+    }
+
+    /* Back Right Module - Module 3 Changed*/
+    public static final class Mod3 {
+      public static final int driveMotorID = CANID.SWERVE_RR_DRIVE;
+      public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
+      public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6);
+      public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
+          canCoderID, angleOffset);
+    }
+  }
+
+  public static final class AutoConstants {
+    // Changed
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    // Changed values
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1.35;
+
+    // Constraint for the motion profilied robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+  public static final class BlingConstants {
+    public static int CANDLE = CANID.CANDLE;
+  }
+
+  public static final class Intake {
+    public static final int INTAKE = CANID.INTAKE;
     public static final byte frontSensor = 0;//its the same but lighter, so dtw 
     public static final byte centerSensor = 2;//its the same but lighter, so dtw 
     public static final byte backSensor = 1;//its the same but lighter, so dtw 
@@ -363,6 +422,7 @@ public final class Config {
   public class ArmConfig {
     public static final int ARM_SPARK_CAN_ID = CANID.ARM;
     public static final boolean SET_INVERTED = true;
+    public static final boolean setInvered = true;
     public static final boolean INVERT_ENCODER = false;
 
     public static final int CURRENT_LIMIT = 20;
@@ -421,41 +481,36 @@ public final class Config {
 
     public static final int CURRENT_LIMIT = 80;
 
-    public static final double shiftEncoderRange = 10;
-
-
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
     public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
 
-
     //soft limit constant for the elevator
-    public static final float elevator_up_limit = (float) Math.toRadians(MAX_ELEVATOR_EXTENSION + shiftEncoderRange);
-    public static final float elevator_down_limit = (float) Math.toRadians(MIN_ELEVATOR_EXTENSION + shiftEncoderRange);
+    public static final float elevator_up_limit = (float) Math.toRadians(MAX_ELEVATOR_EXTENSION);
+    public static final float elevator_down_limit = (float) Math.toRadians(MIN_ELEVATOR_EXTENSION);
     public static final boolean SOFT_LIMIT_ENABLE = true;
 
     //PID constants
-    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.1, 1.4);
-    public static final double elevator_kPDefault = robotSpecific(2.700000, 0.0, 0.5, 1.4);
-    public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0003);
-    public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.9);
-    public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.3);
-    public static final double elevator_kFF = 0.013;
+    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.5, 0.5);
+    public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0);
+    public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.0);
+    public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.0);
+    public static final double elevator_kFF = 0.003;
     public static final double min_output = -1;
     public static final double max_output = 1;
 
-    //PID constants for far shots
-    public static final double elevator_far_kP = 6.0;
-    public static final double elevator_far_kI = 0;
-    public static final double elevator_far_kD = 6.0;
-    public static final double elevator_far_kFF = 0.06;
-    public static final double elevator_far_iZone = Math.toRadians(1.5);
+    //PID constants 
+    // public static final double elevator_far_kP = 6.0;
+    // public static final double elevator_far_kI = 0;
+    // public static final double elevator_far_kD = 6.0;
+    // public static final double elevator_far_kFF = 0.06;
+    // public static final double elevator_far_iZone = Math.toRadians(1.5);
 
     //ff calculations
     public static final double gravitationalConstant = 389.0886; //inches/s/s which is equal to 9.81 m/s/s
     public static final double ELEVATOR_FORCE = 11.29 *gravitationalConstant; //11.29 lb
-
     public static final double LENGTH_ELEVATOR_TO_COG = 14.56;
 
+    //@todo: TBD
     public static final double ELEVATOR_ENCODER_GEAR_RATIO = 1;
 
     //elevator position unit: inches
@@ -467,6 +522,26 @@ public final class Config {
     public static final double MAX_ACCEL = Math.PI * 1.5;
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
+
+    public static final double ELEVATOR_POS_TH = 3;
+
+  }
+
+  public static enum ElevatorSetPoints {
+    //@todo: to be calibrated
+    RESET(-1), 
+    FEEDER(60.0),
+    L1(50.0),
+    L2(70.0),
+    L3(90.0), 
+    L4(110.0),
+    NET(90.0); 
+  
+    public final double position;
+  
+    ElevatorSetPoints(double setPosition) {
+      position = setPosition;
+    }
   }
 
 public static enum ArmSetPoints {
@@ -535,8 +610,8 @@ public static enum ArmSetPoints {
 
   public static final boolean tuningMode = true;
   public static final class ShooterConstants{
-   // public static final byte MOTOR_ID = CANID.SHOOTER;
-   // public static final byte MOTOR_ID2 = CANID.SHOOTER2;
+    public static final byte MOTOR_ID = CANID.SHOOTER;
+    public static final byte MOTOR_ID2 = CANID.SHOOTER2;
     public static final double kP = 0.0002,
                                kI = 0.0,
                                kD = 0.0,
@@ -549,7 +624,6 @@ public static enum ArmSetPoints {
                                kMinOutput = -1.0,
                                maxRPM = 5700.0,
                                subwooferRPM = 2750;
-    public static final int MOTOR_ID = 0;
-    public static final int MOTOR_ID2 = 0;
   }
 }
+

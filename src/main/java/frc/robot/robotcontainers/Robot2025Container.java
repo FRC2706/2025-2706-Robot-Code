@@ -134,13 +134,13 @@ public class Robot2025Container extends RobotContainer {
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
 
-  }
+
 
     // Commands that take control of the rotation stick
-    //driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
-    //driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
-    //driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
-    //driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+    driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
+    driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
+    driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
     
     //vision-aid alignment    
     // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
@@ -159,7 +159,7 @@ public class Robot2025Container extends RobotContainer {
     // Climber
     //operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
 
-
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *leop

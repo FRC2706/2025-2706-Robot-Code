@@ -42,17 +42,6 @@ public class BeetleContainer extends RobotContainer {
 
     //driver.a().onTrue(new BlingCommand(BlingColour.HONEYDEW));
 
-    // ELEVATOR PROTOTYPE
-    operator.x().onTrue(new SetElevator(()->50));
-    operator.b().onTrue(new SetElevator(()->0));
-
-    // go up
-    operator.y()
-            .whileTrue(ElevatorSubsystem.getInstance().raiseMotorCommand())
-            .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
-    operator.a()
-            .whileTrue(ElevatorSubsystem.getInstance().lowerMotorCommand())
-            .onFalse(ElevatorSubsystem.getInstance().stopMotorCommand());
 
     DiffTalonSubsystem.getInstance().setDefaultCommand(
         new ArcadeDrive(driver, XboxController.Axis.kLeftY.value, XboxController.Axis.kRightX.value));

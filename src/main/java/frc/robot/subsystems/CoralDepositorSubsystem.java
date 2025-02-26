@@ -23,13 +23,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 
 public class CoralDepositorSubsystem extends SubsystemBase {
-    private CoralDepositorSubsystem coralDepositor;
-    private boolean direction;
     private DigitalInput sensor;
     private Debouncer sensorDebouncer;
     private BooleanPublisher sensorPub;
     private boolean sensorResult;
-    private StringPublisher statesPub;
 
     private static CoralDepositorSubsystem instance;
     public static CoralDepositorSubsystem getInstance() {
@@ -47,13 +44,13 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
     /** Creates a new CoralDepositorSubsystem. */
     public CoralDepositorSubsystem() {
-
         
-        //DigitalInput sensor = new DigitalInput(Config.Intake.Sensor);
-        //sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+        // Initialize the sensor
+        //@todo: update sensor
+        // sensor = new DigitalInput(Config.CORAL_Intake.sensor);
+        // sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
         
         // Initialize left and right motors
-
         System.out.println("[Init]Creating Coral Depositor");
         leftMotor = new SparkMax(Config.CANID.CoralDepositor_LEFT_MOTOR, MotorType.kBrushless);
         SparkMaxConfig leftMotorConfig = (SparkMaxConfig) new SparkMaxConfig()
@@ -69,22 +66,17 @@ public class CoralDepositorSubsystem extends SubsystemBase {
                         .voltageCompensation(10);
 
         leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        //sensor = new DigitalInput(Config.Intake.Sensor);
+        rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);      
 
-        //sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
-        
-
-        NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Intake");
-        statesPub = intakeTable.getStringTopic("Depositor's Current State").publish(PubSubOption.periodic(0.02));
-        sensorPub = intakeTable.getBooleanTopic("sensor result").publish(PubSubOption.periodic(0.02));
+        NetworkTable intakeTable = NetworkTableInstance.getDefault().getTable("Coral Intake");
+        sensorPub = intakeTable.getBooleanTopic("Coral sensor result").publish(PubSubOption.periodic(0.02));
         
         ErrorTrackingSubsystem.getInstance().register(leftMotor);
         ErrorTrackingSubsystem.getInstance().register(rightMotor);
 
     }
 
-    public void set(double voltage){
+    public void setVoltage(double voltage){
         leftMotor.set(voltage);
         rightMotor.set(-voltage);
     }
@@ -100,6 +92,10 @@ public class CoralDepositorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        //update the sensor status
+        // sensorResult = sensorDebouncer.calculate(!sensor.get());
+        // sensorPub.accept(sensorResult);
 
     }
 }

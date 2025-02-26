@@ -36,13 +36,11 @@ public class SubsystemChecker {
     // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
-        SubsystemType.ArmSubsystem,
-        //SubsystemType.ElevatorSubsystem,
-        SubsystemType.RelaySubsystem,
-        SubsystemType.VisionNTSubsystem,
-        SubsystemType.GripperSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
+        //SubsystemType.ElevatorSubsystem,
+        //SubsystemType.CoralDepositorSubsystem,
+        //coral intake
     };
 
     // RobotID: 1, 2024 robot, Apollo
@@ -64,18 +62,14 @@ public class SubsystemChecker {
 
     };
 
-      // RobotID: 3, ControlBox
-      private static SubsystemType[] ControlBox3 = new SubsystemType[] {
-        SubsystemType.BlingSubsystem,
-        SubsystemType.CoralIntakeSubsystem,
-    };
-
     // RobotID: 3, ControlBox
     private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        //note: CoralDepositorSubsystem and CoralIntakeSubsystem share the CANIDs. At one time, only use one
         SubsystemType.CoralDepositorSubsystem,
+        //SubsystemType.CoralIntakeSubsystem,
+        SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
     };
-
-
 
     // Use robotSpecific to know what robot is currently running the code
     private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);

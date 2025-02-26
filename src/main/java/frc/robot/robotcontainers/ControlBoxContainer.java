@@ -6,6 +6,8 @@
 package frc.robot.robotcontainers;
 
 
+import static frc.lib.lib2706.ErrorCheck.errSpark;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,10 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.lib2706.TunableNumber;
 import frc.lib.lib2706.XBoxControllerUtil;
 import frc.robot.Config;
-import frc.robot.Config.ArmSetPoints;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
-import frc.robot.Config.Swerve.TeleopSpeeds;
 import frc.robot.Robot;
 import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
@@ -33,14 +33,17 @@ import frc.robot.commands.CoralIntake;
 import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
+import frc.robot.commands.ResetElevator;
 import frc.robot.commands.RotateAngleToVisionSupplier;
 import frc.robot.commands.RotateToAngle;
 import frc.robot.commands.RumbleJoystick;
 import frc.robot.commands.SetArm;
 import frc.robot.commands.SubwooferShot;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -79,7 +82,8 @@ public class ControlBoxContainer extends RobotContainer {
 
     
     // Set bling to for some events....
-    operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+    //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
+
     // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
     //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
@@ -89,13 +93,20 @@ public class ControlBoxContainer extends RobotContainer {
       
 
     //Manipulator
-    operator.y().whileTrue(new CoralDepositorCommand(true)); 
-    operator.x().whileTrue(new CoralDepositorCommand(false));
+    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true)); 
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false));
     //intake
-//     operator.a().whileTrue(new CoralIntake(0.3,-0.3));
-//     operator.b().whileTrue(new CoralIntake(-0.3,0.3));
+    // operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
+    // operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
 
 
+    // ELEVATOR PROTOTYPE
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+
+    operator.start().whileTrue(new ResetElevator() );
   }
 
   /**

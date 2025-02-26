@@ -50,41 +50,32 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     m_rightMotor = new SparkMax(rightMotorCanID, motorType); // creates SparkMax right motor controller
     m_rightMotor_config = new SparkMaxConfig(); //create configuration of the right motor controller
 
-    //configure the left motor controller
-    m_leftMotor.setCANTimeout(Config.CANTIMEOUT_MS);
-    
-    m_leftMotor_config.inverted(Config.ArmConfig.SET_INVERTED);
+    //configure the left motor controller  
+    //m_leftMotor.setCANTimeout(Config.CANTIMEOUT_MS);
+    m_leftMotor_config.inverted(true); //@todo: to adjust
     m_leftMotor_config.idleMode(IdleMode.kBrake);
      
-    m_leftMotor_config.smartCurrentLimit(20);
-    m_leftMotor_config.voltageCompensation(6);
-
-    
-
-    m_leftMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-
-  
-
-    m_leftMotor.setCANTimeout(0);
-
-
+    m_leftMotor_config.smartCurrentLimit(60);
+    m_leftMotor_config.voltageCompensation(10);
+ 
+    m_leftMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    //m_leftMotor.setCANTimeout(0);
 
     //configure rigth motor controller
-    m_rightMotor.setCANTimeout(Config.CANTIMEOUT_MS);
-    
-    m_rightMotor_config.inverted(Config.ArmConfig.SET_INVERTED);
+    //m_rightMotor.setCANTimeout(Config.CANTIMEOUT_MS);
+    m_rightMotor_config.inverted(true);//@todo: to adjust
     m_rightMotor_config.idleMode(IdleMode.kBrake);
      
-    m_rightMotor_config.smartCurrentLimit(20);
-    m_rightMotor_config.voltageCompensation(6);
+    m_rightMotor_config.smartCurrentLimit(60);
+    m_rightMotor_config.voltageCompensation(10);
 
+    m_rightMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    //m_rightMotor.setCANTimeout(0);
+    
     //@todo: to add encoder and PIDs
 
-    m_rightMotor.configure(m_leftMotor_config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
-
-    //@todo: to add burn flash 
-
-    m_rightMotor.setCANTimeout(0);
+    ErrorTrackingSubsystem.getInstance().register(m_leftMotor);
+    ErrorTrackingSubsystem.getInstance().register(m_rightMotor);
 
   }
 

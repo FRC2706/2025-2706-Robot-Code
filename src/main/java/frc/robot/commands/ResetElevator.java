@@ -5,48 +5,48 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class CoralIntake extends Command {
+public class ResetElevator extends Command {
 
-  //@todo: to adjust
-  double leftPercent;
-  double rightPercent;
-
-  CoralIntakeSubsystem coralIntake = null;
-
-  /** Creates a new CoralIntake. */
-  public CoralIntake(double leftPercent,
-  double rightPercent) {
-    this.leftPercent = leftPercent;
-    this.rightPercent = rightPercent;
-    coralIntake = CoralIntakeSubsystem.getInstance();
-    
+  ElevatorSubsystem elevatorSubsystem;
+  /** Creates a new ResetElevator. */
+  public ResetElevator() {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(coralIntake);
+    elevatorSubsystem = ElevatorSubsystem.getInstance();
+    addRequirements(elevatorSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    elevatorSubsystem.setServoBrake(false);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    coralIntake.startIntakePercent(leftPercent, rightPercent);
+    elevatorSubsystem.setVoltage(-2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
-    coralIntake.stop();
+    elevatorSubsystem.stopMotor(); 
+    elevatorSubsystem.setServoBrake(true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+
+    if(elevatorSubsystem.isLimitSwitchPressed()) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  
   }
 }
