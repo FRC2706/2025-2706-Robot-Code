@@ -95,8 +95,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         bWasResetbyLimit = false;
 
         // Config elevator
-        //m_elevator.setCANTimeout(Config.CANTIMEOUT_MS);
-
         m_elevator_config.inverted(false)
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
@@ -123,6 +121,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(Config.ElevatorConfig.elevator_kIz);
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
 
+        //@todo: to be tuned
         m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
         m_elevatorPSubs.setDefault(2.5);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
@@ -147,8 +146,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-
-        //m_elevator.setCANTimeout(0);
 
         // reset encoder
         m_elevator_encoder.setPosition(0);
