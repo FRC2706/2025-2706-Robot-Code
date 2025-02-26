@@ -22,7 +22,9 @@ public class SubsystemChecker {
         ArmSubsystem,
         RelaySubsystem,
         BlingSubsystem,
+        GripperSubsystem,
         PhotonSubsystem,
+        CoralIntakeSubsystem,
         CoralDepositorSubsystem,
         ElevatorSubsystem,
 
@@ -57,11 +59,14 @@ public class SubsystemChecker {
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.ElevatorSubsystem,
+
     };
 
     // RobotID: 3, ControlBox
     private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        //note: CoralDepositorSubsystem and CoralIntakeSubsystem share the CANIDs. At one time, only use one
         SubsystemType.CoralDepositorSubsystem,
+        //SubsystemType.CoralIntakeSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.ElevatorSubsystem,
     };

@@ -29,6 +29,7 @@ import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralIntake;
 import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
@@ -47,6 +48,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralIntake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -65,10 +69,10 @@ public class ControlBoxContainer extends RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-
     public ControlBoxContainer() {
         configureButtonBindings();
     }
+
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be
@@ -76,6 +80,7 @@ public class ControlBoxContainer extends RobotContainer {
    */
   private void configureButtonBindings() { 
 
+    
     // Set bling to for some events....
     //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
 
@@ -87,9 +92,13 @@ public class ControlBoxContainer extends RobotContainer {
     //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
       
 
-    //Depositor
-    // operator.y().whileTrue(new CoralDepositorCommand(true)); 
-    // operator.x().whileTrue(new CoralDepositorCommand(false));
+    //Manipulator
+    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true)); 
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false));
+    //intake
+    // operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
+    // operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
+
 
     // ELEVATOR PROTOTYPE
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
