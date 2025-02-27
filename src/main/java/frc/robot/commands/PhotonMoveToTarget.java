@@ -97,7 +97,7 @@ public class PhotonMoveToTarget extends Command {
   public void end(boolean interrupted) {
     //m_timer.stop();
 
-    //stop swever?
+    //stop swever motor?
 
   }
 
