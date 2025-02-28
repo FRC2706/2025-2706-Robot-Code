@@ -87,7 +87,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private Rotation2d targetRobotHeading;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  //private PhotonPoseEstimator photonPoseEstimator;
+  //+++private PhotonPoseEstimator photonPoseEstimator;
  
   public static PhotonSubsystem getInstance(){
     if (instance == null){
@@ -121,7 +121,7 @@ public class PhotonSubsystem extends SubsystemBase {
       aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
       //@todo: update cameraTransform
-      //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.leftReefCameraTransform);
+      //+++photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.leftReefCameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
@@ -287,6 +287,7 @@ public class PhotonSubsystem extends SubsystemBase {
       }
 
       ////New option
+      /// ===========================================================
      {
       //get the swerve pose at the time that the result was gotten
       Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
