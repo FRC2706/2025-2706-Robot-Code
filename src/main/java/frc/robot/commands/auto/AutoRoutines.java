@@ -83,7 +83,7 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
-                return Right_R_CD_R;
+                return Left_R_CD;
             case 3:
                 return RIGHTCenter_R_CD;
             case 4:
@@ -93,7 +93,7 @@ public class AutoRoutines extends SubsystemBase {
             case 6:
                 return LEFTCenter_R_CD_R;
             case 7:
-                return Left_R_CD;
+                return Right_R_CD_R;
             case 8:
                 return Left_R_CD_R;
             case 9: 
