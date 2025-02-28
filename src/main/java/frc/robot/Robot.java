@@ -23,6 +23,7 @@ import frc.robot.commands.SetArm;
 import frc.robot.commands.Shooter_PID_Tuner;
 import frc.robot.robotcontainers.BeetleContainer;
 import frc.robot.robotcontainers.ContainerForTesting;
+import frc.robot.robotcontainers.ControlBoxContainer;
 import frc.robot.robotcontainers.NewRobotContainer;
 import frc.robot.robotcontainers.Robot2025Container;
 import frc.robot.robotcontainers.RobotContainer;
@@ -59,7 +60,7 @@ public class Robot extends TimedRobot {
   private void createRobotContainer() {
     // Instantiate the RobotContainer based on the Robot ID.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-
+    System.out.println(Config.getRobotId());
     switch (Config.getRobotId()) {
       case 0:
         // m_robotContainer = new ContainerForTesting(); break; // testing
@@ -69,6 +70,11 @@ public class Robot extends TimedRobot {
         m_robotContainer = new NewRobotContainer(); break; //Apollo
       case 2:
         m_robotContainer = new BeetleContainer(); break; //beetle
+
+      case 3:
+        System.out.println("ITS DEFINITELY ROBOT ID 3!!!");
+
+        m_robotContainer = new ControlBoxContainer(); break; //ControlBox
        
       default:
         m_robotContainer = new Robot2025Container();

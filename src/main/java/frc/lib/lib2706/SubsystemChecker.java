@@ -22,8 +22,12 @@ public class SubsystemChecker {
         ArmSubsystem,
         RelaySubsystem,
         BlingSubsystem,
+        GripperSubsystem,
         PhotonSubsystem,
-        
+        CoralIntakeSubsystem,
+        CoralDepositorSubsystem,
+        ElevatorSubsystem,
+
     };
 
     /**
@@ -34,6 +38,9 @@ public class SubsystemChecker {
         SubsystemType.SwerveSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
+        //SubsystemType.ElevatorSubsystem,
+        //SubsystemType.CoralDepositorSubsystem,
+        //coral intake
     };
 
     // RobotID: 1, 2024 robot, Apollo
@@ -51,15 +58,21 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
+
     };
 
-    // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
-    private static SubsystemType[] mergonautId3 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem,  // Chassis
+    // RobotID: 3, ControlBox
+    private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        //note: CoralDepositorSubsystem and CoralIntakeSubsystem share the CANIDs. At one time, only use one
+        SubsystemType.CoralDepositorSubsystem,
+        //SubsystemType.CoralIntakeSubsystem,
+        SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
     };
 
     // Use robotSpecific to know what robot is currently running the code
-    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, mergonautId3);
+    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);
 
     /**
      * Check if the subsystem is allowed for the robot this is deployed onto

@@ -58,7 +58,7 @@ public final class Config {
 
   public static class CANID {
     public static int PIGEON = robotSpecific(16, -1, 27, 30);
-    public static final int CANDLE = robotSpecific(25,-1,15,15);
+    public static final int CANDLE = robotSpecific(25,-1,15,25);
     public static final int CLIMBER = robotSpecific(18, 4, -1 ,-1);
 
     //swerve CAN IDs
@@ -75,64 +75,71 @@ public final class Config {
     public static final int SWERVE_RL_CANCODER = 14;
     public static final int SWERVE_RR_CANCODER = 15;
     
-    //mechanism CAN IDs
+    //mechanism CAN IDs for 2025   
+    public static final int CoralDepositor_LEFT_MOTOR = 19; 
+    public static final int CoralDepositor_RIGHT_MOTOR = 16;
+    public static final int ELEVATOR = 15; // temp can number for testing
+    //intake left and right
+    
+    //Apollo 2024
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
+
+  }
     
-  }
+      public static final int CANTIMEOUT_MS = 100;
+    
+      private static final int SIMULATION_ID = 1;
 
-  public static final int CANTIMEOUT_MS = 100;
-
-  private static final int SIMULATION_ID = 1;
-
-  /**
-   * Returns one of the values passed based on the robot ID
-   *
-   * @param first The first value (default value)
-   * @param more  Other values that could be selected
-   * @param <T>   The type of the value
-   * @return The value selected based on the ID of the robot
-   */
-  @SafeVarargs
-  public static <T> T robotSpecific(T first, T... more) {
-    if (getRobotId() < 1 || getRobotId() > more.length) {
-      return first;
-    } else {
-      return more[getRobotId() - 1];
-    }
-  }
-
-  /**
-   * Obtain the robot id found in the robot.conf file
-   *
-   * @return The id of the robot
-   */
-  public static int getRobotId() {
-
-    if (robotId < 0) {
-      // Backup in case the FMS is attached, force to comp robot
-      if (DriverStation.isFMSAttached()) {
-        robotId = 0;
-      }
-
-      // Set the Id to the simulation if simulating
-      else if (RobotBase.isSimulation()) {
-        robotId = SIMULATION_ID;
-
-        // Not simulation, read the file on the roborio for it's robot id.
-      } else {
-        try (BufferedReader reader = Files.newBufferedReader(ROBOT_ID_LOC)) {
-          robotId = Integer.parseInt(reader.readLine());
-        } catch (Exception e) {
-          robotId = 0; // DEFAULT TO COMP ROBOT IF NO ID IS FOUND
+    
+      /**
+       * Returns one of the values passed based on the robot ID
+       *
+       * @param first The first value (default value)
+       * @param more  Other values that could be selected
+       * @param <T>   The type of the value
+       * @return The value selected based on the ID of the robot
+       */
+      @SafeVarargs
+      public static <T> T robotSpecific(T first, T... more) {
+        if (getRobotId() < 1 || getRobotId() > more.length) {
+          return first;
+        } else {
+          return more[getRobotId() - 1];
         }
       }
-    }
-
-    return robotId;
-  }
+    
+      /**
+       * Obtain the robot id found in the robot.conf file
+       *
+       * @return The id of the robot
+       */
+      public static int getRobotId() {
+    
+        if (robotId < 0) {
+          // Backup in case the FMS is attached, force to comp robot
+          if (DriverStation.isFMSAttached()) {
+            robotId = 0;
+          }
+    
+          // Set the Id to the simulation if simulating
+          else if (RobotBase.isSimulation()) {
+            robotId = SIMULATION_ID;
+    
+            // Not simulation, read the file on the roborio for it's robot id.
+          } else {
+            try (BufferedReader reader = Files.newBufferedReader(ROBOT_ID_LOC)) {
+              robotId = Integer.parseInt(reader.readLine());
+            } catch (Exception e) {
+              robotId = 0; // DEFAULT TO COMP ROBOT IF NO ID IS FOUND
+            }
+          }
+        }
+    
+        return robotId;
+      }
 
   /**
    * ROBOT IDs
@@ -302,10 +309,10 @@ public final class Config {
     
     public static final SwerveDriveKinematics swerveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+            new Translation2d(wheelBase / 2.0, trackWidth / 2.0), //FL
+            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0), //FR
+            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0), //BL
+            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0)); //BR
 
     /* Swerve Voltage Compensation Changed */
     public static final double voltageComp = 11.0;
@@ -510,6 +517,76 @@ public final class Config {
     public static final double MOMENT_TO_VOLTAGE = 0.000005;    
 }
 
+  public class ElevatorConfig {
+    public static final int ELEVATOR_SPARK_CAN_ID = CANID.ELEVATOR;
+    public static final boolean SET_INVERTED = true;
+    public static final boolean INVERT_ENCODER = false;
+
+    public static final int CURRENT_LIMIT = 80;
+
+    public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
+    public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
+
+    //soft limit constant for the elevator
+    public static final float elevator_up_limit = (float) Math.toRadians(MAX_ELEVATOR_EXTENSION);
+    public static final float elevator_down_limit = (float) Math.toRadians(MIN_ELEVATOR_EXTENSION);
+    public static final boolean SOFT_LIMIT_ENABLE = true;
+
+    //PID constants
+    public static final double elevator_kP = robotSpecific(2.700000, 0.0, 0.5, 0.5);
+    public static final double elevator_kI = robotSpecific(0.0, 0.0, 0.0, 0.0);
+    public static final double elevator_kD = robotSpecific(0.800000, 0.0, 0.0, 0.0);
+    public static final double elevator_kIz = robotSpecific(0.02, 0.0, 0.0, 0.0);
+    public static final double elevator_kFF = 0.003;
+    public static final double min_output = -1;
+    public static final double max_output = 1;
+
+    //PID constants 
+    // public static final double elevator_far_kP = 6.0;
+    // public static final double elevator_far_kI = 0;
+    // public static final double elevator_far_kD = 6.0;
+    // public static final double elevator_far_kFF = 0.06;
+    // public static final double elevator_far_iZone = Math.toRadians(1.5);
+
+    //ff calculations
+    public static final double gravitationalConstant = 389.0886; //inches/s/s which is equal to 9.81 m/s/s
+    public static final double ELEVATOR_FORCE = 11.29 *gravitationalConstant; //11.29 lb
+    public static final double LENGTH_ELEVATOR_TO_COG = 14.56;
+
+    //@todo: TBD
+    public static final double ELEVATOR_ENCODER_GEAR_RATIO = 1;
+
+    //elevator position unit: inches
+    public static final double elevatorPositionConversionFactor = ELEVATOR_ENCODER_GEAR_RATIO;
+    //elevator velocity unit: inches/sec
+    public static final double elevatorVelocityConversionFactor = elevatorPositionConversionFactor / 60.0;
+
+    public static final double MAX_VEL = Math.PI * 1.5;
+    public static final double MAX_ACCEL = Math.PI * 1.5;
+
+    public static final double MOMENT_TO_VOLTAGE = 0.000005;
+
+    public static final double ELEVATOR_POS_TH = 3;
+
+  }
+
+  public static enum ElevatorSetPoints {
+    //@todo: to be calibrated
+    RESET(-1), 
+    FEEDER(60.0),
+    L1(50.0),
+    L2(70.0),
+    L3(90.0), 
+    L4(110.0),
+    NET(90.0); 
+  
+    public final double position;
+  
+    ElevatorSetPoints(double setPosition) {
+      position = setPosition;
+    }
+  }
+
 public static enum ArmSetPoints {
   //@todo: to be calibrated
   IDLE(35), //61
@@ -592,3 +669,4 @@ public static enum ArmSetPoints {
                                subwooferRPM = 2750;
   }
 }
+
