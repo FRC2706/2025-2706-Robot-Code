@@ -5,7 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.spark.SparkBase;
@@ -23,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.lib3512.config.SwerveModuleConstants;
+
 
 public final class Config {
   /**
@@ -155,22 +159,35 @@ public final class Config {
   public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
 
   public static final class PhotonConfig{
-    public static boolean USE_3D_TAGS = false;
+    public static boolean USE_3D_TAGS = true;
     public static final List<Integer> ALLOWED_TAGS_3D = List.of(3,4,7,8);
 
     public static final double CAMERA_HEIGHT = 0.215;
     public static final Rotation2d CAMERA_PITCH = Rotation2d.fromDegrees(33);
-    //x is forwards, y is sideways with +y being left, rotation probobly if + left too
+    //x is forwards, y is sideways wi th +y being left, rotation probobly if + left too
     public static final Pose2d cameraOffset = new Pose2d(new Translation2d(-0.1,0), Rotation2d.fromDegrees(180));
     // public static final Pose2d cameraOffsetRed = new Pose2d(new Translation2d(-0.1, 0), Rotation2d.fromDegrees(0));
 
-    public static final Transform3d cameraTransform = new Transform3d(
-      -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
+    //robotToCamera: Apollo original camera
+    // public static final Transform3d  cameraTransform = new Transform3d(
+    //   -(0.865/2 - 0.095), 0, 0.23, new Rotation3d(0, Math.toRadians(-33), Math.toRadians(180)));
 
-    //networkTableName
-    public static final String apriltagCameraName = "FrontApriltagOV9281";
+      //-0.71/2 + 0.02 =-0.355+0.02 = -0.335
+      //-(0.865/2 - 0.095) = 0.3375
+    //@todo: new 148 deg camera, measured for Apollo
+    public static final Transform3d  leftReefCameraTransform = new Transform3d(
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+
+   
+    //networkTableName 
+    public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
+
+      
+    public static final String leftReefCameraName = "USB_Camera";
+    public static final String rightReefCameraName = "";
+    public static final String intakeCameraName = "";
     //data max
     public static final int maxNumSamples = 10;
 
@@ -181,9 +198,30 @@ public final class Config {
     public static final double WAYPOINT_POS_TOLERANCE = 0.2; // meters
     public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
     public static final double VEL_TOLERANCE = 0.1*4;
-    public static enum PhotonPositions {
-      
-      
+
+    public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
+      //all left position. For right, opposite y
+      //left and right: between center of robot and aprilTag
+      //blue reef
+      put(17, new Translation2d(1.0, 0));
+      put(18, new Translation2d(1.0, -0.3)); //tested
+      put(19, new Translation2d(1.0, 0));
+      put(20, new Translation2d(1.0, 0));
+      put(21, new Translation2d(-1.0, -0.3)); //tested
+      put(22, new Translation2d(1.0, 0));
+      //red reef
+      put(6, new Translation2d(1.0, 0));
+      put(7, new Translation2d(-1.0, -0.3)); //tested
+      put(8, new Translation2d(1.0, 0));
+      put(9, new Translation2d(1.0, 0));
+      put(10, new Translation2d(1.0, 0));
+      put(11, new Translation2d(1.0, 0));
+      //blue human station
+
+      //red human station
+   }};
+
+    public static enum PhotonPositions {     
       RIGHT_SPEAKER_RED(4, new Translation2d(-0.937,0.937), new Translation2d(-0.637,0.637), Rotation2d.fromDegrees(-60)),
       MIDDLE_SPEAKER_RED(4, new Translation2d(-1.3,0), new Translation2d(-0.95,0), Rotation2d.fromDegrees(0)),
       LEFT_SPEAKER_BLUE(7, new Translation2d(0.937,0.937), new Translation2d(0.637,0.637), Rotation2d.fromDegrees(-120)),
@@ -195,6 +233,10 @@ public final class Config {
       // COMPETITION USE
       FAR_SPEAKER_RED(4, new Translation2d(-3.6,0), Rotation2d.fromDegrees(180)),
       FAR_SPEAKER_BLUE(7, new Translation2d(3.6, 0), Rotation2d.fromDegrees(0)),
+
+      //HUMAN_STATION_LEFT
+      //HUMAN_STATION_MID
+      //HUMAN_STATION_RIGHT
 
       PODIUM_SOURCESIDE_BLUE(8, new Translation2d(3.2, -1.5), Rotation2d.fromDegrees(-33)),
       PODIUM_SOURCESIDE_RED(3, new Translation2d(-3.2, -1.5), Rotation2d.fromDegrees(180+33)),
@@ -308,9 +350,10 @@ public final class Config {
 
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
-      SLOW(0.5, 0.5 * Math.PI, 16, 12 * Math.PI),
+      SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
       MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
-      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI);
+      DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
+      VISION(0.2, 0.2 * Math.PI, 1, 2 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;
