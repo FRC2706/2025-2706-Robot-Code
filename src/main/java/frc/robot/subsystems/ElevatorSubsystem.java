@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
-        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
+        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
