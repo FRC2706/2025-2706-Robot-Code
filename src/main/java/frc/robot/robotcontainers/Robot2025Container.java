@@ -104,20 +104,108 @@ public class Robot2025Container extends RobotContainer {
     //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
 
 
+    //Driver
+    //=========================================================================
+    /**
+     * Driver Controls
+     * Driver button mapping: to add
+     */
+    // Core Swerve Buttons
+    driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
+
+    //slow mode
+    driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    //??? 
+    driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
+
+    //Sync Swerve
+    driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
+
+    // Commands that take control of the rotation stick
+    driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
+    driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
+    driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
+
+    //for tuning the swerve
+    // SwerveModuleState[] moduleStatesForwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    // };
+    // driver.y().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesSideways = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+    // };
+    // driver.x().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStatesBackwards = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+    // };
+    // driver.a().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+    // ));
+
+    // SwerveModuleState[] moduleStates270 = {
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    //   new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+    // };
+    // driver.b().whileTrue(Commands.run(
+    //   () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+    // ));
+
+    //vision-aid alignment: no timer
+    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT))
+    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    //not working
+    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT).withTimeout(0.9))
+    // .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    //This is good one: press one time: with timer
+    //================================================
+    driver.leftTrigger()
+    .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
+            CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
+    .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    //Operator
+    //===========================================================================
     //Manipulator
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true));
-    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false));
+   // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
     //intake
     operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
     operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
 
-
+    //take coral ready for score
+    operator.rightTrigger().onTrue(CombinedCommands.getCoralForScore());
+    // operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+    
     // ELEVATOR PROTOTYPE
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
-
 
     operator.start().whileTrue(new ResetElevator(-0.3) );
     operator.back().whileTrue(new ResetElevator(0.3) );
