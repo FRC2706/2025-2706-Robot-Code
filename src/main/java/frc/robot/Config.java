@@ -61,7 +61,7 @@ public final class Config {
     public static final int CANDLE = robotSpecific(25,-1,15,25);
     public static final int CLIMBER = robotSpecific(18, 4, -1 ,-1);
 
-    //swerve CAN IDs
+    //swerve CAN IDs for 2025 Robot
     public static final int SWERVE_FL_DRIVE = 35;
     public static final int SWERVE_FL_STEERING = 39;
     public static final int SWERVE_FR_DRIVE = 36;
@@ -85,10 +85,25 @@ public final class Config {
     //intake left and right
     
     //Apollo 2024
+
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
+
+    // //swerve CAN IDs for 2024
+    // public static final int SWERVE_FL_DRIVE = 4; 
+    // public static final int SWERVE_FL_STEERING = 5; 
+    // public static final int SWERVE_FR_DRIVE = 6; 
+    // public static final int SWERVE_FR_STEERING = 7; 
+    // public static final int SWERVE_RL_DRIVE = 8; 
+    // public static final int SWERVE_RL_STEERING = 9; 
+    // public static final int SWERVE_RR_DRIVE = 10; 
+    // public static final int SWERVE_RR_STEERING = 11; 
+    // public static final int SWERVE_FL_CANCODER = 12; 
+    // public static final int SWERVE_FR_CANCODER = 13; 
+    // public static final int SWERVE_RL_CANCODER = 14;
+    // public static final int SWERVE_RR_CANCODER = 15;
 
   }
     
