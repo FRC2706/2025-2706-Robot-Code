@@ -495,6 +495,22 @@ public static enum ArmSetPoints {
         public static int DIFF_FOLLOWER_LEFT = robotSpecific( -01, 0, -1, -01);
         public static int DIFF_FOLLOWER_RIGHT = robotSpecific( -01, 0, -1, -01);
 
+        // AlgaeManipulator motor configuration
+            
+            public static final boolean ALGAE_MANIPULATOR_INVERTED = false;
+            public static final boolean ALGAE_MANIPULATOR_ENCODER_INVERTED = false;
+            public static final int ALGAE_MANIPULATOR_CURRENT_LIMIT = 20;
+
+        // PID constants for AlgaeManipulator motor
+        public static final double algaeManipulator_kP = 2.7;
+        public static final double algaeManipulator_kI = 0.0;
+        public static final double algaeManipulator_kD = 0.8;
+        public static final double algaeManipulator_kFF = 0.013;
+        public static final double algaeManipulator_kIz = 0.02;
+        public static final double algaeManipulator_min_output = -1.0;
+        public static final double algaeManipulator_max_output = 1.0;
+
+
         public static boolean ISNEOS = robotSpecific(true, false, false, true);
         public static boolean HAS_FOLLOWERS = robotSpecific(true, false, false, true);
         public static boolean LEFT_FOLLOWER_ISVICTOR = robotSpecific(false, false, false, false);
