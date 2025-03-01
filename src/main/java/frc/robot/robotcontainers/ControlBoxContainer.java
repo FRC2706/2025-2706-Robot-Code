@@ -106,7 +106,7 @@ public class ControlBoxContainer extends RobotContainer {
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
 
-    operator.start().whileTrue(new ResetElevator() );
+    //operator.start().whileTrue(new ResetElevator() );
   }
 
   /**

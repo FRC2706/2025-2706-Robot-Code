@@ -38,8 +38,9 @@ public class SubsystemChecker {
         SubsystemType.SwerveSubsystem,
         SubsystemType.BlingSubsystem,
         SubsystemType.PhotonSubsystem,
-        //SubsystemType.ElevatorSubsystem,
-        //SubsystemType.CoralDepositorSubsystem,
+        SubsystemType.ElevatorSubsystem,
+        SubsystemType.CoralDepositorSubsystem,
+        SubsystemType.CoralIntakeSubsystem
         //coral intake
     };
 
