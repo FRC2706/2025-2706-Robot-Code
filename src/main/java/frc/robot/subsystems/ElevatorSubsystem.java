@@ -103,15 +103,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Hard limit via limit switch
         // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
         //         .forwardLimitSwitchEnabled(true); 
-        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
+        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
         //@todo: to determine the value and reverse or forward limit, then enable them
-        m_elevator_config.softLimit.reverseSoftLimit(0)
+        /*m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
                                    .forwardSoftLimit(500)
-                                   .forwardSoftLimitEnabled(false);
+                                   .forwardSoftLimitEnabled(false);*/
 
         // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
@@ -240,7 +240,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
       else
       {
-        servoBrake.setAngle(0);
+        servoBrake.setAngle(240);
         //servoBrake.set(+0.5);
         m_servoBrakeOnPub.accept(false);
       }
