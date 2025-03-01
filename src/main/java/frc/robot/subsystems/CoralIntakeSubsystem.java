@@ -39,8 +39,8 @@ public class CoralIntakeSubsystem extends SubsystemBase {
   }
 
   //@todo: the CAN IDs
-  int leftMotorCanID = 16;
-  int rightMotorCanID = 19;
+  int leftMotorCanID = 38;
+  int rightMotorCanID = 34;
 
   /** Creates a new CoralIntakeSubsystem. */
   public CoralIntakeSubsystem() {

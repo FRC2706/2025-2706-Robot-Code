@@ -95,7 +95,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         bWasResetbyLimit = false;
 
         // Config elevator
-        m_elevator_config.inverted(false)
+        m_elevator_config.inverted(true)
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
@@ -103,7 +103,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Hard limit via limit switch
         // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
         //         .forwardLimitSwitchEnabled(true); 
-        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
+        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
@@ -240,7 +240,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
       else
       {
-        servoBrake.setAngle(0);
+        servoBrake.setAngle(240);
         //servoBrake.set(+0.5);
         m_servoBrakeOnPub.accept(false);
       }

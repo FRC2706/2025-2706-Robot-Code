@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -48,7 +48,7 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
-  private final PigeonIMU gyro;
+  private final Pigeon2 gyro;
 
   private BuiltInAccelerometer rioAccelerometer;
 
@@ -112,8 +112,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private SwerveSubsystem() {
-    gyro = new PigeonIMU(Swerve.pigeonID);
-    gyro.configFactoryDefault();
+    gyro = new Pigeon2(Swerve.pigeonID);
     // zeroGyro();
 
     rioAccelerometer = new BuiltInAccelerometer();    
@@ -260,9 +259,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private Rotation2d getYaw() {
-    return (Swerve.invertGyro)
+    /*return (Swerve.invertGyro)
         ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        : Rotation2d.fromDegrees(gyro.getYaw());*/
+    return Rotation2d.fromDegrees(0);
   }
   
   /**
@@ -447,7 +447,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getAngularRate() {
     double[] xyz_dps = new double[3];
-    gyro.getRawGyro(xyz_dps);
+    // gyro.getRawGyro(xyz_dps);
     return xyz_dps[2];
   }
 
@@ -515,7 +515,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void logAcceleratometerData() {
     short[] xyz_dps = new short[]{0, 0, 0};
-    gyro.getBiasedAccelerometer(xyz_dps);
+    // gyro.getBiasedAccelerometer(xyz_dps);
 
     pubPigeonAccelX.append(xyz_dps[0] / 16384);
     pubPigeonAccelY.append(xyz_dps[1] / 16384);

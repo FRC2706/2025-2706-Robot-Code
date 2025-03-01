@@ -57,28 +57,31 @@ public final class Config {
   private static int robotId = -1;
 
   public static class CANID {
-    public static int PIGEON = robotSpecific(16, -1, 27, 30);
+    public static int PIGEON = robotSpecific(30, -1, 27, 30);
     public static final int CANDLE = robotSpecific(25,-1,15,25);
     public static final int CLIMBER = robotSpecific(18, 4, -1 ,-1);
 
     //swerve CAN IDs
-    public static final int SWERVE_FL_DRIVE = 4; 
-    public static final int SWERVE_FL_STEERING = 5; 
-    public static final int SWERVE_FR_DRIVE = 6; 
-    public static final int SWERVE_FR_STEERING = 7; 
-    public static final int SWERVE_RL_DRIVE = 8; 
-    public static final int SWERVE_RL_STEERING = 9; 
-    public static final int SWERVE_RR_DRIVE = 10; 
-    public static final int SWERVE_RR_STEERING = 11; 
-    public static final int SWERVE_FL_CANCODER = 12; 
-    public static final int SWERVE_FR_CANCODER = 13; 
-    public static final int SWERVE_RL_CANCODER = 14;
-    public static final int SWERVE_RR_CANCODER = 15;
+    public static final int SWERVE_FL_DRIVE = 35;
+    public static final int SWERVE_FL_STEERING = 39;
+    public static final int SWERVE_FR_DRIVE = 36;
+    public static final int SWERVE_FR_STEERING = 28;
+    public static final int SWERVE_RL_DRIVE = 40;
+    public static final int SWERVE_RL_STEERING = 17;
+    public static final int SWERVE_RR_DRIVE = 37;
+    public static final int SWERVE_RR_STEERING = 30;
+    public static final int SWERVE_FL_CANCODER = 22;
+    public static final int SWERVE_FR_CANCODER = 23;
+    public static final int SWERVE_RL_CANCODER = 20;
+    public static final int SWERVE_RR_CANCODER = 21;
     
     //mechanism CAN IDs for 2025   
-    public static final int CoralDepositor_LEFT_MOTOR = 19; 
-    public static final int CoralDepositor_RIGHT_MOTOR = 16;
-    public static final int ELEVATOR = 15; // temp can number for testing
+    public static final int CoralDepositor_LEFT_MOTOR = 31;
+    public static final int CoralDepositor_RIGHT_MOTOR = 49;
+    public static final int ELEVATOR = 32; // temp can number for testing
+
+    // Algae manipulator
+    public static final int ALGAE_REMOVER = 5;
     //intake left and right
     
     //Apollo 2024
