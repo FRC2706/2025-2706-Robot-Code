@@ -95,7 +95,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         bWasResetbyLimit = false;
 
         // Config elevator
-        m_elevator_config.inverted(false)
+        m_elevator_config.inverted(true)
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);

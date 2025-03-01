@@ -118,7 +118,9 @@ public class Robot2025Container extends RobotContainer {
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
 
-    operator.start().whileTrue(new ResetElevator() );
+
+    operator.start().whileTrue(new ResetElevator(-2) );
+    operator.back().whileTrue(new ResetElevator(2) );
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

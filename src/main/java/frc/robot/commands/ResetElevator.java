@@ -11,11 +11,13 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ResetElevator extends Command {
 
   ElevatorSubsystem elevatorSubsystem;
+  double setVoltage = 0;
   /** Creates a new ResetElevator. */
-  public ResetElevator() {
+  public ResetElevator(double voltage) {
     // Use addRequirements() here to declare subsystem dependencies.
     elevatorSubsystem = ElevatorSubsystem.getInstance();
     addRequirements(elevatorSubsystem);
+    setVoltage = voltage;
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +29,7 @@ public class ResetElevator extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSubsystem.setVoltage(-2);
+    elevatorSubsystem.setVoltage(setVoltage);
   }
 
   // Called once the command ends or is interrupted.
