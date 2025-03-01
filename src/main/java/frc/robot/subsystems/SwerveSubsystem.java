@@ -80,14 +80,14 @@ public class SwerveSubsystem extends SubsystemBase {
   private DoublePublisher pubDesiredY = visionPidTable.getDoubleTopic("DesiredY (m)").publish(PubSubOption.periodic(0.02));
   private DoublePublisher pubDesiredRot = visionPidTable.getDoubleTopic("DesiredRot (deg)").publish(PubSubOption.periodic(0.02));
 
-  DataLog log = DataLogManager.getLog();
-  private DoubleLogEntry pubPigeonAccelX = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/X (G)");
-  private DoubleLogEntry pubPigeonAccelY = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/Y (G)");
-  private DoubleLogEntry pubPigeonAccelZ = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/Z (G)");
+  // DataLog log = DataLogManager.getLog(); 
+  // private DoubleLogEntry pubPigeonAccelX = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/X (G)");
+  // private DoubleLogEntry pubPigeonAccelY = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/Y (G)");
+  // private DoubleLogEntry pubPigeonAccelZ = new DoubleLogEntry(log, "Acceleratometers/Pigeon1/Z (G)");
 
-  private DoubleLogEntry pubRioAccelX = new DoubleLogEntry(log, "Acceleratometers/RoboRio/X (G)");
-  private DoubleLogEntry pubRioAccelY = new DoubleLogEntry(log, "Acceleratometers/RoboRio/Y (G)");
-  private DoubleLogEntry pubRioAccelZ = new DoubleLogEntry(log, "Acceleratometers/RoboRio/Z (G)");
+  // private DoubleLogEntry pubRioAccelX = new DoubleLogEntry(log, "Acceleratometers/RoboRio/X (G)");
+  // private DoubleLogEntry pubRioAccelY = new DoubleLogEntry(log, "Acceleratometers/RoboRio/Y (G)");
+  // private DoubleLogEntry pubRioAccelZ = new DoubleLogEntry(log, "Acceleratometers/RoboRio/Z (G)");
 
   // ProfiledPIDControllers for the pid control
   ProfiledPIDController pidControlX;
@@ -124,6 +124,8 @@ public class SwerveSubsystem extends SubsystemBase {
     gyro = new Pigeon2(Swerve.pigeonID);
     pigeonConfig = new Pigeon2Configuration();
     //todo: This Pigeon is mounted position
+    //todo: calibration for roll and pitch
+    //todo: check yaw inverted or not
     pigeonConfig.MountPose.MountPoseYaw = 0;
     pigeonConfig.MountPose.MountPosePitch = 0;
     pigeonConfig.MountPose.MountPoseRoll = 0;
@@ -548,13 +550,13 @@ public class SwerveSubsystem extends SubsystemBase {
     short[] xyz_dps = new short[]{0, 0, 0};
     //gyro.getBiasedAccelerometer(xyz_dps);
 
-    pubPigeonAccelX.append(xyz_dps[0] / 16384);
-    pubPigeonAccelY.append(xyz_dps[1] / 16384);
-    pubPigeonAccelZ.append(xyz_dps[2] / 16384);
+    // pubPigeonAccelX.append(xyz_dps[0] / 16384);
+    // pubPigeonAccelY.append(xyz_dps[1] / 16384);
+    // pubPigeonAccelZ.append(xyz_dps[2] / 16384);
 
-    pubRioAccelX.append(rioAccelerometer.getX());
-    pubRioAccelY.append(rioAccelerometer.getY());
-    pubRioAccelZ.append(rioAccelerometer.getZ());
+    // pubRioAccelX.append(rioAccelerometer.getX());
+    // pubRioAccelY.append(rioAccelerometer.getY());
+    // pubRioAccelZ.append(rioAccelerometer.getZ());
   }
 
   /**
