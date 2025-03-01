@@ -140,7 +140,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(1000)
+                .maxMotion.maxVelocity(400)
                 .maxAcceleration(1000)
                 .allowedClosedLoopError(0.25);
 
@@ -191,7 +191,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void setVoltage(double voltage)
     {
-      m_elevator.set(voltage);
+      m_elevator.setVoltage(voltage);
     }
 
     //return positon
