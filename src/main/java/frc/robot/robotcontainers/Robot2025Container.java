@@ -33,11 +33,7 @@ import frc.robot.commands.*;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.Config.AutoConstants;
 
 
@@ -192,13 +188,11 @@ public class Robot2025Container extends RobotContainer {
     //===========================================================================
     //Manipulator
    // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
-    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(true, false));
     //intake
-    operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
-    operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
-
+    operator.rightBumper().whileTrue(new CoralIntake(0.3,-0.3));
     //take coral ready for score
-    operator.rightTrigger().onTrue(CombinedCommands.getCoralForScore());
+    operator.rightTrigger().whileTrue(CombinedCommands.getCoralForScore());
     // operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
     
     // ELEVATOR PROTOTYPE
@@ -210,6 +204,7 @@ public class Robot2025Container extends RobotContainer {
     operator.start().whileTrue(new ResetElevator(-2) );
     operator.back().whileTrue(new ResetElevator(2) );
 
+    operator.leftBumper().onTrue(ElevatorSubsystem.getInstance().resetEncoder());
     // Algae remover
     //operator.y().whileTrue(new MoveAlgae(0.5));
     //operator.a().whileTrue(new MoveAlgae(-0.5));

@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleEntry;
@@ -26,6 +27,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.lib2706.ProfiledPIDFFController;
@@ -123,9 +125,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.2);//Config.ElevatorConfig.elevator_kP
+        m_elevatorPSubs.setDefault(0.1);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
-        m_elevatorDSubs.setDefault(0.02);
+        m_elevatorDSubs.setDefault(0.05);
         m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
 
         // Send telemetry thru networktables
@@ -140,7 +142,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(400)
+                .maxMotion.maxVelocity(1000)
                 .maxAcceleration(1000)
                 .allowedClosedLoopError(0.25);
 
@@ -215,6 +217,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void resetEncoderPosition()
     {
       m_elevator_encoder.setPosition(0.0);
+    }
+
+    public Command resetEncoder() {
+        return Commands.runOnce(
+                this::resetEncoderPosition
+        );
     }
 
     public void updateEncoderPosition(double newPosition)
