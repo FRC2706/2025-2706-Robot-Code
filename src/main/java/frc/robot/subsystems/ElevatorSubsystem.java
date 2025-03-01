@@ -52,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private Boolean bWasResetbyLimit;
 
     //Servo for brake
-    Servo servoBrake;
+    Servo servoBrake; 
 
     // network table entry
     private final String m_tuningTable = "Elevator/ElevatorTuning";
@@ -71,6 +71,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //elevator target position
     public double elevatorTargetPos = 0;
+    //elevator level
+    private double elevatorPrevPos =0;    
  
     public static ElevatorSubsystem getInstance() {
         if (instance == null) {
@@ -141,6 +143,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
+                // Set PID gains for velocity control in slot 1
+                .p(0.001, ClosedLoopSlot.kSlot1)
+                .i(0.0, ClosedLoopSlot.kSlot1)
+                .p(0.01, ClosedLoopSlot.kSlot1)
+                .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
                 .maxMotion.maxVelocity(1000)
                 .maxAcceleration(1000)
@@ -180,9 +187,22 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
 
     }
-    public void setElevatorHeight(double height) {
-        ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
-        m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+    public void setElevatorHeight(double height, boolean bUp) {
+      ClosedLoopSlot pidSlot;
+
+      if( bUp == true )
+      {
+        //if up, use kSlot0
+        pidSlot = ClosedLoopSlot.kSlot0;
+      }
+      else
+      {
+        //if down, use kSlot1
+        pidSlot = ClosedLoopSlot.kSlot1;
+      }
+
+
+      m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
 
     }
 
@@ -214,6 +234,16 @@ public class ElevatorSubsystem extends SubsystemBase {
       elevatorTargetPos = targetPos;
     }
 
+    public void resetPrevPos( double prevPos)
+    {
+      elevatorPrevPos = prevPos;
+    }
+
+    public boolean isMoveUpDirection()
+    {
+      return (elevatorPrevPos < elevatorTargetPos);
+    }
+    
     public void resetEncoderPosition()
     {
       m_elevator_encoder.setPosition(0.0);
