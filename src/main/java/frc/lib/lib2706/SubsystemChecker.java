@@ -27,6 +27,7 @@ public class SubsystemChecker {
         CoralIntakeSubsystem,
         CoralDepositorSubsystem,
         ElevatorSubsystem,
+        AlgaeManipulatorSubsystem
 
     };
 
