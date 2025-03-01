@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -40,13 +40,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.AdvantageUtil;
 import frc.lib.lib2706.PoseBuffer;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.lib.lib2706.UpdateSimpleFeedforward;
 import frc.robot.Config;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
-  private final PigeonIMU gyro;
+  private final Pigeon2 gyro;
 
   private BuiltInAccelerometer rioAccelerometer;
 
@@ -103,14 +105,14 @@ public class SwerveSubsystem extends SubsystemBase {
   private static SwerveSubsystem instance;
   public static SwerveSubsystem getInstance(){
       if(instance == null){
-          instance = new SwerveSubsystem();
+        SubsystemChecker.subsystemConstructed(SubsystemType.SwerveSubsystem);
+        instance = new SwerveSubsystem();
       }
       return instance;
   }
 
   private SwerveSubsystem() {
-    gyro = new PigeonIMU(Swerve.pigeonID);
-    gyro.configFactoryDefault();
+    gyro = new Pigeon2(Swerve.pigeonID);
     // zeroGyro();
 
     rioAccelerometer = new BuiltInAccelerometer();    
@@ -126,18 +128,19 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
-    // RobotConfig config = null;
-    // try {
-    //   config = RobotConfig.fromGUISettings();
-    // } catch (Exception e) {
-    //   // Handle exception as needed
-    //   e.printStackTrace();
-    // }
+     RobotConfig config = null;
+     try {
+       config = RobotConfig.fromGUISettings();
+     } catch (Exception e) {
+       // Handle exception as needed
+      e.printStackTrace();
+     }
       
 
     //Please make sure these numbers are good. CUrrent values are dummy values.
-    DCMotor dcMotor = new DCMotor(1.0, 1.0, 1.0, 1.0, 1.0, 1);
-    ModuleConfig moduleConfig = new ModuleConfig(1.0,1.0,1.0,dcMotor,1.0,1);
+    // nominalVoltageVolts,  stallTorqueNewtonMeters,  stallCurrentAmps,  freeCurrentAmps, double freeSpeedRadPerSec, int numMotors
+   /* DCMotor dcMotor = new DCMotor(12.0, 1.0, 1.0, 1.0, 1.0, 1);
+    ModuleConfig moduleConfig = new ModuleConfig(0.049,3.0,1.20,dcMotor,50,1);
     Translation2d[] offsets = new Translation2d[4];
     //in the order of FL, FR, BL, BR, refer to Swerve.swerveKinematics. todo: double check the order
     offsets[0] = new Translation2d(Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//FL
@@ -145,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
     offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
     offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-       RobotConfig config = new RobotConfig(0.1, 0.1, moduleConfig, offsets );
+       RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets ); */
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
@@ -256,9 +259,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   private Rotation2d getYaw() {
-    return (Swerve.invertGyro)
+    /*return (Swerve.invertGyro)
         ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        : Rotation2d.fromDegrees(gyro.getYaw());*/
+    return Rotation2d.fromDegrees(0);
   }
   
   /**
@@ -365,6 +369,10 @@ public class SwerveSubsystem extends SubsystemBase {
         && Math.abs(MathUtil.angleModulus(currentRotation - desiredRotation)) < angleTol;
   }
 
+  public boolean isAtTargetPose(Translation2d targetPos)
+  {
+    return (Math.abs(currentX - targetPos.getX()) < PhotonConfig.POS_TOLERANCE && Math.abs(currentY - targetPos.getY()) < PhotonConfig.POS_TOLERANCE);
+  }
   /**
    * Get a pose at the given timestamp. 
    * Returns an empty Optional if the buffer is empty or doesn't go back far enough.
@@ -439,7 +447,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getAngularRate() {
     double[] xyz_dps = new double[3];
-    gyro.getRawGyro(xyz_dps);
+    // gyro.getRawGyro(xyz_dps);
     return xyz_dps[2];
   }
 
@@ -507,7 +515,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void logAcceleratometerData() {
     short[] xyz_dps = new short[]{0, 0, 0};
-    gyro.getBiasedAccelerometer(xyz_dps);
+    // gyro.getBiasedAccelerometer(xyz_dps);
 
     pubPigeonAccelX.append(xyz_dps[0] / 16384);
     pubPigeonAccelY.append(xyz_dps[1] / 16384);

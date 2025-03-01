@@ -17,42 +17,41 @@ public class SubsystemChecker {
         DiffTalonSubsystem,
         SwerveSubsystem,
         ClimberSubsystem,
-        ShooterSubsystem, 
-        RollerIntakeSubsystem,
-        PneumaticIntakeSubsystem,
-        PneumaticShooterSubsystem,
-        IndexerSubsystem,
+        ShooterSubsystem,
+        IntakeSubsystem,      
         ArmSubsystem,
         RelaySubsystem,
-        VisionNTSubsystem,
         BlingSubsystem,
         GripperSubsystem,
+        PhotonSubsystem,
+        CoralIntakeSubsystem,
+        CoralDepositorSubsystem,
+        ElevatorSubsystem,
+
     };
 
     /**
      * Allowed Subsystems for each robot
      */
-    // RobotID: 0, 2023 Competition robot, unnamed
+    // RobotID: 0, 2025 Competition robot, unnamed
     private static SubsystemType[] compBotId0 = new SubsystemType[] {
         SubsystemType.SwerveSubsystem,
-        SubsystemType.ArmSubsystem,
-        SubsystemType.RelaySubsystem,
-        SubsystemType.VisionNTSubsystem,
-        SubsystemType.GripperSubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.PhotonSubsystem,
+        SubsystemType.ElevatorSubsystem,
+        SubsystemType.CoralDepositorSubsystem,
+        SubsystemType.CoralIntakeSubsystem
+        //coral intake
     };
 
-    // RobotID: 1, 2022 robot, RapidReact, Clutch
-    private static SubsystemType[] clutchId1 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem, // Chassis
-
-        SubsystemType.RollerIntakeSubsystem,
-        SubsystemType.PneumaticIntakeSubsystem,
-        SubsystemType.PneumaticShooterSubsystem,
-        SubsystemType.IndexerSubsystem,
-        SubsystemType.ShooterSubsystem,
+    // RobotID: 1, 2024 robot, Apollo
+    private static SubsystemType[] apolloId1 = new SubsystemType[] {
+        SubsystemType.SwerveSubsystem,
+        SubsystemType.ArmSubsystem,
         SubsystemType.ClimberSubsystem,
+        SubsystemType.ShooterSubsystem,       
         SubsystemType.BlingSubsystem,
+        SubsystemType.PhotonSubsystem,
     };
 
     // RobotID: 2, Half-scale talon differential drive robot, Beetle
@@ -60,31 +59,21 @@ public class SubsystemChecker {
         SubsystemType.DiffTalonSubsystem,  // Chassis
         SubsystemType.RelaySubsystem,
         SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
+
     };
 
-    // RobotID: 3, 2019 Comp Robot, Deep Space, Mergonaut
-    private static SubsystemType[] mergonautId3 = new SubsystemType[] {
-        SubsystemType.DiffTalonSubsystem,  // Chassis
-    };
-
-    // RobotID: 4, 2022 Fall Half-scale swerve robot, unnamed
-    private static SubsystemType[] miniSwerveId4 = new SubsystemType[] {
-        SubsystemType.SwerveSubsystem, // Chassis
-        SubsystemType.RelaySubsystem,
-        SubsystemType.VisionNTSubsystem,
-    };
-
-    // RobotID: 5, 2022 Fall Half-scale Neo Differential drive robot, unnamed
-    private static SubsystemType[] neoMiniRobotId5 = new SubsystemType[] {
-        SubsystemType.DiffNeoSubsystem, // Chassis
-    };
-
-    private static SubsystemType[] armBotId6 = new SubsystemType[] {
-        SubsystemType.ArmSubsystem,
+    // RobotID: 3, ControlBox
+    private static SubsystemType[] ControlBox3 = new SubsystemType[] {
+        //note: CoralDepositorSubsystem and CoralIntakeSubsystem share the CANIDs. At one time, only use one
+        SubsystemType.CoralDepositorSubsystem,
+        //SubsystemType.CoralIntakeSubsystem,
+        SubsystemType.BlingSubsystem,
+        SubsystemType.ElevatorSubsystem,
     };
 
     // Use robotSpecific to know what robot is currently running the code
-    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, clutchId1, beetleId2, mergonautId3, miniSwerveId4, neoMiniRobotId5, armBotId6);
+    private static SubsystemType[] activeRobotAllowedTypes = Config.robotSpecific(compBotId0, apolloId1, beetleId2, ControlBox3);
 
     /**
      * Check if the subsystem is allowed for the robot this is deployed onto
