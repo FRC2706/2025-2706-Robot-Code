@@ -192,7 +192,7 @@ public class Robot2025Container extends RobotContainer {
     //intake
     operator.rightBumper().whileTrue(new CoralIntake(0.3,-0.3));
     //take coral ready for score
-    operator.rightTrigger().whileTrue(CombinedCommands.getCoralForScore());
+    operator.rightTrigger().onTrue(CombinedCommands.getCoralForScore());
     // operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
     
     // ELEVATOR PROTOTYPE
@@ -201,8 +201,8 @@ public class Robot2025Container extends RobotContainer {
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
 
-    operator.start().whileTrue(new ResetElevator(-2) );
-    operator.back().whileTrue(new ResetElevator(2) );
+    operator.start().whileTrue(new ResetElevator(-0.25) );
+    operator.back().whileTrue(new ResetElevator(0.45) );
 
     operator.leftBumper().onTrue(ElevatorSubsystem.getInstance().resetEncoder());
     // Algae remover

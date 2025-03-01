@@ -211,9 +211,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       return m_elevatorSwitch.isPressed();
     }
 
-    public void setVoltage(double voltage)
+    public void setPercent(double percent)
     {
-      m_elevator.setVoltage(voltage);
+      m_elevator.set(percent);
     }
 
     //return positon
