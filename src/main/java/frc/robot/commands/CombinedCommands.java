@@ -151,7 +151,7 @@ public class CombinedCommands {
                 Commands.parallel(
                     new CoralIntake(-0.3,0.3),
                     //new CoralDepositorCommand(true,true))
-                    new CoralDepositorCommand(true, false))
+                    new CoralDepositorCommand(true, true))
             );
     }
 
