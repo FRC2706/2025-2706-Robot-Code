@@ -101,8 +101,8 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .voltageCompensation(12);
 
         // Hard limit via limit switch
-        // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
-        //         .forwardLimitSwitchEnabled(true); 
+        m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
+                 .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
@@ -191,7 +191,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void setVoltage(double voltage)
     {
-      m_elevator.setVoltage(voltage);
+      m_elevator.set(voltage);
     }
 
     //return positon
