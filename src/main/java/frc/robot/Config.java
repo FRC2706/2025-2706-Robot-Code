@@ -598,11 +598,11 @@ public final class Config {
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
     RESET(-1), 
-    FEEDER(60.0),
-    L1(50.0),
-    L2(70.0),
-    L3(90.0), 
-    L4(110.0),
+    FEEDER(5.3),
+    L1(29.23),
+    L2(45.83),
+    L3(68.8), 
+    L4(104.07),
     NET(90.0); 
   
     public final double position;

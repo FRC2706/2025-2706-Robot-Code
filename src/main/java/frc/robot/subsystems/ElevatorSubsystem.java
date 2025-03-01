@@ -101,8 +101,8 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .voltageCompensation(12);
 
         // Hard limit via limit switch
-        // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
-        //         .forwardLimitSwitchEnabled(true); 
+        m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
+                .forwardLimitSwitchEnabled(false); 
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
@@ -122,10 +122,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
 
         //@todo: to be tuned
-        m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
-        m_elevatorPSubs.setDefault(2.5);//Config.ElevatorConfig.elevator_kP
+        m_elevatorFFSubs.setDefault(0);
+        m_elevatorPSubs.setDefault(0.2);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
-        m_elevatorDSubs.setDefault(Config.ElevatorConfig.elevator_kD);
+        m_elevatorDSubs.setDefault(0.02);
         m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
 
         // Send telemetry thru networktables
@@ -147,7 +147,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        // reset encoder
+        //@todo: reset encoder. depends on the initial position
         m_elevator_encoder.setPosition(0);
 
         ErrorTrackingSubsystem.getInstance().register(m_elevator);

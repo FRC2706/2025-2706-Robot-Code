@@ -191,14 +191,14 @@ public class Robot2025Container extends RobotContainer {
     //Operator
     //===========================================================================
     //Manipulator
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
+   // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
     operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
     //intake
     operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
     operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
 
     //take coral ready for score
-    // operator.leftBumper().onTrue(CombinedCommands.getCoralForScore());
+    operator.rightTrigger().onTrue(CombinedCommands.getCoralForScore());
     // operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
     
     // ELEVATOR PROTOTYPE
