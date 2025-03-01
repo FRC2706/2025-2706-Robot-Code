@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+//mport com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
@@ -28,6 +30,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -50,6 +53,11 @@ import frc.robot.Config.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
   private final Pigeon2 gyro;
+  private Pigeon2Configuration pigeonConfig; 
+  private StatusSignal<Angle> gyroYaw;
+  private StatusSignal<Angle> gyroPitch;
+  private StatusSignal<Angle> gyroRoll;
+  
 
   private BuiltInAccelerometer rioAccelerometer;
 
@@ -114,8 +122,26 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private SwerveSubsystem() {
     gyro = new Pigeon2(Swerve.pigeonID);
-    //gyro.reset();
-    // zeroGyro();
+    pigeonConfig = new Pigeon2Configuration();
+    //todo: This Pigeon is mounted position
+    pigeonConfig.MountPose.MountPoseYaw = 0;
+    pigeonConfig.MountPose.MountPosePitch = 0;
+    pigeonConfig.MountPose.MountPoseRoll = 0;
+    // This Pigeon has no need to trim the gyro
+    pigeonConfig.GyroTrim.GyroScalarX = 0;
+    pigeonConfig.GyroTrim.GyroScalarY = 0;
+    pigeonConfig.GyroTrim.GyroScalarZ = 0;
+    // We want the thermal comp and no-motion cal enabled, with the compass disabled for best behavior
+    pigeonConfig.Pigeon2Features.DisableNoMotionCalibration = false;
+    pigeonConfig.Pigeon2Features.DisableTemperatureCompensation = false;
+    pigeonConfig.Pigeon2Features.EnableCompass = false;
+     // Write these configs to the Pigeon2
+    gyro.getConfigurator().apply(pigeonConfig);
+    //set the yaw to 0 degrees for intiial use
+    //gyro.setYaw(0);
+    gyroYaw = gyro.getYaw();
+    gyroPitch = gyro.getPitch();
+    gyroRoll = gyro.getRoll();
 
     rioAccelerometer = new BuiltInAccelerometer();    
 
@@ -130,6 +156,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Swerve.swerveKinematics, getYaw(), getPositions(), new Pose2d() );
 
 
+    //Auto pathplanner configuration
      RobotConfig config = null;
      try {
        config = RobotConfig.fromGUISettings();
@@ -150,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase {
     offsets[2] = new Translation2d(-Swerve.wheelBase / 2.0, Swerve.trackWidth / 2.0);//BL
     offsets[3] = new Translation2d(-Swerve.wheelBase / 2.0, -Swerve.trackWidth / 2.0);//BR
 
-       RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets ); */
+    RobotConfig config = new RobotConfig(50, 6.88, moduleConfig, offsets ); */
 
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
@@ -260,10 +287,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  //@todo: installation of Pigeon2
   private Rotation2d getYaw() {
     return (Swerve.invertGyro)
-        ? Rotation2d.fromDegrees(360 - gyro.getYaw())
-        : Rotation2d.fromDegrees(gyro.getYaw());
+        ? Rotation2d.fromDegrees(360 - gyroYaw.refresh().getValueAsDouble())
+        : Rotation2d.fromDegrees(gyroYaw.refresh().getValueAsDouble());
   }
   
   /**
@@ -448,7 +476,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getAngularRate() {
     double[] xyz_dps = new double[3];
-    gyro.getRawGyro(xyz_dps);
+    //todo
+    //gyro.getRawGyro(xyz_dps);
+    
     return xyz_dps[2];
   }
 
@@ -516,7 +546,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void logAcceleratometerData() {
     short[] xyz_dps = new short[]{0, 0, 0};
-    gyro.getBiasedAccelerometer(xyz_dps);
+    //gyro.getBiasedAccelerometer(xyz_dps);
 
     pubPigeonAccelX.append(xyz_dps[0] / 16384);
     pubPigeonAccelY.append(xyz_dps[1] / 16384);

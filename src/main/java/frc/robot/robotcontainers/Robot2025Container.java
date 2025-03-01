@@ -197,13 +197,11 @@ public class Robot2025Container extends RobotContainer {
     operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
     operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
 
-
     // ELEVATOR PROTOTYPE
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
-
 
     operator.start().whileTrue(new ResetElevator(-2) );
     operator.back().whileTrue(new ResetElevator(2) );
