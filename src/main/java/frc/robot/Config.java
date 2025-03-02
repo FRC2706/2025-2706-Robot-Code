@@ -575,7 +575,7 @@ public final class Config {
 
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
-    RESET(-1), 
+    //RESET(-1), 
     FEEDER(60.0),
     L1(50.0),
     L2(70.0),
