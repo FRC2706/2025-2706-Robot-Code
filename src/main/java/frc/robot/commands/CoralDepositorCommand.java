@@ -20,8 +20,9 @@ public class CoralDepositorCommand extends Command {
       * @return 
       * @return
       */
-    public CoralDepositorCommand(boolean feedCoral) {
+    public CoralDepositorCommand(boolean feedCoral, boolean bUseSensor) {
       direction = feedCoral;
+      this.bUseSensor = bUseSensor;
 
       // Use addRequirements() here to declare subsystem dependencies.
       coralDepositorSubsystem = CoralDepositorSubsystem.getInstance(); 
@@ -36,9 +37,9 @@ public class CoralDepositorCommand extends Command {
   @Override
   public void execute() {
     if (direction == true) 
-      coralDepositorSubsystem.setVoltage(1.0);
+      coralDepositorSubsystem.setVoltage(-0.20);
     else 
-      coralDepositorSubsystem.setVoltage(-1.0);
+      coralDepositorSubsystem.setVoltage(0.2);
   }
 
   // Called once the command ends or is interrupted.
@@ -50,9 +51,13 @@ public class CoralDepositorCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+     
+   if (bUseSensor)
+   {
+    //use the sensor to stop
+    return coralDepositorSubsystem.isSensorActive() == true;
+   }
+   else
     return false;
- 
-   //use the sensor to stop
-    //return coralDepositorSubsystem.isSensorActive() == false;
   }
 }

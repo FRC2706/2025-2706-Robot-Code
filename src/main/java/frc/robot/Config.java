@@ -61,7 +61,7 @@ public final class Config {
     public static final int CANDLE = robotSpecific(25,-1,15,25);
     public static final int CLIMBER = robotSpecific(18, 4, -1 ,-1);
 
-    //swerve CAN IDs
+    //swerve CAN IDs for 2025 Robot
     public static final int SWERVE_FL_DRIVE = 35;
     public static final int SWERVE_FL_STEERING = 39;
     public static final int SWERVE_FR_DRIVE = 36;
@@ -85,10 +85,25 @@ public final class Config {
     //intake left and right
     
     //Apollo 2024
+
     public static final int ARM = 19; 
     public static final int INTAKE = 21; 
     public static final int SHOOTER = 22;
     public static final int SHOOTER2 = 23;
+
+    // //swerve CAN IDs for 2024
+    // public static final int SWERVE_FL_DRIVE = 4; 
+    // public static final int SWERVE_FL_STEERING = 5; 
+    // public static final int SWERVE_FR_DRIVE = 6; 
+    // public static final int SWERVE_FR_STEERING = 7; 
+    // public static final int SWERVE_RL_DRIVE = 8; 
+    // public static final int SWERVE_RL_STEERING = 9; 
+    // public static final int SWERVE_RR_DRIVE = 10; 
+    // public static final int SWERVE_RR_STEERING = 11; 
+    // public static final int SWERVE_FL_CANCODER = 12; 
+    // public static final int SWERVE_FR_CANCODER = 13; 
+    // public static final int SWERVE_RL_CANCODER = 14;
+    // public static final int SWERVE_RR_CANCODER = 15;
 
   }
     
@@ -385,13 +400,20 @@ public final class Config {
     /* Angle Encoder Invert */
     public static final boolean canCoderInvert = false;
 
+
+    //Apollo cancoder offsets
+    //Mod0: 270
+    //Mod1: 157.5
+    //Mod2: 192
+    //Mod3: 6
+
     /* Module Specific Constants */
     /* Front Left Module - Module 0 Changed*/
     public static final class Mod0 {
       public static final int driveMotorID = CANID.SWERVE_FL_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
       public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(270);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(149.85);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -401,7 +423,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_FR_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
       public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(157.5);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(305.59);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -411,7 +433,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_RL_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_RL_STEERING;
       public static final int canCoderID = CANID.SWERVE_RL_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(192);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(148.3);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -421,7 +443,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_RR_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
       public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(89.82);//@todo: to fix
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -569,18 +591,18 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 3;
+    public static final double ELEVATOR_POS_TH = 1.0;
 
   }
 
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
-    //RESET(-1), 
-    FEEDER(60.0),
-    L1(50.0),
-    L2(70.0),
-    L3(90.0), 
-    L4(110.0),
+    RESET(-1), 
+    FEEDER(5.3),
+    L1(29.23),
+    L2(45.83),
+    L3(68.8), 
+    L4(104.07),
     NET(90.0); 
   
     public final double position;
@@ -612,7 +634,7 @@ public static enum ArmSetPoints {
    */
   public static class DIFF {
 
-           // Differential Drive CAN IDs
+        // Differential Drive CAN IDs
         public static int DIFF_LEADER_LEFT = robotSpecific( -01, 0, 2, -01);
         public static int DIFF_LEADER_RIGHT = robotSpecific( -01, 0, 1, -01);
         public static int DIFF_FOLLOWER_LEFT = robotSpecific( -01, 0, -1, -01);

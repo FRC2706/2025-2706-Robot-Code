@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleEntry;
@@ -26,6 +27,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.lib2706.ProfiledPIDFFController;
@@ -50,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private Boolean bWasResetbyLimit;
 
     //Servo for brake
-    Servo servoBrake;
+    Servo servoBrake; 
 
     // network table entry
     private final String m_tuningTable = "Elevator/ElevatorTuning";
@@ -69,6 +71,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //elevator target position
     public double elevatorTargetPos = 0;
+    //elevator level
+    private double elevatorPrevPos =0;    
  
     public static ElevatorSubsystem getInstance() {
         if (instance == null) {
@@ -101,9 +105,9 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .voltageCompensation(12);
 
         // Hard limit via limit switch
-        // m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
-        //         .forwardLimitSwitchEnabled(true); 
-        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(false)
+        m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
+                 .forwardLimitSwitchEnabled(false);
+        m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
@@ -122,10 +126,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
 
         //@todo: to be tuned
-        m_elevatorFFSubs.setDefault(Config.ElevatorConfig.elevator_kFF);
-        m_elevatorPSubs.setDefault(2.5);//Config.ElevatorConfig.elevator_kP
+        m_elevatorFFSubs.setDefault(0);
+        m_elevatorPSubs.setDefault(0.1);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
-        m_elevatorDSubs.setDefault(Config.ElevatorConfig.elevator_kD);
+        m_elevatorDSubs.setDefault(0.05);
         m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
 
         // Send telemetry thru networktables
@@ -139,6 +143,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
+                // Set PID gains for velocity control in slot 1
+                .p(0.05, ClosedLoopSlot.kSlot1)
+                .i(0.0, ClosedLoopSlot.kSlot1)
+                .d(0.05, ClosedLoopSlot.kSlot1)
+                .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
                 .maxMotion.maxVelocity(1000)
                 .maxAcceleration(1000)
@@ -147,7 +156,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        // reset encoder
+        //@todo: reset encoder. depends on the initial position
         m_elevator_encoder.setPosition(0);
 
         ErrorTrackingSubsystem.getInstance().register(m_elevator);
@@ -178,9 +187,22 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
 
     }
-    public void setElevatorHeight(double height) {
-        ClosedLoopSlot pidSlot = ClosedLoopSlot.kSlot0;
-        m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+    public void setElevatorHeight(double height, boolean bUp) {
+      ClosedLoopSlot pidSlot;
+
+      if( bUp == true )
+      {
+        //if up, use kSlot0
+        pidSlot = ClosedLoopSlot.kSlot0;
+      }
+      else
+      {
+        //if down, use kSlot1
+        pidSlot = ClosedLoopSlot.kSlot1;
+      }
+
+
+      m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
 
     }
 
@@ -189,9 +211,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       return m_elevatorSwitch.isPressed();
     }
 
-    public void setVoltage(double voltage)
+    public void setPercent(double percent)
     {
-      m_elevator.setVoltage(voltage);
+      m_elevator.set(percent);
     }
 
     //return positon
@@ -212,9 +234,25 @@ public class ElevatorSubsystem extends SubsystemBase {
       elevatorTargetPos = targetPos;
     }
 
+    public void resetPrevPos( double prevPos)
+    {
+      elevatorPrevPos = prevPos;
+    }
+
+    public boolean isMoveUpDirection()
+    {
+      return (elevatorPrevPos < elevatorTargetPos);
+    }
+
     public void resetEncoderPosition()
     {
       m_elevator_encoder.setPosition(0.0);
+    }
+
+    public Command resetEncoder() {
+        return Commands.runOnce(
+                this::resetEncoderPosition
+        );
     }
 
     public void updateEncoderPosition(double newPosition)

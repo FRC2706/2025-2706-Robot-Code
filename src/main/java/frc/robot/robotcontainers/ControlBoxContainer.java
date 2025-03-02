@@ -93,8 +93,8 @@ public class ControlBoxContainer extends RobotContainer {
       
 
     //Manipulator
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true)); 
-    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false));
+    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false)); 
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
     //intake
     // operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
     // operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
