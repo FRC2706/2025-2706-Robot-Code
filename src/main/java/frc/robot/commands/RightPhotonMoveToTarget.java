@@ -13,16 +13,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.subsystems.RightReefPhotonSubsystem;
 
 //class
-public class PhotonMoveToTarget extends Command {
+public class RightPhotonMoveToTarget extends Command {
   //declerations
   Translation2d targetOffset;
   boolean centerTarget;
   boolean isWaypoint;
   boolean shouldNeverEnd;
 
-  PhotonSubsystem leftReefPhoton;
+  private RightReefPhotonSubsystem rightReefPhoton;
 
   //private Timer m_timer = new Timer();
 
@@ -33,10 +34,11 @@ public class PhotonMoveToTarget extends Command {
  * @param _isWaypoint
  * whether or not to use the larger tolerences meant for stop-and-go waypoints
  */
-  public PhotonMoveToTarget(boolean _isWaypoint, boolean neverEnd) {
-    leftReefPhoton = PhotonSubsystem.getInstance();
+  public RightPhotonMoveToTarget(boolean _isWaypoint, boolean neverEnd) {
+
+    rightReefPhoton = RightReefPhotonSubsystem.getInstance();
     addRequirements(SwerveSubsystem.getInstance());
-    addRequirements(leftReefPhoton);
+    addRequirements(rightReefPhoton);
     centerTarget=true;
     isWaypoint=_isWaypoint;
     shouldNeverEnd = neverEnd;
@@ -50,10 +52,10 @@ public class PhotonMoveToTarget extends Command {
  * @param _isWaypoint
  * whether or not to use the larger tolerences meant for stop-and-go waypoints
  */
-  public PhotonMoveToTarget(boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
-    leftReefPhoton = PhotonSubsystem.getInstance();
+  public RightPhotonMoveToTarget(boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
+    rightReefPhoton = RightReefPhotonSubsystem.getInstance();
     addRequirements(SwerveSubsystem.getInstance());
-    addRequirements(leftReefPhoton);
+    addRequirements(rightReefPhoton);
     centerTarget=_centerTarget;
     isWaypoint=_isWaypoint;
     shouldNeverEnd = neverEnd;
@@ -64,7 +66,7 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
-    targetOffset = leftReefPhoton.getTargetOffset();
+    targetOffset = rightReefPhoton.getTargetOffset();
 
     //m_timer.restart();
     //=================
@@ -77,10 +79,10 @@ public class PhotonMoveToTarget extends Command {
   @Override
   public void execute() {
     //+++Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
-    Translation2d setPoint = leftReefPhoton.getNewTargetPos();
+    Translation2d setPoint = rightReefPhoton.getNewTargetPos();
 
-    Rotation2d targetRotation = leftReefPhoton.getTargetRotation();
-    Rotation2d targetRobotHeading = leftReefPhoton.getTargetRobotHeading();
+    Rotation2d targetRotation = rightReefPhoton.getTargetRotation();
+    Rotation2d targetRobotHeading = rightReefPhoton.getTargetRobotHeading();
 
     //@todo: 
     //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating

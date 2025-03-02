@@ -193,14 +193,19 @@ public final class Config {
       //-0.71/2 + 0.02 =-0.355+0.02 = -0.335
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
+    public static final Transform3d  Apollo248CameraTransform = new Transform3d(
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+
+    //2025 Robot camera locations:
+    //===============================
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
 
-        public static final Transform3d  rightReefCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+    public static final Transform3d  rightReefCameraTransform = new Transform3d(
+        -0.025, 0.2, 0.72, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
 
-        public static final Transform3d  StationCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(0)));
+    public static final Transform3d  StationCameraTransform = new Transform3d(
+        0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(0), Math.toRadians(0)));
 
     //networkTableName 
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
@@ -208,8 +213,8 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_Camera_26";
-    public static final String rightReefCameraName = "USB_Camera_25";
+    public static final String leftReefCameraName = "USB_Camera_25";
+    public static final String rightReefCameraName = "USB_Camera_26";
     public static final String intakeCameraName = "USB_Camera_24";
     //data max
     public static final int maxNumSamples = 10;
