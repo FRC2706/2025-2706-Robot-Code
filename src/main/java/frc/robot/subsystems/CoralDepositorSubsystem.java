@@ -47,8 +47,8 @@ public class CoralDepositorSubsystem extends SubsystemBase {
         
         // Initialize the sensor
         //@todo: update sensor
-        // sensor = new DigitalInput(Config.CORAL_Intake.sensor);
-        // sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+        sensor = new DigitalInput(0);
+        sensorDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
         
         // Initialize left and right motors
         System.out.println("[Init]Creating Coral Depositor");
@@ -94,8 +94,8 @@ public class CoralDepositorSubsystem extends SubsystemBase {
     public void periodic() {
 
         //update the sensor status
-        // sensorResult = sensorDebouncer.calculate(!sensor.get());
-        // sensorPub.accept(sensorResult);
+        sensorResult = sensorDebouncer.calculate(!sensor.get());
+        sensorPub.accept(sensorResult);
 
     }
 }
