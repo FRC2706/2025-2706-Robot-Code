@@ -196,16 +196,21 @@ public final class Config {
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
         -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
 
-   
+        public static final Transform3d  rightReefCameraTransform = new Transform3d(
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+
+        public static final Transform3d  StationCameraTransform = new Transform3d(
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(0)));
+
     //networkTableName 
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
     public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_Camera";
-    public static final String rightReefCameraName = "";
-    public static final String intakeCameraName = "";
+    public static final String leftReefCameraName = "USB_Camera_26";
+    public static final String rightReefCameraName = "USB_Camera_25";
+    public static final String intakeCameraName = "USB_Camera_24";
     //data max
     public static final int maxNumSamples = 10;
 
@@ -237,7 +242,21 @@ public final class Config {
       //blue human station
 
       //red human station
-   }};
+   }
+  };
+
+  public static enum CAMERA_ID {
+   
+    LEFT_REEF(0),
+    RIGHT_REEF(1),
+    HUMAN_STATION(2); 
+  
+    public final int cameraId;
+  
+    CAMERA_ID(int setCameraId) {
+      cameraId = setCameraId;
+    }
+  }  
 
     public static enum PhotonPositions {     
       RIGHT_SPEAKER_RED(4, new Translation2d(-0.937,0.937), new Translation2d(-0.637,0.637), Rotation2d.fromDegrees(-60)),
@@ -597,7 +616,7 @@ public final class Config {
 
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
-    RESET(-1), 
+    //RESET(-1), 
     FEEDER(5.3),
     L1(29.23),
     L2(45.83),

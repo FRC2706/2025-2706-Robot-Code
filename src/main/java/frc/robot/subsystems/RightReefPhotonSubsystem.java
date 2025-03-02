@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 //imports
 import java.util.List;
@@ -59,12 +60,12 @@ import frc.robot.commands.PhotonMoveToTarget;
 import frc.robot.commands.RumbleJoystick;
 
 //class
-public class PhotonSubsystem extends SubsystemBase {
+public class RightReefPhotonSubsystem extends SubsystemBase {
 
   //constants
   
   //declarations
-  private static PhotonSubsystem instance;
+  private static RightReefPhotonSubsystem instance;
   private DoubleArrayPublisher pubSetPoint;
   private DoubleArrayPublisher pubNewSetPoint;
   public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
@@ -90,18 +91,18 @@ public class PhotonSubsystem extends SubsystemBase {
   private AprilTagFieldLayout aprilTagFieldLayout;
   //+++private PhotonPoseEstimator photonPoseEstimator;
  
-  public static PhotonSubsystem getInstance(){
+  public static RightReefPhotonSubsystem getInstance(){
     if (instance == null){
       SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystem);
-      instance = new PhotonSubsystem();
+      instance = new RightReefPhotonSubsystem();
     }
     return instance;
   }
 
   /** Creates a new photonAprilTag. */
-  private PhotonSubsystem() {
+  private RightReefPhotonSubsystem() {
     //name of camera, change if using multiple cameras
-    camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
+    camera1 = new PhotonCamera(PhotonConfig.rightReefCameraName);
     
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
@@ -302,7 +303,7 @@ public class PhotonSubsystem extends SubsystemBase {
         Pose2d odometryPose = optPose.get();
 
         //@todo: need to update cameraTransform for the new camera location
-        Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
+        Transform3d robotToTarget3d = PhotonConfig.rightReefCameraTransform.plus(target.getBestCameraToTarget());
         Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
         // Map the position of the tag relative to the current odometry pose with latency compensation
