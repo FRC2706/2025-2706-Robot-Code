@@ -144,9 +144,9 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
                 // Set PID gains for velocity control in slot 1
-                .p(0.001, ClosedLoopSlot.kSlot1)
+                .p(0.05, ClosedLoopSlot.kSlot1)
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .p(0.01, ClosedLoopSlot.kSlot1)
+                .d(0.05, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
                 .maxMotion.maxVelocity(1000)
@@ -243,7 +243,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     {
       return (elevatorPrevPos < elevatorTargetPos);
     }
-    
+
     public void resetEncoderPosition()
     {
       m_elevator_encoder.setPosition(0.0);

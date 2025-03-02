@@ -55,7 +55,7 @@ public class CoralDepositorCommand extends Command {
    if (bUseSensor)
    {
     //use the sensor to stop
-    return coralDepositorSubsystem.isSensorActive() == false;
+    return coralDepositorSubsystem.isSensorActive() == true;
    }
    else
     return false;
