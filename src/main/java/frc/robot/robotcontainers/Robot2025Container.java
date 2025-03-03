@@ -187,24 +187,26 @@ public class Robot2025Container extends RobotContainer {
     //Operator
     //===========================================================================
     //Manipulator
-   // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
-    operator.leftTrigger().whileTrue(new CoralDepositorCommand(true, true));
-    //intake
-    operator.rightBumper().whileTrue(new CoralIntake(-0.3,  0.3));
-    //take coral ready for score
-    operator.rightTrigger().onTrue(CombinedCommands.getCoralForScore());
-    // operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+    // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
     
-    // ELEVATOR PROTOTYPE
-    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.FEEDER));
+    //intake only
+    operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
+    //depositor reverse only
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+
+    //intake
+    operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
+    //score the coral
+    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));   
+    
+    //elevator 
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.start().whileTrue(new ResetElevator(-0.15) );
+    operator.back().whileTrue(new ResetElevator(0.15) );
 
-    operator.start().whileTrue(new ResetElevator(-0.25) );
-    operator.back().whileTrue(new ResetElevator(0.45) );
-
-    operator.leftBumper().onTrue(ElevatorSubsystem.getInstance().resetEncoder());
     // Algae remover
     //operator.y().whileTrue(new MoveAlgae(0.5));
     //operator.a().whileTrue(new MoveAlgae(-0.5));
@@ -217,6 +219,7 @@ public class Robot2025Container extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
+    //@todo: to put to the newwork table
 
     return m_autoRoutines.getAutonomousCommand(autoId);
   }

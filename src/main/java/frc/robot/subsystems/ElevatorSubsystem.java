@@ -127,7 +127,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.1);//Config.ElevatorConfig.elevator_kP
+        m_elevatorPSubs.setDefault(0.15);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(0);
         m_elevatorDSubs.setDefault(0.05);
         m_elevatorIzSubs.setDefault(0);
@@ -145,16 +145,16 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.003)
                 .iZone(0.0)
                 // Set PID gains for velocity control in slot 1
-                .p(0.05, ClosedLoopSlot.kSlot1)
+                .p(0.055, ClosedLoopSlot.kSlot1)
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .d(0.05, ClosedLoopSlot.kSlot1)
+                .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(500) //@todo: to tune
-                          .maxVelocity(500, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(500)
-                          .maxAcceleration(500, ClosedLoopSlot.kSlot1)               
+                .maxMotion.maxVelocity(50) //@todo: to tune
+                          .maxVelocity(0.0001, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(20)
+                          .maxAcceleration(0.0001, ClosedLoopSlot.kSlot1)               
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -209,6 +209,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 
       m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+      //m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
 
     }
 

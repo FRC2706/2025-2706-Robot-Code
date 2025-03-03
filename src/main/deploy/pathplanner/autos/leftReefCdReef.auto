@@ -11,9 +11,28 @@
           }
         },
         {
-          "type": "wait",
+          "type": "sequential",
           "data": {
-            "waitTime": 3.0
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CoralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -23,15 +42,40 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 3.0
+            "name": "coralIntake"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "leftCd-reef"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CoralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
           }
         }
       ]
