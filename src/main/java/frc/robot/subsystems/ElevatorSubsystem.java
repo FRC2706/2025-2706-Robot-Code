@@ -127,10 +127,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.1);//Config.ElevatorConfig.elevator_kP
-        m_elevatorISubs.setDefault(Config.ElevatorConfig.elevator_kI);
+        m_elevatorPSubs.setDefault(0.15);//Config.ElevatorConfig.elevator_kP
+        m_elevatorISubs.setDefault(0);
         m_elevatorDSubs.setDefault(0.05);
-        m_elevatorIzSubs.setDefault(Config.ElevatorConfig.elevator_kIz);
+        m_elevatorIzSubs.setDefault(0);
 
         // Send telemetry thru networktables
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
@@ -143,15 +143,21 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.003)
+                .iZone(0.0)
                 // Set PID gains for velocity control in slot 1
-                .p(0.05, ClosedLoopSlot.kSlot1)
+                .p(0.055, ClosedLoopSlot.kSlot1)
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .d(0.05, ClosedLoopSlot.kSlot1)
+                .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
+                .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(1000)
-                .maxAcceleration(1000)
-                .allowedClosedLoopError(0.25);
+                .maxMotion.maxVelocity(50) //@todo: to tune
+                          .maxVelocity(0.0001, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(20)
+                          .maxAcceleration(0.0001, ClosedLoopSlot.kSlot1)               
+                .allowedClosedLoopError(0.25)
+                .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
+
 
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -203,6 +209,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 
       m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+      //m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
 
     }
 

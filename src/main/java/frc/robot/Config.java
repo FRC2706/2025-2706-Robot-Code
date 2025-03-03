@@ -174,7 +174,7 @@ public final class Config {
   public static final boolean swerveTuning = false; //tune swerve? Turn this to false for competition
   public static final boolean demoEnabled = false; //disable demo mode
 
-  public static int ANALOG_SELECTOR_PORT = robotSpecific(3, -1, -1, 0);
+  public static int ANALOG_SELECTOR_PORT = robotSpecific(0, -1, -1, 0);//appolo is 3
 
   public static final class PhotonConfig{
     public static boolean USE_3D_TAGS = true;
@@ -306,12 +306,18 @@ public final class Config {
     public static final double stickDeadband = 0.1;
 
     public static final int pigeonID = CANID.PIGEON;
-    public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
+    public static final boolean invertGyro = true; // Always ensure Gyro is CCW+ CW-
+
+    //Apollo:
+    // public static final double trackWidth = Units.inchesToMeters(25.787);
+    // public static final double wheelBase = Units.inchesToMeters(20.472);
+    // public static final double wheelDiameter = Units.inchesToMeters(3.884);
 
     /* Drivetrain Constants Changed */
-    public static final double trackWidth = Units.inchesToMeters(25.787);
-    public static final double wheelBase = Units.inchesToMeters(20.472);
-    public static final double wheelDiameter = Units.inchesToMeters(3.884);
+    //2025 competition robot
+    public static final double trackWidth = Units.inchesToMeters(21.5);
+    public static final double wheelBase = Units.inchesToMeters(21.5);
+    public static final double wheelDiameter = Units.inchesToMeters(4.0);
     public static final double wheelCircumference = wheelDiameter * Math.PI;
 
     public static final double openLoopRamp = 0.25;
@@ -597,12 +603,16 @@ public final class Config {
 
   public static enum ElevatorSetPoints {
     //@todo: to be calibrated
-    RESET(-1), 
-    FEEDER(5.3),
+    //RESET(-1), 
+    //Note: first movement needs some adjustment
+    FEEDER(2.500),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
     L1(29.23),
     L2(45.83),
+    AUTO_L2(47.83),
     L3(68.8), 
+    AUTO_L3(70.8),
     L4(104.07),
+    AUTO_L4(106.07),
     NET(90.0); 
   
     public final double position;

@@ -292,7 +292,7 @@ public class SwerveSubsystem extends SubsystemBase {
   //@todo: installation of Pigeon2
   private Rotation2d getYaw() {
     return (Swerve.invertGyro)
-        ? Rotation2d.fromDegrees(360 - gyroYaw.refresh().getValueAsDouble())
+        ? Rotation2d.fromDegrees(180+ gyroYaw.refresh().getValueAsDouble())
         : Rotation2d.fromDegrees(gyroYaw.refresh().getValueAsDouble());
   }
   
