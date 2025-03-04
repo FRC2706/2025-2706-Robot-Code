@@ -400,7 +400,6 @@ public final class Config {
     public static final IdleMode driveNeutralMode = IdleMode.kBrake;
 
     /* Motor Inverts */
-    public static final Boolean[] driveInvert = {true, false, false, false};
     public static final boolean angleInvert = false;
 
     /* Angle Encoder Invert */
