@@ -64,6 +64,7 @@ public class SwerveModule {
   private final SparkClosedLoopController angleController;
   SparkMaxConfig driveMotorConfig;
   SparkMaxConfig angleMotorConfig;
+  boolean isInverted;
 
   private boolean synchronizeEncoderQueued = false;
 
@@ -92,6 +93,9 @@ public class SwerveModule {
     configAngleMotor();
 
     /* Drive Motor Config */
+    // check if inverted
+    isInverted = moduleConstants.inverted;
+
     driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
     driveEncoder = driveMotor.getEncoder();
     driveController = driveMotor.getClosedLoopController();
@@ -191,7 +195,7 @@ public class SwerveModule {
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
 
     // Invert based on config
-    driveMotorConfig.inverted(Config.Swerve.driveInvert[this.moduleNumber]);
+    driveMotorConfig.inverted(isInverted);
 
 
     driveMotorConfig.idleMode(Config.Swerve.driveNeutralMode);
