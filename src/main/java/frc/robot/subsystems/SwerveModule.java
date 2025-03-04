@@ -190,13 +190,8 @@ public class SwerveModule {
 
     driveMotorConfig.smartCurrentLimit(Config.Swerve.driveContinuousCurrentLimit);
 
-    // Temp fix for 2025 robot: submergius. Front left drive motor is reversed
-    if (this.moduleNumber == 0) {
-      // Set it to the opposite inversion
-      driveMotorConfig.inverted(!Config.Swerve.driveInvert);
-    } else {
-      driveMotorConfig.inverted(Config.Swerve.driveInvert);
-    }
+    // Invert based on config
+    driveMotorConfig.inverted(Config.Swerve.driveInvert[this.moduleNumber]);
 
 
     driveMotorConfig.idleMode(Config.Swerve.driveNeutralMode);
