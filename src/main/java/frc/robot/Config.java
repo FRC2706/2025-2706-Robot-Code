@@ -220,23 +220,28 @@ public final class Config {
     public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
     public static final double VEL_TOLERANCE = 0.1*4;
 
+
+    public static final Translation2d targetOffset = new Translation2d(0.5, 0.3); // From tag coordinate frame, left targets
+    // public static final Translation2d targetOffset = new Translation2d(0.5, -0.3); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
-      //all left position. For right, opposite y
-      //left and right: between center of robot and aprilTag
-      //blue reef
-      put(17, new Translation2d(1.0, 0));
-      put(18, new Translation2d(0.5, -0.3)); //tested
-      put(19, new Translation2d(1.0, 0));
-      put(20, new Translation2d(1.0, 0));
-      put(21, new Translation2d(-1.0, -0.3)); //tested
-      put(22, new Translation2d(1.0, 0));
+      // These values are in field oriented coordinates,
+      // So take the tag relative coordinates and rotate them into the field coordinates
+      // The order of tags is in the order of tags around the hexagon, starting from the tag that faces away from the blue allaince 
+      // blue reef
+      put(21, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0))); // faces 0
+      put(20, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1))); // faces 60 deg
+      put(19, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2))); // faces 120 deg
+      put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
+      put(17, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(22, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5))); // faces 300 deg
+
       //red reef
-      put(6, new Translation2d(1.0, 0));
-      put(7, new Translation2d(-1.0, -0.3)); //tested
-      put(8, new Translation2d(1.0, 0));
-      put(9, new Translation2d(1.0, 0));
-      put(10, new Translation2d(1.0, 0));
-      put(11, new Translation2d(1.0, 0));
+      put(7, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0)));  // faces 0 deg (away from blue alliance is 0 deg)
+      put(8, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1)));  // faces 60 deg
+      put(9, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2)));  // faces 120 deg
+      put(10, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg (away from red allaince is 180 deg)
+      put(11, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(6, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5)));  // faces 300 deg
       //blue human station
 
       //red human station
