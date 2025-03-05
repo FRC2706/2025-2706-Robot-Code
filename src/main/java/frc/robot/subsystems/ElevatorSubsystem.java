@@ -112,9 +112,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // Soft limit of position
         //@todo: to determine the value and reverse or forward limit, then enable them
+        //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(500)
+                                   .forwardSoftLimit(115)
                                    .forwardSoftLimitEnabled(false);
 
         // Get pid values from network tables
@@ -151,10 +152,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(50) //@todo: to tune
-                          .maxVelocity(0.0001, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(20)
-                          .maxAcceleration(0.0001, ClosedLoopSlot.kSlot1)               
+                .maxMotion.maxVelocity(1000) //@todo: to tune
+                          .maxVelocity(500, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(1000)
+                          .maxAcceleration(500, ClosedLoopSlot.kSlot1)               
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -207,9 +208,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         pidSlot = ClosedLoopSlot.kSlot1;
       }
 
-
-      m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
-      //m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
+      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
 
     }
 

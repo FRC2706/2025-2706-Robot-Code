@@ -107,6 +107,7 @@ public class Robot2025Container extends RobotContainer {
      * Driver button mapping: to add
      */
     // Core Swerve Buttons
+    //back is left side
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
     //slow mode
@@ -118,6 +119,7 @@ public class Robot2025Container extends RobotContainer {
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
     //Sync Swerve
+    //start is right side
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
     // Commands that take control of the rotation stick
@@ -204,8 +206,13 @@ public class Robot2025Container extends RobotContainer {
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.15) );
+    //back is left side: going up
     operator.back().whileTrue(new ResetElevator(0.15) );
+
+    //@todo: check the elevator position when free run
+    
 
     // Algae remover
     //operator.y().whileTrue(new MoveAlgae(0.5));
