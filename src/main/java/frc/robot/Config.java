@@ -418,7 +418,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_FL_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
       public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(149.85);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(149.85); // may need to be increased
       public static final boolean inverted = true;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, inverted);
@@ -429,7 +429,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_FR_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
       public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(305.59);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(307.7);
       public static final boolean inverted = false;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
               canCoderID, angleOffset, inverted);
@@ -451,7 +451,7 @@ public final class Config {
       public static final int driveMotorID = CANID.SWERVE_RR_DRIVE;
       public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
       public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(89.82);//@todo: to fix
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(92.81);//@todo: to fix
       public static final boolean inverted = false;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
               canCoderID, angleOffset, inverted);
@@ -600,7 +600,7 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 1.0;
+    public static final double ELEVATOR_POS_TH = 0.8;
 
   }
 
@@ -608,7 +608,7 @@ public final class Config {
     //@todo: to be calibrated
     //RESET(-1), 
     //Note: first movement needs some adjustment
-    FEEDER(2.500),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
+    FEEDER(3.5),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
     L1(29.23),
     L2(45.83),
     AUTO_L2(47.83),
