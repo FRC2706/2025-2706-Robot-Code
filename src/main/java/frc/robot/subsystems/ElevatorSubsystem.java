@@ -152,10 +152,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(1000) //@todo: to tune
-                          .maxVelocity(500, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(1000)
-                          .maxAcceleration(500, ClosedLoopSlot.kSlot1)               
+                .maxMotion.maxVelocity(4200) //@todo: to tune
+                          .maxVelocity(3800, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(2000)
+                          .maxAcceleration(1500, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
