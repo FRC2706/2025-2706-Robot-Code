@@ -105,8 +105,7 @@ public class CombinedCommands {
          
         return Commands.parallel(
             new MakeIntakeMotorSpin(9.0,0),
-            new SetArm(()->ArmSetPoints.INTAKE.angleDeg), // Continue to hold arm in the correct position
-            PhotonSubsystem.getInstance().saveImagesIntakeCameraCommand()
+            new SetArm(()->ArmSetPoints.INTAKE.angleDeg) // Continue to hold arm in the correct position
         );
     }
 
@@ -133,6 +132,29 @@ public class CombinedCommands {
         );
     }
 
+    /*Bling command to indicate that a note is loaded in intake*/
+    public static Command strobeToSolidBlingCommand() {
+        return
+            Commands.sequence(
+                new BlingCommand(BlingColour.PURPLESTROBE),
+                new WaitCommand(2),
+                new BlingCommand(BlingColour.PURPLE))
+        ;
+    }
+
+    //coral intake
+    public static Command getCoralForScore()
+    {
+        return 
+            Commands.sequence(
+                new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
+                Commands.deadline(
+                    new CoralIntake(-0.3,0.3),
+                    //new CoralDepositorCommand(true,true))
+                    new CoralDepositorCommand(true, true))
+            );
+    }
+
     /**
      * Score in the amp or speaker using vision and the given parameters.
      * Uses simple programming for the intake and shooter.
@@ -146,172 +168,62 @@ public class CombinedCommands {
      * @param bluePosition PhotonPosition for the blue alliance
      * @param redPosition PhotonPosition for the red alliance
      */ 
-    public static Command visionScoreTeleopSimple(
+    public static Command visionScoreLeftReef(
             CommandXboxController driverJoystick, 
-            double preparingTimeoutSeconds, 
-            double scoringTimeoutSeconds, 
-            double shooterSpeed,
-            double shooterTriggerSpeed,
-            double armAngleDeg, 
-            BooleanSupplier keepArmLoweredUntil,
-            PhotonPositions bluePosition, 
-            PhotonPositions redPosition) {
+            CommandXboxController operatorJoystick) {
 
-        // Use a timer to not rumble if the it's only been 0.5 seconds
-        Timer timer = new Timer();
+        // Use a timer to not rumble if the it's only been 0.5 seconds 
+       // Timer timer = new Timer();
 
         // Bling Commands
-        Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE));
+        Command bling = new ProxyCommand(new BlingCommand(BlingColour.BLUESTROBE).withName("bling"));
         Command idleBling = new ProxyCommand(Commands.idle(BlingSubsystem.getINSTANCE()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming).withName("ProxiedIdleBling"));
         Command turnOffBling = new ProxyCommand(new BlingCommand(BlingColour.DISABLED).withName("TurnOffBling"));
 
         // Wait for vision data to be available
-        Command waitForVisionData = Commands.deadline(new ProxyCommand(new SelectByAllianceCommand(
-            PhotonSubsystem.getInstance().getWaitForDataCommand(bluePosition.id), 
-            PhotonSubsystem.getInstance().getWaitForDataCommand(redPosition.id)).withName("ProxiedWaitForVisionData")),
-            new ProxyCommand(Commands.parallel(
-                new IntakeControl(false), // Reverse note until not touching shooter
-                new WaitCommand(0.2).andThen(new Shooter_PID_Tuner(() -> shooterSpeed))
-            ).withName("ProxiedReverseNoteAndSpinupShooter"))
-        );
+        //@todo: not proxy command
+        //PhotonSubsystem
+        Command waitForVisionData = new ProxyCommand(PhotonSubsystem.getInstance().getWaitForDataCommand()).withName("ProxiedWaitForVisionData");
+        //Command waitForVisionData = PhotonSubsystem.getInstance().getWaitForDataCommand();
+     
             
-        // Wait for all subsytems to get ready
+        //Wait for all subsytems to get ready
+        //SwerveSubsystem
         Command waitForAllSubsytems = Commands.parallel(
-            new WaitUntilCommand(() -> ShooterSubsystem.getInstance().getVelocityRPM() > shooterTriggerSpeed),
-            new WaitUntilCommand(() -> Math.abs(Math.toDegrees(ArmSubsystem.getInstance().getPosition()) - armAngleDeg) < 1),
-            new WaitUntilCommand(() -> SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
+                   new WaitUntilCommand(() -> SwerveSubsystem.getInstance().isAtPose(PhotonConfig.POS_TOLERANCE, PhotonConfig.ANGLE_TOLERANCE) 
                                     && !SwerveSubsystem.getInstance().isChassisMoving(PhotonConfig.VEL_TOLERANCE))
         );
+  
+        //require ServeSubsystem and PhotonSubsystem
+        Command moveToTargetCommands = new ProxyCommand(new PhotonMoveToTarget(false, false, false)).withName("moveToTargetCommands");
+   
+        // Rumble commands
+        Command rumbleDriverBefore = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 1, true);
+        Command rumbleDriverAfter = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 0.3, false);
 
-        // Control all subsystems commands
-        Command controlAllSubsystems = Commands.parallel(
-            new WaitUntilCommand(keepArmLoweredUntil).andThen(new SetArm(()->armAngleDeg)),
-            // new ProxyCommand(centerNoteThenSpinUpShooer(shooterSpeed).withName("ProxiedCenterNoteThenSpinUpShooter")),
-            new ProxyCommand(Commands.parallel(
-                new IntakeControl(false), // Reverse note until not touching shooter
-                new WaitCommand(0.1).andThen(new Shooter_PID_Tuner(() -> shooterSpeed))
-            ).withName("ProxiedReverseNoteAndSpinupShooter")),
-            new SelectByAllianceCommand(
-                    PhotonSubsystem.getInstance().getAprilTagCommand(bluePosition, driverJoystick, true), 
-                    PhotonSubsystem.getInstance().getAprilTagCommand(redPosition, driverJoystick, true)),
-            Commands.sequence(bling, new WaitCommand(0.02), idleBling),
-            Commands.runOnce(() -> timer.restart())
-        );
+        Command rumbleOpBefore = new RumbleJoystick(operatorJoystick, RumbleType.kBothRumble, 0.7, 1, true);
+        Command rumbleOpAfter = new RumbleJoystick(operatorJoystick, RumbleType.kBothRumble, 0.7, 0.3, false);
 
-        // Score the note
-        Command scoreNote = new ProxyCommand(
-            Commands.parallel(
-                new MakeIntakeMotorSpin(9.0, 0),
-                new Shooter_PID_Tuner(() -> shooterSpeed)
-            ).withName("ProxiedShooterAndFeedIntake")
-        ).withTimeout(scoringTimeoutSeconds);
-
-        // Rumble command
-        Command rumble = new RumbleJoystick(driverJoystick, RumbleType.kBothRumble, 0.7, 0.3, false);
-
-        // Sequence preparing then scoring
+        // Sequence 
         return Commands.sequence( 
             waitForVisionData,
-            Commands.deadline(
-                Commands.sequence(
-                    forcefulTimeoutCommand(
-                        preparingTimeoutSeconds,
-                        waitForAllSubsytems
-                    ),
-                    scoreNote),
-                controlAllSubsystems
-            )
+            //@todo: add rumble or bling here to notify the vision data available....
+            //@todo: may not need waitForAllSubsystems
+            // forcefulTimeoutCommand(
+            //             preparingTimeoutSeconds,
+            //             waitForAllSubsytems), 
+
+            
+            Commands.parallel(moveToTargetCommands,
+                              Commands.sequence(bling, new WaitCommand(0.02), idleBling)
+                              )
+                             
         ).finallyDo(() -> {
             idleBling.cancel(); // Cancel idle bling as a safety factor
             Commands.sequence(new WaitCommand(0.02), new ScheduleCommand(turnOffBling)).withName("DelayTurnOffBling").schedule();
-            if (timer.hasElapsed(1))
-                rumble.schedule(); // Rumble the joystick to notify the driver
-        }).withName("VisionScoreTeleopSimple");
-    }
-
-    /**
-     * Score in amp with vision using simple intake/shooter
-     * @param driver joystick
-     */
-    public static Command simpleAmpScoreWithVision(CommandXboxController driver) {
-        return CombinedCommands.visionScoreTeleopSimple(
-            driver, 
-            25, 
-            2, 
-            2000, 2500,
-            ArmSetPoints.AMP.angleDeg,
-            () -> true,
-            PhotonPositions.AMP_BLUE,
-            PhotonPositions.AMP_RED
-        );
-    }    
-
-    /**
-     * Score in speaker with vision using simple intake/shooter.
-     * 
-     * @param driver joystick
-     * @param bluePosition PhotonPosition for the blue alliance
-     * @param redPosition PhotonPosition for the red alliance
-     */
-    public static Command centerSpeakerVisionShot(CommandXboxController driver, PhotonPositions bluePosition, PhotonPositions redPosition) {
-        BooleanSupplier keepArmLoweredUntil = () -> {
-          return PhotonSubsystem.getInstance().getTargetPos().getY() - SwerveSubsystem.getInstance().getPose().getY() < 0.5;
-        };
-        
-        double armAngle = ArmSetPoints.CENTER_VISION_SHOT.angleDeg;
-        double shooterSpeed = 4000;
-        double shooterTriggerSpeed = 3960;
-
-        return CombinedCommands.visionScoreTeleopSimple(
-            driver, 
-            12, 
-            1,
-            shooterSpeed, shooterTriggerSpeed,
-            armAngle,
-            keepArmLoweredUntil,
-            bluePosition,
-            redPosition
-        );
-    }
-
-    /**
-     * Score in speaker with vision using simple intake/shooter.
-     * 
-     * @param driver joystick
-     * @param bluePosition PhotonPosition for the blue alliance
-     * @param redPosition PhotonPosition for the red alliance
-     */
-    public static Command podiumSourceSideSpeakerVisionShot(CommandXboxController driver, PhotonPositions bluePosition, PhotonPositions redPosition) {
-        // BooleanSupplier keepArmLoweredUntil = () -> {
-        //   return PhotonSubsystem.getInstance().getTargetPos().getY() - SwerveSubsystem.getInstance().getPose().getY() > 0.5;
-        // };
-        
-        BooleanSupplier keepArmLoweredUntil = () -> {return true;};
-
-        double armAngle = 39;
-        double shooterSpeed = 4000;
-        double shooterTriggerSpeed = 3960;
-
-        return CombinedCommands.visionScoreTeleopSimple(
-            driver, 
-            12, 
-            1,
-            shooterSpeed, shooterTriggerSpeed,
-            armAngle,
-            keepArmLoweredUntil,
-            bluePosition,
-            redPosition
-        );
-    }
-
-     /*Bling command to indicate that a note is loaded in intake*/
-    public static Command strobeToSolidBlingCommand() {
-        return
-            Commands.sequence(
-                new BlingCommand(BlingColour.PURPLESTROBE),
-                new WaitCommand(2),
-                new BlingCommand(BlingColour.PURPLE))
-        ;
+            rumbleDriverAfter.schedule();
+            // rumbleOpAfter.schedule();
+         }).withName("VisionScoreLeftReef");
     }
     
 }

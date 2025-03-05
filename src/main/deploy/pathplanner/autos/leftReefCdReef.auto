@@ -1,0 +1,87 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "leftStartLine-reef"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CoralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "leftReef-leftCd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "coralIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "leftCd-reef"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CoralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

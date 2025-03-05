@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BlingCommand;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ClimberRPM;
 import frc.robot.subsystems.DiffTalonSubsystem;
 
 /**
@@ -40,7 +40,8 @@ public class BeetleContainer extends RobotContainer {
     CommandXboxController driver = new CommandXboxController(0);
     CommandXboxController operator = new CommandXboxController(1); 
 
-    driver.a().onTrue(new BlingCommand(BlingColour.HONEYDEW));
+    //driver.a().onTrue(new BlingCommand(BlingColour.HONEYDEW));
+
 
     DiffTalonSubsystem.getInstance().setDefaultCommand(
         new ArcadeDrive(driver, XboxController.Axis.kLeftY.value, XboxController.Axis.kRightX.value));

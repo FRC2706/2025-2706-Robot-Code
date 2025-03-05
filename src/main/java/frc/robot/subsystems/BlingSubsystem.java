@@ -14,6 +14,8 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.lib2706.SubsystemChecker;
+import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 
 public class BlingSubsystem extends SubsystemBase {
@@ -23,10 +25,11 @@ public class BlingSubsystem extends SubsystemBase {
   private static BlingSubsystem INSTANCE = null;
 
   /**
-   * Creates a new Bling.
-   */
+   * Creates a new Bling. */
+   
   private BlingSubsystem() {
     if (Config.BlingConstants.CANDLE != -1) {
+      SubsystemChecker.subsystemConstructed(SubsystemType.BlingSubsystem);
       candle = new CANdle(Config.BlingConstants.CANDLE);
 
       CANdleConfiguration config = new CANdleConfiguration();
@@ -100,4 +103,4 @@ public class BlingSubsystem extends SubsystemBase {
     candle.animate(animation);
   }
 
-}
+} 
