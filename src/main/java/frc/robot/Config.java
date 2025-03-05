@@ -400,7 +400,6 @@ public final class Config {
     public static final IdleMode driveNeutralMode = IdleMode.kBrake;
 
     /* Motor Inverts */
-    public static final boolean driveInvert = false;
     public static final boolean angleInvert = false;
 
     /* Angle Encoder Invert */
@@ -420,8 +419,9 @@ public final class Config {
       public static final int angleMotorID = CANID.SWERVE_FL_STEERING;
       public static final int canCoderID = CANID.SWERVE_FL_CANCODER;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(149.85);
+      public static final boolean inverted = true;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
+          canCoderID, angleOffset, inverted);
     }
 
     /* Front Right Module - Module 1 Changed*/
@@ -430,8 +430,9 @@ public final class Config {
       public static final int angleMotorID = CANID.SWERVE_FR_STEERING;
       public static final int canCoderID = CANID.SWERVE_FR_CANCODER;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(305.59);
+      public static final boolean inverted = false;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
+              canCoderID, angleOffset, inverted);
     }
 
     /* Back Left Module - Module 2 Changed*/
@@ -440,8 +441,9 @@ public final class Config {
       public static final int angleMotorID = CANID.SWERVE_RL_STEERING;
       public static final int canCoderID = CANID.SWERVE_RL_CANCODER;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(148.3);
+      public static final boolean inverted = false;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
+              canCoderID, angleOffset, inverted);
     }
 
     /* Back Right Module - Module 3 Changed*/
@@ -450,8 +452,9 @@ public final class Config {
       public static final int angleMotorID = CANID.SWERVE_RR_STEERING;
       public static final int canCoderID = CANID.SWERVE_RR_CANCODER;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(89.82);//@todo: to fix
+      public static final boolean inverted = false;
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
-          canCoderID, angleOffset);
+              canCoderID, angleOffset, inverted);
     }
   }
 
