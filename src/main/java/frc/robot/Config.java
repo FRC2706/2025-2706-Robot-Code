@@ -600,7 +600,7 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 1.0;
+    public static final double ELEVATOR_POS_TH = 0.8;
 
   }
 
@@ -608,7 +608,7 @@ public final class Config {
     //@todo: to be calibrated
     //RESET(-1), 
     //Note: first movement needs some adjustment
-    FEEDER(2.500),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
+    FEEDER(3.5),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
     L1(29.23),
     L2(45.83),
     AUTO_L2(47.83),

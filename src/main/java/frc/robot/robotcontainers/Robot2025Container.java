@@ -193,8 +193,13 @@ public class Robot2025Container extends RobotContainer {
     
     //intake only
     operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
-    //depositor reverse only
-    operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+    //intake rescue
+    operator.rightBumper().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
+    .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
+    //operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+
+
+
 
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
@@ -212,7 +217,7 @@ public class Robot2025Container extends RobotContainer {
     operator.back().whileTrue(new ResetElevator(0.15) );
 
     //@todo: check the elevator position when free run
-    
+
 
     // Algae remover
     //operator.y().whileTrue(new MoveAlgae(0.5));
