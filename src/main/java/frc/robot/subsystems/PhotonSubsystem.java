@@ -85,6 +85,7 @@ public class PhotonSubsystem extends SubsystemBase {
   private int bestTagId;
   private Rotation2d bestTagHeading;
   private Rotation2d targetRobotHeading;
+  private boolean isCameraConnected = false;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
   //+++private PhotonPoseEstimator photonPoseEstimator;
@@ -221,7 +222,21 @@ public class PhotonSubsystem extends SubsystemBase {
     //@todo: test 2D and 3D mode both
    // PhotonPipelineResult result = camera1.getLatestResult();
     //@todo: to test...
-    List<PhotonPipelineResult> listResult = camera1.getAllUnreadResults();
+    List<PhotonPipelineResult> listResult;
+
+    try {
+      listResult = camera1.getAllUnreadResults();
+      isCameraConnected = true;
+    } catch (Exception e) {
+
+      // Print the error message only once when the camera is disconnects
+      if (isCameraConnected) {
+        DriverStation.reportError("PhotonSubsystem no camera found: \n" + e, false);
+        isCameraConnected = false;
+      }
+      return; // No camera connected
+    }
+
     if (listResult.isEmpty() == true)
     {
       return;
