@@ -231,8 +231,7 @@ public final class Config {
       put(21, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0))); // faces 0
       put(20, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1))); // faces 60 deg
       put(19, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2))); // faces 120 deg
-      // put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
-      put(18, new Translation2d(0.44, 0.12));
+      put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
       put(17, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
       put(22, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5))); // faces 300 deg
 
