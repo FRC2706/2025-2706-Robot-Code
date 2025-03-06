@@ -100,7 +100,7 @@ public class PhotonSubsystem extends SubsystemBase {
   /** Creates a new photonAprilTag. */
   private PhotonSubsystem() {
     //name of camera, change if using multiple cameras
-    camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
+    camera1 = new PhotonCamera(PhotonConfig.rightReefCameraName);
     
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
@@ -109,7 +109,7 @@ public class PhotonSubsystem extends SubsystemBase {
     pubBestTagHeading = photonTable.getDoubleTopic("BestTagHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubHasData =  photonTable.getBooleanTopic("hasData").publish(PubSubOption.periodic(0.02));
-    hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.leftReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
+    hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.rightReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
     pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint(fieldToTarget)").publish(PubSubOption.periodic(0.02));
     pubNewSetPoint = photonTable.getDoubleArrayTopic("SetPoint(new)").publish(PubSubOption.periodic(0.02));
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
@@ -301,7 +301,7 @@ public class PhotonSubsystem extends SubsystemBase {
         Pose2d odometryPose = optPose.get();
 
         //@todo: need to update cameraTransform for the new camera location
-        Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
+        Transform3d robotToTarget3d = PhotonConfig.rightReefCameraTransform.plus(target.getBestCameraToTarget());
         Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
         // Map the position of the tag relative to the current odometry pose with latency compensation

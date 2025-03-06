@@ -194,10 +194,10 @@ public final class Config {
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
+        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
 
     public static final Transform3d  rightReefCameraTransform = new Transform3d(
-          -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+          -0.18, -0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
 
    
     //networkTableName 
@@ -206,8 +206,8 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "ReefCamera_24";//USB_Camera24";
-    public static final String rightReefCameraName = "";
+    public static final String leftReefCameraName = "";
+    public static final String rightReefCameraName = "OV9281-70deg-Arducam-USB-Cam87";
     public static final String intakeCameraName = "";
     //data max
     public static final int maxNumSamples = 10;
@@ -221,7 +221,7 @@ public final class Config {
     public static final double VEL_TOLERANCE = 0.1*4;
 
 
-    public static final Translation2d targetOffset = new Translation2d(0.5, 0.3); // From tag coordinate frame, left targets
+    public static final Translation2d targetOffset = new Translation2d(0.44, 0.15); // From tag coordinate frame, left targets
     // public static final Translation2d targetOffset = new Translation2d(0.5, -0.3); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
       // These values are in field oriented coordinates,
@@ -231,7 +231,8 @@ public final class Config {
       put(21, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0))); // faces 0
       put(20, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1))); // faces 60 deg
       put(19, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2))); // faces 120 deg
-      put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
+      // put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
+      put(18, new Translation2d(0.44, 0.12));
       put(17, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
       put(22, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5))); // faces 300 deg
 
