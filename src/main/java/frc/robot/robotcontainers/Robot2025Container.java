@@ -198,19 +198,18 @@ public class Robot2025Container extends RobotContainer {
     // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
     
     //intake only
-    operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
-    //intake rescue
-    operator.rightBumper().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
+    // operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
+    //intake rescue 1
+    operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
+    //intake rescue 2
+    operator.rightTrigger().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
     .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
     //operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
-
-
-
 
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));   
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
