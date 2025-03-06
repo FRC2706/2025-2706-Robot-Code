@@ -206,7 +206,7 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_Camera24";
+    public static final String leftReefCameraName = "ReefCamera_24";//USB_Camera24";
     public static final String rightReefCameraName = "";
     public static final String intakeCameraName = "";
     //data max
