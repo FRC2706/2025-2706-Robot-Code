@@ -94,9 +94,8 @@ public class PhotonMoveToTarget extends Command {
     // Grab the latest target offset.
     targetOffset = PhotonSubsystem.getInstance().getTargetOffset();
 
-    Pose2d desiredPose = new Pose2d(setPoint, desiredRotation);
-    desiredPose = desiredPose.transformBy(new Transform2d(targetOffset, new Rotation2d()));
-
+    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
+ 
     SwerveSubsystem.getInstance().driveToPose(desiredPose);
   }
  

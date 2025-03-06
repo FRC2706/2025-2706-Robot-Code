@@ -221,7 +221,7 @@ public final class Config {
     public static final double VEL_TOLERANCE = 0.1*4;
 
 
-    public static final Translation2d targetOffset = new Translation2d(0.44, 0.15); // From tag coordinate frame, left targets
+    public static final Translation2d targetOffset = new Translation2d(0.44, 0.11); // From tag coordinate frame, left targets
     // public static final Translation2d targetOffset = new Translation2d(0.5, -0.3); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
       // These values are in field oriented coordinates,
@@ -382,10 +382,10 @@ public final class Config {
 
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
-      SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
-      MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
+      SLOW(0.2, 0.2 * Math.PI, 6, 6 * Math.PI),
+      MAX(3.0, 2.5 * Math.PI, 12, 10 * Math.PI),
       DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
-      VISION(0.2, 0.2 * Math.PI, 1, 2 * Math.PI);
+      VISION(1.0, 1.0 * Math.PI, 8, 7 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;

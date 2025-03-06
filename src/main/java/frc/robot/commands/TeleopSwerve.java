@@ -27,9 +27,9 @@ public class TeleopSwerve extends Command {
   private boolean keepConstantHeading = false;
   private boolean getLastValue = false;
 
-  private static SlewRateLimiter translationLimiter = new SlewRateLimiter(12);
-  private static SlewRateLimiter strafeLimiter = new SlewRateLimiter(12);
-  private static SlewRateLimiter rotationLimiter = new SlewRateLimiter(10 * Math.PI);
+  private static SlewRateLimiter translationLimiter = new SlewRateLimiter(Config.Swerve.TeleopSpeeds.MAX.translationAccelLimit);
+  private static SlewRateLimiter strafeLimiter = new SlewRateLimiter(Config.Swerve.TeleopSpeeds.MAX.translationAccelLimit);
+  private static SlewRateLimiter rotationLimiter = new SlewRateLimiter(Config.Swerve.TeleopSpeeds.MAX.angularAccelLimit);
 
   private double translationVal;
   private double strafeVal;
