@@ -207,10 +207,10 @@ public class SwerveSubsystem extends SubsystemBase {
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
-    pidControlX = new ProfiledPIDController(9, 0.5, 0.2,
-            new TrapezoidProfile.Constraints(2.5, 4.5));
-    pidControlY = new ProfiledPIDController(9, 0.5, 0.2,
-            new TrapezoidProfile.Constraints(2.5, 4.5));
+    pidControlX = new ProfiledPIDController(7, 0.5, 0.2,
+            new TrapezoidProfile.Constraints(1.5, 2.0));
+    pidControlY = new ProfiledPIDController(7, 0.5, 0.2,
+            new TrapezoidProfile.Constraints(1.5, 2.0));
     pidControlRotation = new ProfiledPIDController(5.0, 0.5, 0.3,
             new TrapezoidProfile.Constraints(8 * Math.PI, 8 * Math.PI));
             pidControlRotation.enableContinuousInput(-Math.PI, Math.PI);

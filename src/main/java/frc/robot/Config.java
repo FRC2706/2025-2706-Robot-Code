@@ -194,7 +194,10 @@ public final class Config {
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
+
+    public static final Transform3d  rightReefCameraTransform = new Transform3d(
+          -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
 
    
     //networkTableName 
@@ -203,7 +206,7 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_Camera";
+    public static final String leftReefCameraName = "USB_Camera24";
     public static final String rightReefCameraName = "";
     public static final String intakeCameraName = "";
     //data max
@@ -222,7 +225,7 @@ public final class Config {
       //left and right: between center of robot and aprilTag
       //blue reef
       put(17, new Translation2d(1.0, 0));
-      put(18, new Translation2d(1.0, -0.3)); //tested
+      put(18, new Translation2d(0.5, -0.3)); //tested
       put(19, new Translation2d(1.0, 0));
       put(20, new Translation2d(1.0, 0));
       put(21, new Translation2d(-1.0, -0.3)); //tested

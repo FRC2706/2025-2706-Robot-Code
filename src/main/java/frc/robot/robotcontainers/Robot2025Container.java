@@ -179,10 +179,16 @@ public class Robot2025Container extends RobotContainer {
 
     //This is good one: press one time: with timer
     //================================================
-    driver.leftTrigger()
-    .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
-            CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
-    .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    // driver.leftTrigger()
+    // .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
+    //         CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
+    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    driver.leftTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.leftTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(new PhotonMoveToTarget(false, false, false));
 
     //Operator
     //===========================================================================
