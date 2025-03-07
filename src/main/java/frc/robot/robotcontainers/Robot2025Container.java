@@ -169,23 +169,6 @@ public class Robot2025Container extends RobotContainer {
      ));
      */
 
-    //vision-aid alignment: no timer
-    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-
-    //not working
-    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT).withTimeout(0.9))
-    // .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
-    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-
-    //This is good one: press one time: with timer
-    //================================================
-    // driver.leftTrigger()
-    // .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
-    //         CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
-    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-
     // Right trigger because it is hard coded to work for the right corals (no camera for left)
     driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
@@ -195,16 +178,13 @@ public class Robot2025Container extends RobotContainer {
 
     //Operator
     //===========================================================================
-    //Manipulator
-    // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
-    
-    //intake only
-    // operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
+    operator.rightTrigger().whileTrue(new AlgaeCommand());
+
     //intake rescue 1
     operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
     //intake rescue 2
-    operator.rightTrigger().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
-    .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
+    // operator.rightTrigger().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
+    // .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
     //operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
 
     //intake
