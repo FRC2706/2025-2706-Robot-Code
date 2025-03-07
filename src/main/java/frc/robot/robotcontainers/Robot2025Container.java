@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -107,6 +108,7 @@ public class Robot2025Container extends RobotContainer {
      * Driver button mapping: to add
      */
     // Core Swerve Buttons
+    //back is left side
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
     //slow mode
@@ -118,6 +120,7 @@ public class Robot2025Container extends RobotContainer {
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
     //Sync Swerve
+    //start is right side
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
     // Commands that take control of the rotation stick
@@ -167,45 +170,46 @@ public class Robot2025Container extends RobotContainer {
      ));
      */
 
-    //vision-aid alignment: no timer
-    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-
-    //not working
-    // driver.leftTrigger().whileTrue(CombinedCommands.visionScoreLeftReef(driver, operator, PhotonPositions.REEF_LEFT).withTimeout(0.9))
-    // .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
-    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-
-    //This is good one: press one time: with timer
-    //================================================
-    driver.leftTrigger()
-    .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
-            CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
-    .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    // Right trigger because it is hard coded to work for the right corals (no camera for left)
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(Commands.deadline(
+            new PhotonMoveToTarget(false, false, false),
+            new BlingCommand(BlingColour.BLUESTROBE)));
+    driver.rightTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
 
     //Operator
     //===========================================================================
-    //Manipulator
-    // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
-    
-    //intake only
-    operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
-    //depositor reverse only
-    operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
+    //control Algae
+    operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
+    operator.rightTrigger().whileTrue(Commands.run(() -> CoralIntakeSubsystem.getInstance().startIntakePercent(operator.getRightY(), -operator.getRightY())));
+    //intake rescue 1
+    operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
 
+
+   
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));   
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.15) );
+    //back is left side: going up
     operator.back().whileTrue(new ResetElevator(0.15) );
+
+    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    //@todo: check the elevator position when free run
+
 
     // Algae remover
     //operator.y().whileTrue(new MoveAlgae(0.5));

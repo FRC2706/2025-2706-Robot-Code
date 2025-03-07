@@ -112,9 +112,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // Soft limit of position
         //@todo: to determine the value and reverse or forward limit, then enable them
+        //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(500)
+                                   .forwardSoftLimit(115)
                                    .forwardSoftLimitEnabled(false);
 
         // Get pid values from network tables
@@ -127,7 +128,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.15);//Config.ElevatorConfig.elevator_kP
+        m_elevatorPSubs.setDefault(0.17);//Config.ElevatorConfig.elevator_kP
         m_elevatorISubs.setDefault(0);
         m_elevatorDSubs.setDefault(0.05);
         m_elevatorIzSubs.setDefault(0);
@@ -142,19 +143,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         // PID config
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
-                .velocityFF(0.003)
+                .velocityFF(0.0)
                 .iZone(0.0)
                 // Set PID gains for velocity control in slot 1
-                .p(0.055, ClosedLoopSlot.kSlot1)
+                .p(0.07, ClosedLoopSlot.kSlot1)
                 .i(0.0, ClosedLoopSlot.kSlot1)
                 .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(50) //@todo: to tune
-                          .maxVelocity(0.0001, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(20)
-                          .maxAcceleration(0.0001, ClosedLoopSlot.kSlot1)               
+                .maxMotion.maxVelocity(4500) //@todo: to tune
+                          .maxVelocity(4000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(3000)
+                          .maxAcceleration(2000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -207,9 +208,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         pidSlot = ClosedLoopSlot.kSlot1;
       }
 
-
-      m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
-      //m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
+      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
 
     }
 
