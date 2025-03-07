@@ -564,7 +564,7 @@ public final class Config {
     public static final boolean SET_INVERTED = true;
     public static final boolean INVERT_ENCODER = false;
 
-    public static final int CURRENT_LIMIT = 40;
+    public static final int CURRENT_LIMIT = 70;
 
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
     public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
