@@ -4,65 +4,37 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.subsystems.AlgaeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ManipulateCoralIntake extends Command {
-  /** Creates a new ManipulateCoralIntake. */
-  double leftPercent;
-  double rightPercent;
-  int counter;
-
-  CoralIntakeSubsystem coralIntake = null;
-
-  public ManipulateCoralIntake() {
-
-    coralIntake = CoralIntakeSubsystem.getInstance();
+public class AlgaeCommand extends Command {
+  AlgaeSubsystem algae;
+  Supplier<Double> percent;
+  /** Creates a new AlgaeCommand. */
+  public AlgaeCommand(Supplier<Double> percent) {
+    this.percent = percent;
+    algae = AlgaeSubsystem.getInstance();
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(coralIntake);
+    addRequirements(algae);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    counter = 0;
-    
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    counter ++;
-
-    if (counter < 25)
-    {  
-      coralIntake.startIntakePercent(-0.7, -0.7);
-    }
-    else if (counter < 75)
-    {
-      coralIntake.startIntakePercent(-0.7, 0.7);
-    }
-    else if (counter < 100)
-    {
-      coralIntake.startIntakePercent(0.7, 0.7);
-
-    }
-
-    if (counter == 100)
-    {
-      counter = 0;
-    }
-
-
+    algae.setPercent(percent.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    coralIntake.stop();
+    algae.stop();
   }
 
   // Returns true when the command should end.
