@@ -4,14 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlgaeSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AlgaeCommand extends Command {
   AlgaeSubsystem algae;
+  Supplier<Double> percent;
   /** Creates a new AlgaeCommand. */
-  public AlgaeCommand() {
+  public AlgaeCommand(Supplier<Double> percent) {
+    this.percent = percent;
     algae = AlgaeSubsystem.getInstance();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(algae);
@@ -24,7 +28,7 @@ public class AlgaeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    algae.setPercent(0.3);
+    algae.setPercent(percent.get());
   }
 
   // Called once the command ends or is interrupted.

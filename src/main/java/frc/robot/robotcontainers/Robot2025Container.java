@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -174,19 +175,21 @@ public class Robot2025Container extends RobotContainer {
         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
     driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
     driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
-        .whileTrue(new PhotonMoveToTarget(false, false, false));
+        .whileTrue(Commands.deadline(
+            new PhotonMoveToTarget(false, false, false),
+            new BlingCommand(BlingColour.BLUESTROBE)));
+    driver.rightTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
 
     //Operator
     //===========================================================================
-    operator.rightTrigger().whileTrue(new AlgaeCommand());
-
+    //control Algae
+    operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
+    operator.rightTrigger().whileTrue(Commands.run(() -> CoralIntakeSubsystem.getInstance().startIntakePercent(operator.getRightY(), -operator.getRightY())));
     //intake rescue 1
     operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
-    //intake rescue 2
-    // operator.rightTrigger().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
-    // .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
-    //operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
 
+
+   
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
@@ -201,6 +204,9 @@ public class Robot2025Container extends RobotContainer {
     operator.start().whileTrue(new ResetElevator(-0.15) );
     //back is left side: going up
     operator.back().whileTrue(new ResetElevator(0.15) );
+
+    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
 
     //@todo: check the elevator position when free run
 

@@ -39,15 +39,15 @@ public class ManipulateCoralIntake extends Command {
 
     if (counter < 25)
     {  
-      coralIntake.startIntakePercent(-0.3, -0.3);
+      coralIntake.startIntakePercent(-0.7, -0.7);
     }
     else if (counter < 75)
     {
-      coralIntake.startIntakePercent(-0.3, 0.3);
+      coralIntake.startIntakePercent(-0.7, 0.7);
     }
     else if (counter < 100)
     {
-      coralIntake.startIntakePercent(0.3, 0.3);
+      coralIntake.startIntakePercent(0.7, 0.7);
 
     }
 
