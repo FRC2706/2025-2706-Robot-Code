@@ -181,10 +181,17 @@ public class Robot2025Container extends RobotContainer {
 
     //This is good one: press one time: with timer
     //================================================
-    driver.leftTrigger()
-    .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
-            CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
-    .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    // driver.leftTrigger()
+    // .onTrue(Commands.sequence(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)), 
+    //         CombinedCommands.visionScoreLeftReef(driver, operator).withTimeout(0.9)))
+    // .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    // Right trigger because it is hard coded to work for the right corals (no camera for left)
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(new PhotonMoveToTarget(false, false, false));
 
     //Operator
     //===========================================================================
@@ -192,19 +199,18 @@ public class Robot2025Container extends RobotContainer {
     // operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));
     
     //intake only
-    operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
-    //intake rescue
-    operator.rightBumper().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
+    // operator.leftTrigger().whileTrue(new CoralIntake(-0.3,  0.3));
+    //intake rescue 1
+    operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
+    //intake rescue 2
+    operator.rightTrigger().onTrue(new CoralIntake(-0.3,  -0.3).withTimeout(0.5))
     .onFalse(new CoralIntake(0.3,  0.3).withTimeout(0.5));
     //operator.rightBumper().whileTrue(new CoralDepositorCommand(false, false));
-
-
-
 
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true, false));   
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));

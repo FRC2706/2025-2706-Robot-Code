@@ -194,7 +194,10 @@ public final class Config {
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.025, -0.2, 0.72, new Rotation3d(0, Math.toRadians(34.2), Math.toRadians(180)));
+        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
+
+    public static final Transform3d  rightReefCameraTransform = new Transform3d(
+          -0.18, -0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
 
    
     //networkTableName 
@@ -203,8 +206,8 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
       
-    public static final String leftReefCameraName = "USB_Camera";
-    public static final String rightReefCameraName = "";
+    public static final String leftReefCameraName = "";
+    public static final String rightReefCameraName = "OV9281-70deg-Arducam-USB-Cam87";
     public static final String intakeCameraName = "";
     //data max
     public static final int maxNumSamples = 10;
@@ -217,23 +220,28 @@ public final class Config {
     public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
     public static final double VEL_TOLERANCE = 0.1*4;
 
+
+    public static final Translation2d targetOffset = new Translation2d(0.44, 0.11); // From tag coordinate frame, left targets
+    // public static final Translation2d targetOffset = new Translation2d(0.5, -0.3); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
-      //all left position. For right, opposite y
-      //left and right: between center of robot and aprilTag
-      //blue reef
-      put(17, new Translation2d(1.0, 0));
-      put(18, new Translation2d(1.0, -0.3)); //tested
-      put(19, new Translation2d(1.0, 0));
-      put(20, new Translation2d(1.0, 0));
-      put(21, new Translation2d(-1.0, -0.3)); //tested
-      put(22, new Translation2d(1.0, 0));
+      // These values are in field oriented coordinates,
+      // So take the tag relative coordinates and rotate them into the field coordinates
+      // The order of tags is in the order of tags around the hexagon, starting from the tag that faces away from the blue allaince 
+      // blue reef
+      put(21, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0))); // faces 0
+      put(20, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1))); // faces 60 deg
+      put(19, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2))); // faces 120 deg
+      put(18, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
+      put(17, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(22, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5))); // faces 300 deg
+
       //red reef
-      put(6, new Translation2d(1.0, 0));
-      put(7, new Translation2d(-1.0, -0.3)); //tested
-      put(8, new Translation2d(1.0, 0));
-      put(9, new Translation2d(1.0, 0));
-      put(10, new Translation2d(1.0, 0));
-      put(11, new Translation2d(1.0, 0));
+      put(7, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 0)));  // faces 0 deg (away from blue alliance is 0 deg)
+      put(8, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 1)));  // faces 60 deg
+      put(9, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 2)));  // faces 120 deg
+      put(10, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg (away from red allaince is 180 deg)
+      put(11, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(6, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5)));  // faces 300 deg
       //blue human station
 
       //red human station
@@ -374,10 +382,10 @@ public final class Config {
 
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
-      SLOW(0.2, 0.2 * Math.PI, 2, 4 * Math.PI),
-      MAX(3.0, 2.5 * Math.PI, 6, 8 * Math.PI),
+      SLOW(0.2, 0.2 * Math.PI, 6, 6 * Math.PI),
+      MAX(3.0, 2.5 * Math.PI, 12, 10 * Math.PI),
       DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
-      VISION(0.2, 0.2 * Math.PI, 1, 2 * Math.PI);
+      VISION(1.0, 1.0 * Math.PI, 8, 7 * Math.PI);
 
       public final double translationalSpeed;
       public final double angularSpeed;
