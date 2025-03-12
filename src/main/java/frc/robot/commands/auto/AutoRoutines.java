@@ -77,8 +77,8 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
 
-         NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.AUTO_L2));
-         NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.AUTO_L4));
+         NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
+         NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
          NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
@@ -94,7 +94,7 @@ public class AutoRoutines extends SubsystemBase {
             case 2:
                 return Left_R_CD_R;
             case 3:
-                return RIGHTCenter_R_CD;
+                return Right_R_CD_R;
             case 4:
                 return RIGHTCenter_R_CD_R;
             case 5:
