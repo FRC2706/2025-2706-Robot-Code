@@ -198,8 +198,8 @@ public class Robot2025Container extends RobotContainer {
     //elevator 
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
     //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.15) );
     //back is left side: going up
