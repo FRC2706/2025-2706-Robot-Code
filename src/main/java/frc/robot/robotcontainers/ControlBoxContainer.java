@@ -29,7 +29,6 @@ import frc.robot.commands.BlingCommand;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.ClimberRPM;
 import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.CoralIntake;
 import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
@@ -48,9 +47,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.CoralIntakeSubsystem;
 import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.CoralIntake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

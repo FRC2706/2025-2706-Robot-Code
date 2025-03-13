@@ -24,7 +24,6 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.CoralDepositorCommand;
-import frc.robot.commands.CoralIntake;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;

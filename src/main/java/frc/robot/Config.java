@@ -616,7 +616,7 @@ public final class Config {
     //@todo: to be calibrated
     //RESET(-1), 
     //Note: first movement needs some adjustment
-    FEEDER(3.5),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
+    FEEDER(-1),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
     L1(29.23),
     L2(45.83),
     AUTO_L2(47.83),
