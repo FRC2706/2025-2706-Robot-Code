@@ -25,12 +25,6 @@
                 "data": {
                   "name": "CoralScore"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "elevatorIntake"
-                }
               }
             ]
           }
