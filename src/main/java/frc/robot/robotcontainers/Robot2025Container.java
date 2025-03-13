@@ -184,14 +184,14 @@ public class Robot2025Container extends RobotContainer {
     //===========================================================================
     //control Algae
     operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
-    operator.rightTrigger().whileTrue(Commands.run(() -> CoralIntakeSubsystem.getInstance().startIntakePercent(operator.getRightY(), -operator.getRightY())));
+    //operator.rightTrigger().whileTrue(Commands.run(() -> CoralIntakeSubsystem.getInstance().startIntakePercent(operator.getRightY(), -operator.getRightY())));
     //intake rescue 1
-    operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
+   // operator.leftTrigger().whileTrue(new ManipulateCoralIntake());
 
 
    
     //intake
-    operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
+   // operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
     operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
