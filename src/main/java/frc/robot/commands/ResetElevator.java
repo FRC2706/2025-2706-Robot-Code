@@ -43,7 +43,8 @@ public class ResetElevator extends Command {
   @Override
   public boolean isFinished() {
 
-    if(elevatorSubsystem.isLimitSwitchPressed()) {
+    if(elevatorSubsystem.isLimitSwitchPressed() && setPercent<0.0) {
+      elevatorSubsystem.resetPrevPos(0);
       return true;
     }
     else {

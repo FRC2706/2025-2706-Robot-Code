@@ -26,6 +26,7 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,7 +48,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private RelativeEncoder m_elevator_encoder; 
     private SparkClosedLoopController m_pidControllerElevator;
 
-    //limit switch
+    //limit switch: connected to SparkMax
     private final SparkLimitSwitch m_elevatorSwitch;
     private Boolean bWasResetbyLimit;
 
@@ -83,7 +84,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private ElevatorSubsystem() {
-
+      
         servoBrake = new Servo(0);
 
         // Initialize elevator and other stuff
@@ -93,9 +94,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_encoder = m_elevator.getEncoder();
         m_pidControllerElevator = m_elevator.getClosedLoopController();
 
-        //@todo: forware or reverse?
-       // m_elevatorSwitch = m_elevator.getForwardLimitSwitch();
+        //reverse
         m_elevatorSwitch = m_elevator.getReverseLimitSwitch();
+       
         bWasResetbyLimit = false;
 
         // Config elevator
@@ -104,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        // Hard limit via limit switch
+        // //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
@@ -128,9 +129,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.17);//Config.ElevatorConfig.elevator_kP
+        m_elevatorPSubs.setDefault(0.07);//Config.ElevatorConfig.elevator_kP//0.17
         m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.05);
+        m_elevatorDSubs.setDefault(0.05);//0.05
         m_elevatorIzSubs.setDefault(0);
 
         // Send telemetry thru networktables
@@ -146,16 +147,16 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0)
                 .iZone(0.0)
                 // Set PID gains for velocity control in slot 1
-                .p(0.07, ClosedLoopSlot.kSlot1)
+                .p(0.03, ClosedLoopSlot.kSlot1)//0.07
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .d(0.03, ClosedLoopSlot.kSlot1)
+                .d(0.03, ClosedLoopSlot.kSlot1)//0.03
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(4500) //@todo: to tune
-                          .maxVelocity(4000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(3000)
-                          .maxAcceleration(2000, ClosedLoopSlot.kSlot1)
+                .maxMotion.maxVelocity(6000) //@todo: to tune
+                          .maxVelocity(5000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(7000)
+                          .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -175,7 +176,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_currentPositionPub.accept(m_elevator_encoder.getPosition());
         m_targetPositionPub.accept(elevatorTargetPos);
         m_switchPressedPub.accept(m_elevatorSwitch.isPressed());
-
         resetEncoderbyLimit();
 
     }
@@ -205,17 +205,18 @@ public class ElevatorSubsystem extends SubsystemBase {
       else
       {
         //if down, use kSlot1
-        pidSlot = ClosedLoopSlot.kSlot1;
+        pidSlot = ClosedLoopSlot.kSlot1; 
       }
 
-      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 0);
-      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0);
+      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.5);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.5);
 
     }
 
     public boolean isLimitSwitchPressed()
     {
       return m_elevatorSwitch.isPressed();
+
     }
 
     public void setPercent(double percent)
