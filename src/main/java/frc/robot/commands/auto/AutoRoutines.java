@@ -24,7 +24,6 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.commands.CombinedCommands;
 import frc.robot.commands.CoralDepositorCommand;
-import frc.robot.commands.CoralIntake;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;
@@ -80,7 +79,7 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
-         NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
+        // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
     }
 
