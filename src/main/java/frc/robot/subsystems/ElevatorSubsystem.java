@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        // //Hard limit via limit switch
+        //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
@@ -157,7 +157,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                           .maxVelocity(5000, ClosedLoopSlot.kSlot1)
                           .maxAcceleration(8000)
                           .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
-                .allowedClosedLoopError(0.25)
+                .allowedClosedLoopError(0.25) 
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
 
