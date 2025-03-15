@@ -77,6 +77,7 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
 
          NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
+         NamedCommands.registerCommand("elevatorL3",new SetElevator(Config.ElevatorSetPoints.L3));
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));

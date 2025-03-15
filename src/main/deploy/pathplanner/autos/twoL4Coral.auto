@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL4"
+                  "name": "elevatorL3"
                 }
               },
               {
@@ -42,9 +42,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "coralIntake"
+            "waitTime": 2.0
           }
         },
         {
@@ -60,7 +60,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL4"
+                  "name": "elevatorL3"
                 }
               },
               {
