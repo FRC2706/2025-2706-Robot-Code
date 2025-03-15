@@ -96,7 +96,7 @@ public class AutoRoutines extends SubsystemBase {
             case 2:
                 return testCurvedPath;
             case 3:
-                return RIGHTCenter_R_CD;
+                return Right_R_CD_R;
             case 4:
                 return RIGHTCenter_R_CD_R;
             case 5:
