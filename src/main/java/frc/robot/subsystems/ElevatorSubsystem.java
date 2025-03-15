@@ -116,8 +116,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(115)
-                                   .forwardSoftLimitEnabled(false);
+                                   .forwardSoftLimit(112)
+                                   .forwardSoftLimitEnabled(true);
 
         // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
@@ -129,9 +129,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.04);//Config.ElevatorConfig.elevator_kP//0.17
+        m_elevatorPSubs.setDefault(0.07);//0.15 (tried 0.3/0.15 )
         m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.1);//0.05
+        m_elevatorDSubs.setDefault(0.01);//0.01/0.03
         m_elevatorIzSubs.setDefault(0);
 
         // Send telemetry thru networktables
@@ -153,9 +153,9 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(7000) //@todo: to tune
+                .maxMotion.maxVelocity(8000) //@todo: to tune
                           .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(8000)
+                          .maxAcceleration(10000)//10000
                           .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25) 
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);

@@ -608,7 +608,7 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 0.5;
+    public static final double ELEVATOR_POS_TH = 0.25;
 
   }
 
