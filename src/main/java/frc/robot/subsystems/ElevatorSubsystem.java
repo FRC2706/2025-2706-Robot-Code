@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        // //Hard limit via limit switch
+        //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
@@ -129,9 +129,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.07);//Config.ElevatorConfig.elevator_kP//0.17
+        m_elevatorPSubs.setDefault(0.04);//Config.ElevatorConfig.elevator_kP//0.17
         m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.05);//0.05
+        m_elevatorDSubs.setDefault(0.1);//0.05
         m_elevatorIzSubs.setDefault(0);
 
         // Send telemetry thru networktables
@@ -153,11 +153,11 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(6000) //@todo: to tune
+                .maxMotion.maxVelocity(7000) //@todo: to tune
                           .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(7000)
+                          .maxAcceleration(8000)
                           .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
-                .allowedClosedLoopError(0.25)
+                .allowedClosedLoopError(0.25) 
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
 
