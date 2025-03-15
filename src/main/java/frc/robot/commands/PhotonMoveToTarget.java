@@ -7,6 +7,7 @@ package frc.robot.commands;
 //imports
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,8 +73,8 @@ public class PhotonMoveToTarget extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //+++Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
-    Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
+    Translation2d setPoint = PhotonSubsystem.getInstance().getTargetPos();
+    // Translation2d setPoint = PhotonSubsystem.getInstance().getNewTargetPos();
 
     Rotation2d targetRotation = PhotonSubsystem.getInstance().getTargetRotation();
     Rotation2d targetRobotHeading = PhotonSubsystem.getInstance().getTargetRobotHeading();
@@ -82,13 +83,20 @@ public class PhotonMoveToTarget extends Command {
     //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
     //convert to Robot: facing to AprilTag
     Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
-        
-    if (centerTarget){
-      SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), rotationSetPoint));
-    }else{
-      //use the absolute heading
-      SwerveSubsystem.getInstance().driveToPose(new Pose2d(setPoint.plus(targetOffset), targetRobotHeading));
+
+    Rotation2d desiredRotation;
+    if (centerTarget) {
+      desiredRotation = rotationSetPoint;
+    } else {
+      desiredRotation = targetRobotHeading;
     }
+
+    // Grab the latest target offset.
+    targetOffset = PhotonSubsystem.getInstance().getTargetOffset();
+
+    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
+ 
+    SwerveSubsystem.getInstance().driveToPose(desiredPose);
   }
  
 

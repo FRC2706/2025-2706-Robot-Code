@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,11 +34,7 @@ import frc.robot.commands.*;
 import frc.robot.commands.BlingCommand.BlingColour;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.CoralIntakeSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.Config.AutoConstants;
 
 
@@ -104,23 +101,116 @@ public class Robot2025Container extends RobotContainer {
     //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
 
 
-    //Manipulator
-    operator.rightTrigger().whileTrue(new CoralDepositorCommand(true));
-    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false));
+    //Driver
+    //=========================================================================
+    /**
+     * Driver Controls
+     * Driver button mapping: to add
+     */
+    // Core Swerve Buttons
+    //back is left side
+    driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
+
+    //slow mode
+    driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+
+    //??? 
+    driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
+
+    //Sync Swerve
+    //start is right side
+    driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
+
+    // Commands that take control of the rotation stick
+    driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
+    driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
+    driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));
+
+    //for tuning the swerve
+    /*SwerveModuleState[] moduleStatesForwards = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    };
+     driver.y().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+     ));
+
+     SwerveModuleState[] moduleStatesSideways = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)), new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+     };
+     driver.x().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+     ));
+
+     SwerveModuleState[] moduleStatesBackwards = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+     };
+     driver.a().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+     ));
+
+     SwerveModuleState[] moduleStates270 = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+     };
+     driver.b().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+     ));
+     */
+
+    // Right trigger because it is hard coded to work for the right corals (no camera for left)
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(Commands.deadline(
+            new PhotonMoveToTarget(false, false, false),
+            new BlingCommand(BlingColour.BLUESTROBE)));
+    driver.rightTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    //Operator
+    //===========================================================================
+    //control Algae
+    operator.rightTrigger().whileTrue(new AlgaeCommand(90, 1));
+    //rescue: reverse the depositor
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
+       
     //intake
-    operator.leftBumper().whileTrue(new CoralIntake(0.3,-0.3));
-    operator.rightBumper().whileTrue(new CoralIntake(-0.3,0.3));
-
-
-    // ELEVATOR PROTOTYPE
+    operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
+    //score the coral
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
+    
+    //elevator 
     operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
     operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    //start is right side: going down
+    operator.start().whileTrue(new ResetElevator(-0.15) );
+    //back is left side: going up
+    operator.back().whileTrue(new ResetElevator(0.15) );
+
+    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    //@todo: check the elevator position when free run
 
 
-    operator.start().whileTrue(new ResetElevator(-2) );
-    operator.back().whileTrue(new ResetElevator(2) );
+    // Algae remover
+    //operator.y().whileTrue(new MoveAlgae(0.5));
+    //operator.a().whileTrue(new MoveAlgae(-0.5));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -130,6 +220,7 @@ public class Robot2025Container extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
+    //@todo: to put to the newwork table
 
     return m_autoRoutines.getAutonomousCommand(autoId);
   }

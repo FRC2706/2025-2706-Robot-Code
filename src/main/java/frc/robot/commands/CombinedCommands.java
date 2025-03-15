@@ -142,6 +142,16 @@ public class CombinedCommands {
         ;
     }
 
+    //coral intake
+    public static Command getCoralForScore()
+    {
+        return 
+            Commands.sequence(
+                new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
+                new CoralDepositorCommand(true, true)
+            );
+    }
+
     /**
      * Score in the amp or speaker using vision and the given parameters.
      * Uses simple programming for the intake and shooter.

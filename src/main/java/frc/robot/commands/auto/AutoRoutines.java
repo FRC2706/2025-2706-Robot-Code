@@ -23,10 +23,12 @@ import frc.robot.Config.ArmConfig;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.commands.CombinedCommands;
+import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;
 import frc.robot.commands.SetArm;
+import frc.robot.commands.SetElevator;
 import frc.robot.commands.Shooter_PID_Tuner;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -73,6 +75,12 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("purpleBling", new BlingCommand(BlingColour.PURPLE));
          NamedCommands.registerCommand("honeydewBling", new BlingCommand(BlingColour.HONEYDEW));
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
+
+         NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
+         NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
+         NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
+        // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
+         NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
     }
 
     public Command getAutonomousCommand(int selectAuto) {
@@ -83,9 +91,9 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
-                return Right_R_CD_R;
+                return Left_R_CD_R;
             case 3:
-                return RIGHTCenter_R_CD;
+                return Right_R_CD_R;
             case 4:
                 return RIGHTCenter_R_CD_R;
             case 5:
@@ -93,7 +101,7 @@ public class AutoRoutines extends SubsystemBase {
             case 6:
                 return LEFTCenter_R_CD_R;
             case 7:
-                return Left_R_CD;
+                return Right_R_CD_R;
             case 8:
                 return Left_R_CD_R;
             case 9: 
