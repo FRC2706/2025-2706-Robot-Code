@@ -69,8 +69,8 @@ public class SetElevator extends Command {
         
         
         if (elevatorSubsystem.isAtTargetPos() == true 
-            || m_timer.hasElapsed(5)
-            || bLimitSwitch)
+            || m_timer.hasElapsed(5))
+          //  || bLimitSwitch)
         {
             return true;
         }
