@@ -148,10 +148,7 @@ public class CombinedCommands {
         return 
             Commands.sequence(
                 new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
-                Commands.deadline(
-                    new CoralIntake(-0.3,0.3),
-                    //new CoralDepositorCommand(true,true))
-                    new CoralDepositorCommand(true, true))
+                new CoralDepositorCommand(true, true)
             );
     }
 
