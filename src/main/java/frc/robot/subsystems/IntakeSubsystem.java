@@ -131,10 +131,14 @@ public class IntakeSubsystem extends SubsystemBase{
         m_intake.setVoltage(voltage);
     }
 
-    public void stop(){
-        m_intake.stopMotor();
+    public void stop() 
+    {
+      m_intake.stopMotor();
     }
 
+  
+
+    
     /*---------------------------Commands---------------------------*/
 
     @Override

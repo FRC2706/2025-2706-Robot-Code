@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,25 +30,13 @@ import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.Config.Swerve.TeleopSpeeds;
 import frc.robot.Robot;
-import frc.robot.commands.BlingCommand;
+import frc.robot.commands.*;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.commands.ClimberRPM;
-import frc.robot.commands.CombinedCommands;
-import frc.robot.commands.IntakeControl;
-import frc.robot.commands.MakeIntakeMotorSpin;
-import frc.robot.commands.RotateAngleToVisionSupplier;
-import frc.robot.commands.RotateToAngle;
-import frc.robot.commands.RumbleJoystick;
-import frc.robot.commands.SetArm;
-import frc.robot.commands.SubwooferShot;
-import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.AutoSelector;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.Config.AutoConstants;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -86,7 +75,6 @@ public class Robot2025Container extends RobotContainer {
     m_swerveDefaultCommand = new TeleopSwerve(driver);
     s_Swerve.setDefaultCommand(m_swerveDefaultCommand);
     
-
     // Setup auto
     m_autoRoutines = new AutoRoutines();
     m_autoSelector = new AutoSelector();
@@ -101,8 +89,9 @@ public class Robot2025Container extends RobotContainer {
    * Use this method to define your trigger->command mappings. Triggers can be
    * created via the {@link CommandXboxController} or other ways.
    */
-  private void configureButtonBindings() { 
-    // Set bling to for some events....
+  private void configureButtonBindings() {
+// Set bling to for some events....
+    //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
 
     // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
     //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
@@ -110,51 +99,119 @@ public class Robot2025Container extends RobotContainer {
     // new Trigger(() -> intake.isBackSensorLongActive() && DriverStation.isTeleopEnabled()).onTrue(Commands.parallel(
     //         new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
     //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
-      
 
+
+    //Driver
+    //=========================================================================
     /**
      * Driver Controls
      * Driver button mapping: to add
      */
     // Core Swerve Buttons
+    //back is left side
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
-    
+
     //slow mode
     driver.leftBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
-    
-    //???
+
+    //??? 
     driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
 
     //Sync Swerve
+    //start is right side
     driver.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().synchSwerve()));
 
     // Commands that take control of the rotation stick
     driver.y().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(0)));
     driver.x().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(90)));
     driver.a().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(180)));
-    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));   
-    
-    //vision-aid alignment    
-    // driver.leftTrigger().whileTrue(CombinedCommands.centerSpeakerVisionShot(driver, PhotonPositions.FAR_SPEAKER_BLUE, PhotonPositions.FAR_SPEAKER_RED))
-    //         .onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-    //         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.b().whileTrue(new RotateToAngle(driver, Rotation2d.fromDegrees(270)));
 
-    /**
-     * Operator Controls
-     * Operator button mapping: to add
+    //for tuning the swerve
+    /*SwerveModuleState[] moduleStatesForwards = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+    };
+     driver.y().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesForwards, true, true)
+     ));
+
+     SwerveModuleState[] moduleStatesSideways = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)), new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(90)),
+     };
+     driver.x().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesSideways, true, true)
+     ));
+
+     SwerveModuleState[] moduleStatesBackwards = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(180)),
+     };
+     driver.a().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStatesBackwards, true, true)
+     ));
+
+     SwerveModuleState[] moduleStates270 = {
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+       new SwerveModuleState(0, Rotation2d.fromDegrees(270)),
+     };
+     driver.b().whileTrue(Commands.run(
+       () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
+     ));
      */
-    // elevator
-    // operator.y().onTrue(new SetArm(()->ArmSetPoints.AMP.angleDeg)).onTrue(new IntakeControl(false).withTimeout(0.25)); // Amp
-    // operator.b().onTrue(new SetArm(()->ArmSetPoints.IDLE.angleDeg)); // Idle
-    // operator.a().onTrue(new SetArm(()->ArmSetPoints.NO_INTAKE.angleDeg)); // Pickup
-    // operator.x().onTrue(new SetArm(()->ArmSetPoints.SPEAKER_KICKBOT_SHOT.angleDeg));
-    // Climber
-    //operator.leftTrigger(0.10).and(operator.back()).whileTrue(new ClimberRPM(()-> MathUtil.applyDeadband(operator.getLeftTriggerAxis(), 0.35) * 0.5));
-  
-  }
 
+    // Right trigger because it is hard coded to work for the right corals (no camera for left)
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(Commands.deadline(
+            new PhotonMoveToTarget(false, false, false),
+            new BlingCommand(BlingColour.BLUESTROBE)));
+    driver.rightTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    //Operator
+    //===========================================================================
+    //control Algae
+    operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
+    //rescue: reverse the depositor
+    operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
+       
+    //intake
+    operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
+    //score the coral
+    operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
+    
+    //elevator 
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    //start is right side: going down
+    operator.start().whileTrue(new ResetElevator(-0.15) );
+    //back is left side: going up
+    operator.back().whileTrue(new ResetElevator(0.15) );
+
+    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
+
+    //@todo: check the elevator position when free run
+
+
+    // Algae remover
+    //operator.y().whileTrue(new MoveAlgae(0.5));
+    //operator.a().whileTrue(new MoveAlgae(-0.5));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *leop
@@ -163,6 +220,7 @@ public class Robot2025Container extends RobotContainer {
   public Command getAutonomousCommand() {
     int autoId = m_autoSelector.getAutoId();
     System.out.println("*********************** Auto Id"+autoId);
+    //@todo: to put to the newwork table
 
     return m_autoRoutines.getAutonomousCommand(autoId);
   }
