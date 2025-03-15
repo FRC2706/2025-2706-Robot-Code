@@ -51,7 +51,6 @@ public class AutoRoutines extends SubsystemBase {
                     LEFTCenter_R_CD_R,
                     Left_R_CD,
                     Left_R_CD_R,
-                    testCurvedPath,
                     centerMove;
     
 
@@ -67,7 +66,6 @@ public class AutoRoutines extends SubsystemBase {
         LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
         LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
         centerMove = new PathPlannerAuto("centerMove");
-        testCurvedPath = new PathPlannerAuto("testCurvedPath");
 
          
        
@@ -79,7 +77,6 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
 
          NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
-         NamedCommands.registerCommand("elevatorL3",new SetElevator(Config.ElevatorSetPoints.L3));
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
@@ -94,7 +91,7 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
-                return testCurvedPath;
+                return Left_R_CD_R;
             case 3:
                 return Right_R_CD_R;
             case 4:
