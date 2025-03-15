@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "centerScore"
+            "pathName": "leftBlue-Reef"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL3"
+                  "name": "elevatorL2"
                 }
               },
               {
@@ -33,12 +33,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "disableBLING"
           }
         }
       ]
