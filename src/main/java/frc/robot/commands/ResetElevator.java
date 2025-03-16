@@ -37,19 +37,15 @@ public class ResetElevator extends Command {
   public void end(boolean interrupted) {
     elevatorSubsystem.stopMotor(); 
     elevatorSubsystem.setServoBrake(true);
+
+    if(elevatorSubsystem.isLimitSwitchPressed() ) {
+      elevatorSubsystem.resetPrevPos(0);
+    }
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
-    if(elevatorSubsystem.isLimitSwitchPressed() && setPercent<0.0) {
-      elevatorSubsystem.resetPrevPos(0);
-      return true;
+    return false;
     }
-    else {
-      return false;
-    }
-  
-  }
 }
