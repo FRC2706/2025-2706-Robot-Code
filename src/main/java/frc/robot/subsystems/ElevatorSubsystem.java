@@ -105,18 +105,18 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        //Hard limit via limit switch
+        // //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
-        //@todo: to determine the value and reverse or forward limit, then enable them
+        // highest height in MVS using manual button is 109.
         //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(112)
+                                   .forwardSoftLimit(112) 
                                    .forwardSoftLimitEnabled(true);
 
         // Get pid values from network tables
@@ -129,6 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
+
         m_elevatorPSubs.setDefault(0.07);//0.15 (tried 0.3/0.15 )
         m_elevatorISubs.setDefault(0);
         m_elevatorDSubs.setDefault(0.01);//0.01/0.03
@@ -153,11 +154,11 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(8000) //@todo: to tune
+                .maxMotion.maxVelocity(8000) //6000
                           .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(10000)//10000
-                          .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
-                .allowedClosedLoopError(0.25) 
+                          .maxAcceleration(10000)//7000
+                         .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
+                .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
 

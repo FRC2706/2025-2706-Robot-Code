@@ -18,6 +18,8 @@ public class SetElevator extends Command {
     Timer m_timer = new Timer();
     Boolean bUpDirection = true;
     
+    Boolean bLimitSwitch = false;
+
     /** Creates a new SetArm. */
     public SetElevator(ElevatorSetPoints setPos) {
         this.setPos = setPos;
@@ -59,9 +61,16 @@ public class SetElevator extends Command {
     public boolean isFinished() {
         //check the set position AND timer
         //@todo: check the timeout value
-       
+
+        bLimitSwitch = false;
+        if ( bUpDirection == false) {
+            bLimitSwitch = elevatorSubsystem.isLimitSwitchPressed()==true;
+        }
+        
+        
         if (elevatorSubsystem.isAtTargetPos() == true 
-            || m_timer.hasElapsed(5))
+            || m_timer.hasElapsed(5)
+            || bLimitSwitch)
         {
             return true;
         }
