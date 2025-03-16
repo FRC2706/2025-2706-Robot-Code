@@ -129,9 +129,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.07);//Config.ElevatorConfig.elevator_kP//0.17
+
+        m_elevatorPSubs.setDefault(0.07);//0.15 (tried 0.3/0.15 )
         m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.05);//0.05
+        m_elevatorDSubs.setDefault(0.01);//0.01/0.03
         m_elevatorIzSubs.setDefault(0);
 
         // Send telemetry thru networktables
@@ -153,10 +154,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(6000) //@todo: to tune
+                .maxMotion.maxVelocity(8000) //6000
                           .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(7000)
-                          .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(10000)//7000
+                         .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
