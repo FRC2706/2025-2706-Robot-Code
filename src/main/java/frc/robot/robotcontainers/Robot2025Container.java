@@ -198,9 +198,9 @@ public class Robot2025Container extends RobotContainer {
     operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
     operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
     //start is right side: going down
-    operator.start().whileTrue(new ResetElevator(-0.15) );
+    operator.start().whileTrue(new ResetElevator(-0.2) );
     //back is left side: going up
-    operator.back().whileTrue(new ResetElevator(0.15) );
+    operator.back().whileTrue(new ResetElevator(0.3) );
 
     new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
                                                   .onFalse(new BlingCommand(BlingColour.DISABLED));
