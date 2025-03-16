@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        // //Hard limit via limit switch
+        //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
