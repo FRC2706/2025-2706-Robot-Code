@@ -112,12 +112,12 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
-        //@todo: to determine the value and reverse or forward limit, then enable them
+        // highest height in MVS using manual button is 109.
         //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(115)
-                                   .forwardSoftLimitEnabled(false);
+                                   .forwardSoftLimit(112) 
+                                   .forwardSoftLimitEnabled(true);
 
         // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
