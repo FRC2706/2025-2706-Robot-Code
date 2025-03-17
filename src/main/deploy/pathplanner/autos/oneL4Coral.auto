@@ -5,40 +5,40 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "leftBlue-Reef"
+          }
+        },
+        {
           "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "rightStartLine-reef"
+                  "name": "elevatorL3"
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 4.0
+                  "name": "coralScore"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "rightReef-rightCd"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 4.0
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "rightCD-reef"
+                  "name": "elevatorIntake"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "reefRightSide-CD"
           }
         }
       ]
