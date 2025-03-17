@@ -564,7 +564,7 @@ public final class Config {
     public static final boolean SET_INVERTED = true;
     public static final boolean INVERT_ENCODER = false;
 
-    public static final int CURRENT_LIMIT = 80;
+    public static final int CURRENT_LIMIT = 85;
 
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
     public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
@@ -616,7 +616,7 @@ public final class Config {
     //RESET(-1), 
     //Note: first movement needs some adjustment
 
-    FEEDER(-0.5),
+    FEEDER(0.0),
     L1(29.23),
     L2(45.83),
     AUTO_L2(47.83),
