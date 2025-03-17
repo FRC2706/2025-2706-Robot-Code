@@ -65,6 +65,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoubleEntry m_elevatorDSubs;
     private DoubleEntry m_elevatorIzSubs;
     private DoubleEntry m_elevatorFFSubs;
+    private DoubleEntry elevatorCurrent;
     private DoublePublisher m_targetPositionPub;
     private DoublePublisher m_currentPositionPub;
     private BooleanPublisher m_switchPressedPub;
@@ -116,7 +117,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(112) 
+                                   .forwardSoftLimit(109) 
                                    .forwardSoftLimitEnabled(true);
 
         // Get pid values from network tables
@@ -126,14 +127,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(Config.ElevatorConfig.elevator_kD);
         m_elevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(Config.ElevatorConfig.elevator_kIz);
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
+        elevatorCurrent = ElevatorTuningTable.getDoubleTopic("Current(A)").getEntry(0.0);
 
         //@todo: to be tuned
-        m_elevatorFFSubs.setDefault(0);
+        m_elevatorFFSubs.setDefault(0);//don't use FF
+        m_elevatorPSubs.setDefault(1.1);
+        m_elevatorISubs.setDefault(0.015);
+        m_elevatorDSubs.setDefault(0.01);
+        m_elevatorIzSubs.setDefault(1.0); 
 
-        m_elevatorPSubs.setDefault(0.07);//0.15 (tried 0.3/0.15 )
-        m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.01);//0.01/0.03
-        m_elevatorIzSubs.setDefault(0);
+        elevatorCurrent.setDefault(0.0);
 
         // Send telemetry thru networktables
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
@@ -148,19 +151,18 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0)
                 .iZone(0.0)
                 // Set PID gains for velocity control in slot 1
-                .p(0.03, ClosedLoopSlot.kSlot1)//0.07
+                .p(0.07, ClosedLoopSlot.kSlot1)
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .d(0.03, ClosedLoopSlot.kSlot1)//0.03
+                .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(8000) //6000
-                          .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(10000)//7000
-                         .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
+                .maxMotion.maxVelocity(4000) 
+                          .maxVelocity(3000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(7000)
+                         .maxAcceleration(4000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
-
 
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -177,6 +179,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_currentPositionPub.accept(m_elevator_encoder.getPosition());
         m_targetPositionPub.accept(elevatorTargetPos);
         m_switchPressedPub.accept(m_elevatorSwitch.isPressed());
+        elevatorCurrent.accept(m_elevator.getOutputCurrent());
         resetEncoderbyLimit();
 
     }
@@ -210,7 +213,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
 
       //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.5);
-      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.5);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.2);
 
     }
 

@@ -93,13 +93,13 @@ public class Robot2025Container extends RobotContainer {
 // Set bling to for some events....
     //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
 
-    // new Trigger(() -> intake.isBackSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
-    //                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
-
     new Trigger(() -> PhotonSubsystem.getInstance().hasData()).onTrue(Commands.parallel(
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
             new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
 
+    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                              .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
+                                              .onFalse(new BlingCommand(BlingColour.DISABLED));
 
     //Driver
     //=========================================================================
@@ -203,14 +203,9 @@ public class Robot2025Container extends RobotContainer {
     operator.back().whileTrue(new ResetElevator(0.3) );
 
     new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
+                                                  .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                                   .onFalse(new BlingCommand(BlingColour.DISABLED));
 
-    //@todo: check the elevator position when free run
-
-
-    // Algae remover
-    //operator.y().whileTrue(new MoveAlgae(0.5));
-    //operator.a().whileTrue(new MoveAlgae(-0.5));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
