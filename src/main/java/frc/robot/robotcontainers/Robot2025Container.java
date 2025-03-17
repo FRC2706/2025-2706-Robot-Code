@@ -193,10 +193,10 @@ public class Robot2025Container extends RobotContainer {
     operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
-    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
-    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW))));
     //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.2) );
     //back is left side: going up
