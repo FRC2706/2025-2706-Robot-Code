@@ -147,9 +147,9 @@ public class CombinedCommands {
     {
         return 
             Commands.sequence(
+                    Commands.runOnce(() -> TeleopSwerve.setSpeeds(Config.Swerve.TeleopSpeeds.MAX)),
                 new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
-                new CoralDepositorCommand(true, true),
-                    Commands.runOnce(() -> TeleopSwerve.setSpeeds(Config.Swerve.TeleopSpeeds.MAX))
+                new CoralDepositorCommand(true, true)
             );
     }
 
