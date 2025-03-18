@@ -36,6 +36,7 @@ import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
 import frc.robot.Config;
 import frc.robot.Config.ElevatorConfig;
+import frc.robot.commands.BlingCommand;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private static ElevatorSubsystem instance = null; // static object that contains all movement controls
@@ -277,6 +278,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         return true;
       else
         return false;
+    }
+
+    public boolean hasReachedLevel() {
+        if (isAtTargetPos() && elevatorTargetPos > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void setServoBrake(boolean bBrakeOn)

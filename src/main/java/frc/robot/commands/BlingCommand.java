@@ -31,6 +31,7 @@ public class BlingCommand extends InstantCommand {
     YELLOWSTROBE,
     BLUESTROBE,
     PURPLESTROBE,
+    CORALALIGN,
   }
   public BlingSubsystem bling = BlingSubsystem.getINSTANCE();
   public BlingColour blingColour;
@@ -95,6 +96,9 @@ public class BlingCommand extends InstantCommand {
           break;
         case PURPLESTROBE:
           setPurpleStrobe();
+          break;
+        case CORALALIGN:
+          bling.setCoralAlign();
           break;
         default:
           break;

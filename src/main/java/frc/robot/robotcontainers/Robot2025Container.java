@@ -206,6 +206,8 @@ public class Robot2025Container extends RobotContainer {
                                                   .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                                   .onFalse(new BlingCommand(BlingColour.DISABLED));
 
+    new Trigger(() -> ElevatorSubsystem.getInstance().hasReachedLevel()).onTrue(new BlingCommand(BlingColour.CORALALIGN));
+
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
