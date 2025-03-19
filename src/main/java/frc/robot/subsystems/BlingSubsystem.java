@@ -92,27 +92,6 @@ public class BlingSubsystem extends SubsystemBase {
     candle.setLEDs(255, 255, 0);
   }
 
-  // coral align
-  public void setCoralAlign() {
-    candle.clearAnimation(0);
-    for (int i = 0; i < 512; i += 6) {
-      if (i < 6) {
-        candle.setLEDs(255, 0, 0, 0, i, 6); // Red (0-5)
-      } else if (i < 12) {
-        candle.setLEDs(255, 165, 0, 0, i, 6); // Orange (6-11)
-      } else if (i < 18) {
-        candle.setLEDs(255, 255, 0, 0, i, 6); // Yellow (12-17)
-      } else if (i < 24) {
-        candle.setLEDs(0, 255, 0, 0, i, 6); // Green (18-23)
-      } else if (i < 30) {
-        candle.setLEDs(0, 0, 255, 0, i, 6); // Blue (24-29)
-      } else if (i < 36) {
-        candle.setLEDs(75, 0, 130, 0, i, 6); // Indigo (30-35)
-      } else if (i < 42) {
-        candle.setLEDs(148, 0, 211, 0, i, 6); // Violet (36-41)
-      }
-    }
-  }
 
   @Override
   public void periodic() {
