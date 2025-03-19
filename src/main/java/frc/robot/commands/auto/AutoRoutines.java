@@ -43,33 +43,22 @@ public class AutoRoutines extends SubsystemBase {
     // PathPlannerPath speakerPath = PathPlannerPath.fromPathFile("Speaker Path");
    
     PathPlannerAuto 
-                    Right_R_CD,
-                    Right_R_CD_R,
-                    RIGHTCenter_R_CD,
-                    RIGHTCenter_R_CD_R,
-                    LEFTCenter_R_CD,
-                    LEFTCenter_R_CD_R,
-                    Left_R_CD,
-                    Left_R_CD_R,
-                    testCurvedPath,
+                    oneL4Coral_leftBlue,
+                    oneL4Coral_rightBlue,
+                    oneL4Coral_CD,
+                    twoL4Coral,
+                    threeL4Coral,
                     centerMove;
     
 
     public AutoRoutines() {
         registerCommandsToPathplanner();
-
-        Right_R_CD = new PathPlannerAuto("rightReefCd");
-        Right_R_CD_R = new PathPlannerAuto("rightReefCdReef");
-        Left_R_CD = new PathPlannerAuto("leftReefCd");
-        Left_R_CD_R = new PathPlannerAuto("leftReefCdReef");
-        RIGHTCenter_R_CD = new PathPlannerAuto("rightCenterReefCd");
-        RIGHTCenter_R_CD_R = new PathPlannerAuto("rightCenterReefCdReef");
-        LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
-        LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
-        centerMove = new PathPlannerAuto("centerMove");
-        testCurvedPath = new PathPlannerAuto("testCurvedPath");
-         
-       
+        centerMove = new PathPlannerAuto("centerMove"); // blue side, starts in center of starting line and goes forward to reef
+        oneL4Coral_leftBlue = new PathPlannerAuto("oneL4Coral-leftBlue"); // blue side, starts on the left of starting line (robot perspective) and goes to right angled side of top half of reef
+        oneL4Coral_rightBlue = new PathPlannerAuto("oneL4Coral-rightBlue"); // blue side, starts on the right of starting line (robot perspective) and goes to right angled side bottom half of reef
+        oneL4Coral_CD = new PathPlannerAuto("oneL4Coral-CD"); // blue side, starts on the left of starting line (robot perspective), goes to right angled side of top half of reef, and then to the coral depot
+        twoL4Coral= new PathPlannerAuto("twoL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts two coral on L4 reef
+        threeL4Coral = new PathPlannerAuto("threeL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts three coral on L4 reef
     }
 
     public void registerCommandsToPathplanner() {
@@ -93,23 +82,16 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
-                return testCurvedPath;
+                return oneL4Coral_leftBlue;
             case 3:
-                return Right_R_CD_R;
+                return oneL4Coral_rightBlue;
             case 4:
-                return RIGHTCenter_R_CD_R;
+                return oneL4Coral_CD;
             case 5:
-                return LEFTCenter_R_CD;
+                return twoL4Coral;
             case 6:
-                return LEFTCenter_R_CD_R;
+                return threeL4Coral;
             case 7:
-                return Right_R_CD_R;
-            case 8:
-                return Left_R_CD_R;
-            case 9: 
-                return Right_R_CD;
-            case 10: 
-            case 11:
                 var alliance = DriverStation.getAlliance();
 
                  // Default to blue alliance

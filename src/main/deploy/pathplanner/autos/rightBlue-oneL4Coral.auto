@@ -5,25 +5,31 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "rightBlue-Reef"
+          }
+        },
+        {
           "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Wei-testPath2"
+                  "name": "elevatorL4"
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 2.0
+                  "name": "CoralScore"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Wei-testPath1"
+                  "name": "elevatorIntake"
                 }
               }
             ]

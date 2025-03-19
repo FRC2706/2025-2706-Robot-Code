@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftBlue-Reef"
+            "pathName": "rightBlue-Reef"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL3"
+                  "name": "elevatorL4"
                 }
               },
               {
@@ -60,7 +60,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL3"
+                  "name": "elevatorL4"
                 }
               },
               {
