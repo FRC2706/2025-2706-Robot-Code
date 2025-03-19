@@ -1,0 +1,130 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "leftBlue-Reef"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "coralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "reefRightSide-CD"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CD-reefLeftSide"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "coralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "reefLeftSide-CD"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of CD-reefLeftSide"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorL3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "coralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
