@@ -27,8 +27,8 @@ public class SubsystemChecker {
         CoralIntakeSubsystem,
         CoralDepositorSubsystem,
         ElevatorSubsystem,
-        AlgaeSubsystem
-
+        AlgaeSubsystem,
+        PhotonSubsystemLeftReef
     };
 
     /**
@@ -42,7 +42,8 @@ public class SubsystemChecker {
         SubsystemType.ElevatorSubsystem,
         SubsystemType.CoralDepositorSubsystem,
         //SubsystemType.CoralIntakeSubsystem,
-        SubsystemType.AlgaeSubsystem
+        SubsystemType.AlgaeSubsystem,
+        SubsystemType.PhotonSubsystemLeftReef
         //coral intake
     };
 
