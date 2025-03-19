@@ -2,6 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
@@ -58,12 +62,12 @@ import frc.robot.commands.PhotonMoveToTarget;
 import frc.robot.commands.RumbleJoystick;
 
 //class
-public class PhotonSubsystem extends SubsystemBase {
+public class PhotonSubsystemLeftReef extends SubsystemBase {
 
   //constants
   
   //declarations
-  private static PhotonSubsystem instance;
+  private static PhotonSubsystemLeftReef instance;
   private DoubleArrayPublisher pubSetPoint;
   private DoubleArrayPublisher pubNewSetPoint;
   public DoublePublisher pubBestTagHeading, pubTargetRobotHeading;
@@ -88,29 +92,28 @@ public class PhotonSubsystem extends SubsystemBase {
   private boolean isCameraConnected = false;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
-  //+++private PhotonPoseEstimator photonPoseEstimator;
  
-  public static PhotonSubsystem getInstance(){
+  public static PhotonSubsystemLeftReef getInstance(){
     if (instance == null){
-      SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystem);
-      instance = new PhotonSubsystem();
+      SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystemLeftReef);
+      instance = new PhotonSubsystemLeftReef();
     }
     return instance;
   }
 
   /** Creates a new photonAprilTag. */
-  private PhotonSubsystem() {
+  private PhotonSubsystemLeftReef() {
     //name of camera, change if using multiple cameras
-    camera1 = new PhotonCamera(PhotonConfig.rightReefCameraName);
+    camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
     
     //networktable publishers
-    NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableName);
+    NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableNameLeft);
     pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
     pubTargetOffset = photonTable.getDoubleArrayTopic("TargetOffset").publish(PubSubOption.periodic(0.02));
     pubBestTagHeading = photonTable.getDoubleTopic("BestTagHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubTargetRobotHeading = photonTable.getDoubleTopic("TargetRobotHeading (deg)").publish(PubSubOption.periodic(0.02));
     pubHasData =  photonTable.getBooleanTopic("hasData").publish(PubSubOption.periodic(0.02));
-    hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.rightReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
+    hasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/"+PhotonConfig.leftReefCameraName + "/hasTarget").subscribe(false, PubSubOption.periodic(0.02));
     pubSetPoint = photonTable.getDoubleArrayTopic("SetPoint(fieldToTarget)").publish(PubSubOption.periodic(0.02));
     pubNewSetPoint = photonTable.getDoubleArrayTopic("SetPoint(new)").publish(PubSubOption.periodic(0.02));
     pub3DTagsDebugMsg = photonTable.getStringTopic("3DTagsDebugMsg").publish(PubSubOption.periodic(0.02));
@@ -121,8 +124,6 @@ public class PhotonSubsystem extends SubsystemBase {
     try {
       aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
-      //@todo: update cameraTransform
-      //+++photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonConfig.rightReefCameraTransform);
     } catch (Exception e) {
       aprilTagFieldLayout = null;
       DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
@@ -142,10 +143,6 @@ public class PhotonSubsystem extends SubsystemBase {
   }
 
   public void resetTagAtBootup() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    // if (alliance.isEmpty() || alliance.get() == Alliance.Blue) {
-    //   
-    // }
     reset();
   }
 
@@ -218,10 +215,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
     Pose2d fieldToTarget = null;
     
-    // Must be set by 2D or 3D mode;
-    //@todo: test 2D and 3D mode both
-   // PhotonPipelineResult result = camera1.getLatestResult();
-    //@todo: to test...
     List<PhotonPipelineResult> listResult;
 
     try {
@@ -270,7 +263,7 @@ public class PhotonSubsystem extends SubsystemBase {
       }
 
       bestTagId = target.getFiducialId();
-      targetOffset = Config.PhotonConfig.targetOffsetMap.get(bestTagId);
+      targetOffset = Config.PhotonConfig.targetOffsetMapLeft.get(bestTagId);
       pubBestTagId.accept(bestTagId);
       pubTargetOffset.accept(new double[]{targetOffset.getX(), targetOffset.getY()});
       
@@ -293,9 +286,6 @@ public class PhotonSubsystem extends SubsystemBase {
         //due to the camera is at the back
         targetRobotHeading = bestTagHeading;
 
-       //for red tags: no need to add 180
-       //--targetRobotHeading = bestTagHeading.plus(Rotation2d.fromDegrees(180));
-       //targetRobotHeading = bestTagHeading;
         pubBestTagHeading.accept(bestTagHeading.getDegrees());
         pubTargetRobotHeading.accept(targetRobotHeading.getDegrees());
        
@@ -316,7 +306,7 @@ public class PhotonSubsystem extends SubsystemBase {
         Pose2d odometryPose = optPose.get();
 
         //@todo: need to update cameraTransform for the new camera location
-        Transform3d robotToTarget3d = PhotonConfig.rightReefCameraTransform.plus(target.getBestCameraToTarget());
+        Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
         Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
         // Map the position of the tag relative to the current odometry pose with latency compensation
@@ -325,33 +315,6 @@ public class PhotonSubsystem extends SubsystemBase {
         pub3DTagsDebugMsg.accept("Transform2d from robot to tag: " + robotToTarget.toString());
       } 
     }
-
-     //previous poseEstimation option
-    //********************************/
-    // {
-    //   Optional<EstimatedRobotPose> optEstPose = photonPoseEstimator.update(result);
-    //   if (optEstPose.isEmpty()) {
-    //     pub3DTagsDebugMsg.accept("EmptyEstimatedRobotPose"); 
-    //     return;
-    //   }      
-    //   // Grab the pose from when the image was taken to compensate for how much the robot has moved since the image was taken
-    //   Optional<Pose2d> odometryPose = SwerveSubsystem.getInstance().getPoseAtTimestamp(optEstPose.get().timestampSeconds);
-    //   if (odometryPose.isEmpty()) {
-    //     pub3DTagsDebugMsg.accept("No odometry pose at timestamp: " + optEstPose.get().timestampSeconds);
-    //     return;
-    //   }
-    //   else
-    //   {
-    //       // Create a transform that maps the change in Pose between the robot estimated position and the true tag position
-    //     Transform2d robotToTarget = new Transform2d(optEstPose.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
-
-    //     // Map the position of the tag relative to the current odometry pose with latency compensation
-    //     fieldToTarget = odometryPose.get().plus(robotToTarget);
-    //     pub3DTagsDebugMsg.accept("Transform2d from robot to tag:" + robotToTarget.toString());
-
-    //   }
-    // }
-
 
     } 
  
@@ -379,3 +342,4 @@ public class PhotonSubsystem extends SubsystemBase {
   pubHasData.accept(hasData());
 }
 }
+
