@@ -204,7 +204,7 @@ public final class Config {
     public static final String frontCameraName = "HD_USB_CAMERA";
 
     public static final String networkTableNameLeft = "PhotonCameraLeft";  
-    public static final String leftReefCameraName = "";
+    public static final String leftReefCameraName = "Arducam_OV9281_USB_CameraLeft";
 
     public static final String networkTableName = "PhotonCameraRight";
     public static final String rightReefCameraName = "OV9281-70deg-Arducam-USB-Cam87";
