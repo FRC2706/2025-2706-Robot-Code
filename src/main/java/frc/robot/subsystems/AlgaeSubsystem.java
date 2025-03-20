@@ -34,14 +34,13 @@ public class AlgaeSubsystem extends SubsystemBase {
     // network table entry
     private final String m_tuningTable = "Algae/AlgaeTuning";
     private final String m_dataTable = "Algae/AlgaeData";
-    // network table entries
-    private DoubleEntry m_AlgaePSubs;
-    private DoubleEntry m_AlgaeISubs;
-    private DoubleEntry m_AlgaeDSubs;
-    private DoubleEntry m_AlgaeIzSubs;
-    private DoubleEntry m_AlgaeFFSubs;
+
     private DoublePublisher m_targetPositionPub;
     private DoublePublisher m_currentPositionPub;
+
+    private double m_AlgaeP;
+    private double m_AlgaeI;
+    private double m_AlgaeD;
 
 
     public static AlgaeSubsystem getInstance() {
@@ -76,10 +75,10 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         // Get pid values from network tables
         NetworkTable AlgaeTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
-        m_AlgaePSubs.setDefault(0.2);
-        m_AlgaeISubs.setDefault(0.0);
-        m_AlgaeDSubs.setDefault(0.0);
-        m_AlgaeIzSubs.setDefault(0.0);
+        m_AlgaeP = 0.2;
+        m_AlgaeI = 0.0;
+        m_AlgaeD = 0.0;
+
         // Send telemetry thru networktables
         NetworkTable AlgaeDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
         m_targetPositionPub = AlgaeDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
@@ -87,7 +86,7 @@ public class AlgaeSubsystem extends SubsystemBase {
 
 
         m_algaeMotor_config.closedLoop
-                        .pid(m_AlgaePSubs.get(), m_AlgaeISubs.get(), m_AlgaeDSubs.get());
+                        .pid(m_AlgaeP, m_AlgaeI, m_AlgaeD);
 
         m_algaeMotor.configure(m_algaeMotor_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
