@@ -633,6 +633,36 @@ public final class Config {
     }
   }
 
+  public  class AlgaeConfig{
+    public static final int Algae_SPARK_CAN_ID = 5;
+    public static final boolean SET_INVERTED = true;
+    public static final boolean INVERT_ENCODER = false;
+  
+      public static final int CURRENT_LIMIT = 80;
+  
+  //soft limit constant for the algea rotation
+  public static final float algae_up_limit = (float) Math.toRadians(180);
+  public static final float algae_down_limit = (float) Math.toRadians(-2);
+  public static final boolean SOFT_LIMIT_ENABLE = true;
+    // AlgaeManipulator motor configuration
+        public static final boolean ALGAE_MANIPULATOR_INVERTED = false;
+        public static final boolean ALGAE_MANIPULATOR_ENCODER_INVERTED = false;
+        public static final int ALGAE_MANIPULATOR_CURRENT_LIMIT = 20;
+  
+    // PID constants for AlgaeManipulator motor
+    public static final double algae_kP = robotSpecific(2.700000, 0.0, 0.5, 0.5);
+    public static final double algae_kI = robotSpecific(0.0, 0.0, 0.0, 0.0);
+    public static final double algae_kD = robotSpecific(0.800000, 0.0, 0.0, 0.0);
+    public static final double algae_kFF = robotSpecific(0.800000, 0.0, 0.0, 0.0);
+    public static final double algae_kIz = robotSpecific(0.02, 0.0, 0.0, 0.0);
+    public static final double algae_min_output = -1.0;
+    public static final double algae_max_output = 1.0;
+  
+  
+  
+  }
+  
+
 public static enum ArmSetPoints {
   //@todo: to be calibrated
   IDLE(35), //61

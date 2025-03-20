@@ -184,6 +184,9 @@ public class Robot2025Container extends RobotContainer {
     //===========================================================================
     //control Algae
     operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
+    operator.povUp().whileTrue(new AlgaeManipulator(10,15));
+    operator.povRight().whileTrue(new AlgaeManipulator(75,15));
+    operator.povDown().whileTrue(new AlgaeManipulator(90,15));
     //rescue: reverse the depositor
     operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
        

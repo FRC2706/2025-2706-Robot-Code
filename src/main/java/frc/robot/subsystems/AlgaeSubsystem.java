@@ -45,7 +45,8 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     /** Creates a new AlgaeSubsystem. */
     public AlgaeSubsystem() {
-        m_algaeMotor = new SparkMax(Config.CANID.ALGAE_REMOVER, motorType); // creates SparkMax algae motor controller
+        //m_algaeMotor = new SparkMax(Config.CANID.ALGAE_REMOVER, motorType); // creates SparkMax algae motor controller
+        m_algaeMotor = new SparkMax(99, motorType); // creates SparkMax algae motor controller
         m_algaeMotor_config = new SparkMaxConfig(); //create configuration of the algae motor controller
 
         m_algae_encoder = m_algaeMotor.getEncoder();
