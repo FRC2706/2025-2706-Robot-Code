@@ -192,6 +192,8 @@ public class Robot2025Container extends RobotContainer {
     operator.povLeft().onTrue(new MoveAlgae(-55));
     operator.povRight().onTrue(new MoveAlgae(-55));
 
+    // PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
+
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
