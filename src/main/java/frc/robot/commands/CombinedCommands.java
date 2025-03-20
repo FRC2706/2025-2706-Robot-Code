@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -24,12 +25,7 @@ import frc.robot.Config.ArmSetPoints;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.Config.PhotonConfig.PhotonPositions;
 import frc.robot.commands.BlingCommand.BlingColour;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.BlingSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.*;
 
 public class CombinedCommands {
     /**
@@ -145,12 +141,20 @@ public class CombinedCommands {
     //coral intake
     public static Command getCoralForScore()
     {
-        return 
-            Commands.sequence(
-                Commands.runOnce(() -> TeleopSwerve.setSpeeds(Config.Swerve.TeleopSpeeds.MAX)),
-                new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
-                new CoralDepositorCommand(true, true)
-            );
+        if (Objects.equals(ElevatorSubsystem.getInstance().hasReachedLevel(), "L2")) {
+            return
+                    Commands.sequence(
+                            Commands.runOnce(() -> TeleopSwerve.setSpeeds(Config.Swerve.TeleopSpeeds.MAX)),
+                            new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
+                            new CoralDepositorCommand(true, true)
+                    );
+        } else {
+            return
+                    Commands.sequence(
+                            new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
+                            new CoralDepositorCommand(true, true)
+                    );
+        }
     }
 
     /**
