@@ -633,6 +633,19 @@ public final class Config {
     }
   }
 
+  public static enum AlgaeSetPoints {
+
+    // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
+    UP(0),
+    MIDDLE(-50),
+    DOWN(-160);
+
+    public final double position;
+    AlgaeSetPoints(double setPosition) {
+      position = setPosition;
+    }
+  }
+
 public static enum ArmSetPoints {
   //@todo: to be calibrated
   IDLE(35), //61

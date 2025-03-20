@@ -187,10 +187,10 @@ public class Robot2025Container extends RobotContainer {
     //rescue: reverse the depositor
     operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
 
-    operator.povUp().onTrue(new MoveAlgae(0));
-    operator.povDown().onTrue(new MoveAlgae(-160));
-    operator.povLeft().onTrue(new MoveAlgae(-55));
-    operator.povRight().onTrue(new MoveAlgae(-55));
+    operator.povUp().onTrue(new MoveAlgae(Config.AlgaeSetPoints.UP.position));
+    operator.povDown().onTrue(new MoveAlgae(Config.AlgaeSetPoints.DOWN.position));
+    operator.povLeft().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
+    operator.povRight().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
 
     // PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
 
