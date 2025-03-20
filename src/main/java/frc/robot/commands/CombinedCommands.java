@@ -141,20 +141,11 @@ public class CombinedCommands {
     //coral intake
     public static Command getCoralForScore()
     {
-        if (Objects.equals(ElevatorSubsystem.getInstance().hasReachedLevel(), "L2")) {
-            return
-                    Commands.sequence(
-                            Commands.runOnce(() -> TeleopSwerve.setSpeeds(Config.Swerve.TeleopSpeeds.MAX)),
-                            new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
-                            new CoralDepositorCommand(true, true)
-                    );
-        } else {
             return
                     Commands.sequence(
                             new SetElevator(Config.ElevatorSetPoints.FEEDER), //@todo: the right level
                             new CoralDepositorCommand(true, true)
                     );
-        }
     }
 
     /**
