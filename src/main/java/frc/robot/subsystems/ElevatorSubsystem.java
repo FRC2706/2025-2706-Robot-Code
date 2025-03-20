@@ -279,6 +279,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         return false;
     }
 
+    public String hasReachedLevel() {
+        if (isAtTargetPos() && elevatorTargetPos > 0) {
+            if (elevatorTargetPos == Config.ElevatorSetPoints.L1.position) {
+                return "L1";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L2.position) {
+                return "L2";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L3.position) {
+                return "L3";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L4.position) {
+                return "L4";
+            } else {
+                return "None";
+            }
+        } else {
+            return "None";
+        }
+    }
+
     public void setServoBrake(boolean bBrakeOn)
     {
       //@todo: the range of servo?
