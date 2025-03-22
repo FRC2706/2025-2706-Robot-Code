@@ -52,6 +52,7 @@ public class AutoRoutines extends SubsystemBase {
                     Left_R_CD,
                     Left_R_CD_R,
                     testCurvedPath,
+                    oneL4Coral_leftBlue,
                     centerMove;
     
 
@@ -68,6 +69,7 @@ public class AutoRoutines extends SubsystemBase {
         LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
         centerMove = new PathPlannerAuto("centerMove");
         testCurvedPath = new PathPlannerAuto("testCurvedPath");
+        oneL4Coral_leftBlue = new PathPlannerAuto("oneL4Coral-leftBlue"); // blue side, starts on the right of starting line (robot perspective) and goes to right angled side bottom half of reef
          
        
     }
@@ -93,9 +95,11 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
+                // robot start on right corner of starting line (robot perspective) or left from driver perspective
                 return testCurvedPath;
             case 3:
-                return Right_R_CD_R;
+                // robot start on left corner of starting line (robot perspective) or right from driver perspective 
+                return oneL4Coral_leftBlue;
             case 4:
                 return RIGHTCenter_R_CD_R;
             case 5:
