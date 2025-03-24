@@ -54,6 +54,12 @@ public class TeleopSwerve extends Command {
     rotationLimiter = new SlewRateLimiter(newSpeed.angularAccelLimit);
     resetAccelerationLimiters();
   }
+
+  public static boolean isSlowMode()
+  {
+    return (speed == TeleopSpeeds.SLOW);
+  }
+
   public static void setFieldRelative(boolean newIsFieldRelative) {
     isFieldRelative = newIsFieldRelative;
   }
