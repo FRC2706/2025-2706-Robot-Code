@@ -101,6 +101,8 @@ public class Robot2025Container extends RobotContainer {
                                               .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
+    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.FIRE))
+                                                .onFalse(new BlingCommand(BlingColour.DISABLED));
     //Driver
     //=========================================================================
     /**
@@ -112,8 +114,13 @@ public class Robot2025Container extends RobotContainer {
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
     //slow mode
+    // driver.leftTrigger().whileTrue(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)),
+    //                                               new BlingCommand(BlingColour.FIRE)))
+    //                    .onFalse(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)),
+    //                                               new BlingCommand(BlingColour.DISABLED)));
+
     driver.leftTrigger().whileTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
     //??? 
     driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
