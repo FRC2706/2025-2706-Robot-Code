@@ -196,8 +196,8 @@ public class Robot2025Container extends RobotContainer {
 
     operator.povUp().onTrue(new MoveAlgae(Config.AlgaeSetPoints.UP.position));
     operator.povDown().onTrue(new MoveAlgae(Config.AlgaeSetPoints.DOWN.position));
-    operator.povLeft().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
-    operator.povRight().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
+    operator.povLeft().onTrue(new MoveAlgae(Config.AlgaeSetPoints.RETRIEVAL.position));
+    operator.povRight().onTrue(new MoveAlgae(Config.AlgaeSetPoints.TRANSPORT.position));
 
     // PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
 
@@ -207,10 +207,10 @@ public class Robot2025Container extends RobotContainer {
     operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
-    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
-    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW))));
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
     //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.2) );
     //back is left side: going up
