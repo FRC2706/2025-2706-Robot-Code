@@ -133,7 +133,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorFFSubs.setDefault(0);//don't use FF
 
         m_elevatorPSubs.setDefault(0.9);//1.1//0.17
-        m_elevatorDSubs.setDefault(0.05);//0.01//0.05
+        m_elevatorDSubs.setDefault(1);//0.01//0.05
 
         m_elevatorISubs.setDefault(0.0);//0.015//0.0      
         m_elevatorIzSubs.setDefault(0.0); //1.0//0.0
@@ -158,10 +158,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(4000) 
-                          .maxVelocity(3000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(5000)//7000
-                         .maxAcceleration(4000, ClosedLoopSlot.kSlot1)
+                .maxMotion.maxVelocity(5600)
+                          .maxVelocity(4000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(18000)//7000
+                         .maxAcceleration(8000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -214,7 +214,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
 
       //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.2);
-      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 0.0);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.0);
 
     }
 
