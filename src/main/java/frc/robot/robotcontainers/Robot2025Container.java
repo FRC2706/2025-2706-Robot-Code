@@ -189,7 +189,7 @@ public class Robot2025Container extends RobotContainer {
      .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
     driver.leftTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystemLeftReef.getInstance().reset())); // Re-acquire target every time button is pressed
     driver.leftTrigger().and(() -> PhotonSubsystemLeftReef.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
-        .whileTrue(Commands.deadline(
+        .whileTrue(Commands.parallel(
             new PhotonMoveToTargetLeft(false, false, false),
             new BlingCommand(BlingColour.REDSTROBE),
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
