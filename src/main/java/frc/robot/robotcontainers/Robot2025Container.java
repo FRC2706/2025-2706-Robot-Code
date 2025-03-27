@@ -97,6 +97,7 @@ public class Robot2025Container extends RobotContainer {
                                               .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
+
     new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.FIRE))
                                                 .onFalse(new BlingCommand(BlingColour.DISABLED));
     //Driver
@@ -225,10 +226,7 @@ public class Robot2025Container extends RobotContainer {
     //back is left side: going up
     operator.back().whileTrue(new ResetElevator(0.3) );
 
-    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
-                                                  .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
-                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
-
+   
 
   }
   /**
