@@ -97,6 +97,8 @@ public class Robot2025Container extends RobotContainer {
                                               .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
+    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.FIRE))
+                                                .onFalse(new BlingCommand(BlingColour.DISABLED));
     //Driver
     //=========================================================================
     /**
@@ -200,17 +202,24 @@ public class Robot2025Container extends RobotContainer {
     operator.rightTrigger().whileTrue(new AlgaeCommand(() -> operator.getLeftY()));
     //rescue: reverse the depositor
     operator.leftTrigger().whileTrue(new CoralDepositorCommand(false, false));
-       
+
+    operator.povUp().onTrue(new MoveAlgae(Config.AlgaeSetPoints.UP.position));
+    operator.povDown().onTrue(new MoveAlgae(Config.AlgaeSetPoints.DOWN.position));
+    operator.povLeft().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
+    operator.povRight().onTrue(new MoveAlgae(Config.AlgaeSetPoints.MIDDLE.position));
+
+    // PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
+
     //intake
     operator.leftBumper().whileTrue(CombinedCommands.getCoralForScore());
     //score the coral
     operator.rightBumper().whileTrue(new CoralDepositorCommand(true, false));   
     
     //elevator 
-    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1));
-    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2));
-    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3));
-    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4));
+    operator.a().onTrue(new SetElevator(Config.ElevatorSetPoints.L1).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.b().onTrue(new SetElevator(Config.ElevatorSetPoints.L2).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.x().onTrue(new SetElevator(Config.ElevatorSetPoints.L3).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX))));
+    operator.y().onTrue(new SetElevator(Config.ElevatorSetPoints.L4).andThen(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW))));
     //start is right side: going down
     operator.start().whileTrue(new ResetElevator(-0.2) );
     //back is left side: going up
@@ -219,6 +228,7 @@ public class Robot2025Container extends RobotContainer {
     new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
                                                   .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                                   .onFalse(new BlingCommand(BlingColour.DISABLED));
+
 
   }
   /**

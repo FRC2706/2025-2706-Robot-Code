@@ -34,6 +34,12 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "leftReef-CD"
+          }
         }
       ]
     }
