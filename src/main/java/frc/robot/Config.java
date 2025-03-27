@@ -637,7 +637,7 @@ public final class Config {
 
     // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
     UP(0),
-    RETRIEVAL(-73),
+    RETRIEVAL(-80),
     TRANSPORT(-57),
     DOWN(-160);
 
