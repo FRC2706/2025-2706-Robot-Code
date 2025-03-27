@@ -636,9 +636,10 @@ public final class Config {
   public static enum AlgaeSetPoints {
 
     // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
-    UP(0),
-    MIDDLE(-50),
-    DOWN(-160);
+    UP(0), // 0 degrees
+    RETRIEVAL(-80), // 58.5 degrees
+    TRANSPORT(-57), // 41.5 degrees
+    DOWN(-160); // 64.7 degrees
 
     public final double position;
     AlgaeSetPoints(double setPosition) {
