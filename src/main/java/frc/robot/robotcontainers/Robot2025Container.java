@@ -98,7 +98,7 @@ public class Robot2025Container extends RobotContainer {
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
 
-    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.FIRE))
+    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.RAINBOW))
                                                 .onFalse(new BlingCommand(BlingColour.DISABLED));
     //Driver
     //=========================================================================
