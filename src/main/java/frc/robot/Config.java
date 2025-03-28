@@ -658,7 +658,7 @@ public final class Config {
     // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
     UP(0), // 0 degrees
     RETRIEVAL(-50.97), // 58.5 degrees
-    TRANSPORT(-31.67), // 41.5 degrees
+    TRANSPORT(-45.57), // 60.0 degrees
     DOWN(-115.2); // 64.7 degrees
 
     public final double position;
