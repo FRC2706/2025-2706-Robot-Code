@@ -68,7 +68,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         m_algaeMotor_config.voltageCompensation(10);
 
         //@todo: tune the limits
-        m_algaeMotor_config.softLimit.reverseSoftLimit(-160)
+        m_algaeMotor_config.softLimit.reverseSoftLimit(-120)
                                    .reverseSoftLimitEnabled(true)
                                    .forwardSoftLimit(0) 
                                    .forwardSoftLimitEnabled(true);
