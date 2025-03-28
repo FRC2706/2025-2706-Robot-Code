@@ -27,6 +27,7 @@ import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;
+import frc.robot.commands.RotateAngleToVisionSupplier;
 import frc.robot.commands.SetArm;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.Shooter_PID_Tuner;
@@ -82,6 +83,11 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
+         NamedCommands.registerCommand("reset", 
+         new SelectByAllianceCommand(
+             PhotonSubsystem.getInstance().getResetCommand(),
+             PhotonSubsystem.getInstance().getResetCommand()));
+         NamedCommands.registerCommand("vision-move",new PhotonMoveToTarget(false, false, false));
     }
 
     public Command getAutonomousCommand(int selectAuto) {
