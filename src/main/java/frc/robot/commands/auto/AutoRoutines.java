@@ -80,9 +80,11 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
 
          NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
+
          NamedCommands.registerCommand("elevatorL3",new SetElevator(Config.ElevatorSetPoints.L3));
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.AUTO_L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER).withTimeout(2));
+
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
     }
@@ -98,6 +100,7 @@ public class AutoRoutines extends SubsystemBase {
                 // robot start on right corner of starting line (robot perspective) or left from driver perspective
                 return oneL4Coral_rightBlue;
             case 3:
+
                 // robot start on left corner of starting line (robot perspective) or right from driver perspective 
                 return oneL4Coral_leftBlue;
             case 4:
