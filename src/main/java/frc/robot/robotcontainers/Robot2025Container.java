@@ -114,9 +114,9 @@ public class Robot2025Container extends RobotContainer {
     driver.leftBumper().whileTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
-    //??? 
-    driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));
+    //disable and reenable field oriented drive
+    /*driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(true)));*/
 
     //Sync Swerve
     //start is right side
