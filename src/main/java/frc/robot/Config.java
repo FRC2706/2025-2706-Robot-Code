@@ -245,7 +245,7 @@ public final class Config {
    }};
 
     //left side reef from robot
-    public static final Translation2d targetOffsetLeft = new Translation2d(0.44, -0.11); // From tag coordinate frame, right targets
+    public static final Translation2d targetOffsetLeft = new Translation2d(0.44, -0.2); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMapLeft =new HashMap<Integer, Translation2d>() {{
       // These values are in field oriented coordinates,
       // So take the tag relative coordinates and rotate them into the field coordinates
@@ -642,7 +642,7 @@ public final class Config {
     //AUTO_L2(47.83),
     L3(68.8), 
     //AUTO_L3(70.8),
-    L4(103.0),
+    L4(102.0),
     AUTO_L4(104.07),
     NET(90.0); 
   
@@ -659,7 +659,7 @@ public final class Config {
     UP(0), // 0 degrees
     RETRIEVAL(-50.97), // 58.5 degrees
     TRANSPORT(-43.0), // 44.7 degrees
-    DOWN(-115.2); // 64.7 degrees
+    DOWN(-86.7); // 64.7 degrees
 
     public final double position;
     AlgaeSetPoints(double setPosition) {
