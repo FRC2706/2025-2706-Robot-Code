@@ -93,15 +93,12 @@ public class Robot2025Container extends RobotContainer {
 // Set bling to for some events....
     //operator.a().onTrue(new BlingCommand(BlingColour.PURPLE)).onFalse(new BlingCommand(BlingColour.DISABLED));
 
-    new Trigger(() -> PhotonSubsystem.getInstance().hasData()).onTrue(Commands.parallel(
-            new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
-            new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
-
     new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
                                               .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
-    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.FIRE))
+
+    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.RAINBOW))
                                                 .onFalse(new BlingCommand(BlingColour.DISABLED));
     //Driver
     //=========================================================================
@@ -114,13 +111,8 @@ public class Robot2025Container extends RobotContainer {
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
     //slow mode
-    // driver.leftTrigger().whileTrue(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)),
-    //                                               new BlingCommand(BlingColour.FIRE)))
-    //                    .onFalse(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)),
-    //                                               new BlingCommand(BlingColour.DISABLED)));
-
-    driver.leftTrigger().whileTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-                        .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftBumper().whileTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
+                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
 
     //??? 
     driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))
@@ -176,16 +168,34 @@ public class Robot2025Container extends RobotContainer {
        () -> SwerveSubsystem.getInstance().setModuleStates(moduleStates270, true, true)
      ));
      */
+    // new Trigger(() -> PhotonSubsystem.getInstance().hasData()).onTrue(Commands.parallel(
+    //         new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
+    //         new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
 
-    // Right trigger because it is hard coded to work for the right corals (no camera for left)
+
+    // Right trigger because it is hard coded to work for the right corals 
     driver.rightTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
         .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
     driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
     driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
-        .whileTrue(Commands.deadline(
+        .whileTrue(Commands.parallel(
             new PhotonMoveToTarget(false, false, false),
-            new BlingCommand(BlingColour.BLUESTROBE)));
+            new BlingCommand(BlingColour.BLUESTROBE),
+            new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
+            new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
     driver.rightTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
+
+     // Left trigger because it is hard coded to work for the left corals 
+     driver.leftTrigger().onTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.VISION)))
+     .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystemLeftReef.getInstance().reset())); // Re-acquire target every time button is pressed
+    driver.leftTrigger().and(() -> PhotonSubsystemLeftReef.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
+        .whileTrue(Commands.parallel(
+            new PhotonMoveToTargetLeft(false, false, false),
+            new BlingCommand(BlingColour.REDSTROBE),
+            new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
+            new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
+    driver.leftTrigger().onFalse(new BlingCommand(BlingColour.DISABLED));
 
     //Operator
     //===========================================================================
@@ -216,10 +226,7 @@ public class Robot2025Container extends RobotContainer {
     //back is left side: going up
     operator.back().whileTrue(new ResetElevator(0.3) );
 
-    new Trigger(() -> CoralDepositorSubsystem.getInstance().isSensorActive()).onTrue(CombinedCommands.strobeToSolidBlingCommand())
-                                                  .onTrue(new RumbleJoystick(operator, RumbleType.kBothRumble, 0.5, 0.4, true))
-                                                  .onFalse(new BlingCommand(BlingColour.DISABLED));
-
+   
 
   }
   /**

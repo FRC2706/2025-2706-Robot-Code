@@ -194,19 +194,19 @@ public final class Config {
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(0), Math.toRadians(180)));
+        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
 
     public static final Transform3d  rightReefCameraTransform = new Transform3d(
           -0.18, -0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
-
    
     //networkTableName 
     public static final String apriltagCameraName = "FrontApriltagOV9281"; 
-    public static final String networkTableName = "PhotonCamera";
     public static final String frontCameraName = "HD_USB_CAMERA";
 
-      
-    public static final String leftReefCameraName = "";
+    public static final String networkTableNameLeft = "PhotonCameraLeft";  
+    public static final String leftReefCameraName = "Arducam_OV9281_USB_CameraLeft";
+
+    public static final String networkTableName = "PhotonCameraRight";
     public static final String rightReefCameraName = "OV9281-70deg-Arducam-USB-Cam87";
     public static final String intakeCameraName = "";
     //data max
@@ -221,8 +221,8 @@ public final class Config {
     public static final double VEL_TOLERANCE = 0.1*4;
 
 
+    //right side reef from robot (default)
     public static final Translation2d targetOffset = new Translation2d(0.44, 0.11); // From tag coordinate frame, left targets
-    // public static final Translation2d targetOffset = new Translation2d(0.5, -0.3); // From tag coordinate frame, right targets
     public static final Map<Integer,Translation2d> targetOffsetMap =new HashMap<Integer, Translation2d>() {{
       // These values are in field oriented coordinates,
       // So take the tag relative coordinates and rotate them into the field coordinates
@@ -242,9 +242,29 @@ public final class Config {
       put(10, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg (away from red allaince is 180 deg)
       put(11, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
       put(6, targetOffset.rotateBy(Rotation2d.fromDegrees(60 * 5)));  // faces 300 deg
-      //blue human station
+   }};
 
-      //red human station
+    //left side reef from robot
+    public static final Translation2d targetOffsetLeft = new Translation2d(0.44, -0.11); // From tag coordinate frame, right targets
+    public static final Map<Integer,Translation2d> targetOffsetMapLeft =new HashMap<Integer, Translation2d>() {{
+      // These values are in field oriented coordinates,
+      // So take the tag relative coordinates and rotate them into the field coordinates
+      // The order of tags is in the order of tags around the hexagon, starting from the tag that faces away from the blue allaince 
+      // blue reef
+      put(21, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 0))); // faces 0
+      put(20, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 1))); // faces 60 deg
+      put(19, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 2))); // faces 120 deg
+      put(18, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg
+      put(17, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(22, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 5))); // faces 300 deg
+
+      //red reef
+      put(7, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 0)));  // faces 0 deg (away from blue alliance is 0 deg)
+      put(8, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 1)));  // faces 60 deg
+      put(9, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 2)));  // faces 120 deg
+      put(10, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 3))); // faces 180 deg (away from red allaince is 180 deg)
+      put(11, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 4))); // faces 240 deg
+      put(6, targetOffsetLeft.rotateBy(Rotation2d.fromDegrees(60 * 5)));  // faces 300 deg
    }};
 
     public static enum PhotonPositions {     
@@ -637,9 +657,9 @@ public final class Config {
 
     // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
     UP(0), // 0 degrees
-    RETRIEVAL(-80), // 58.5 degrees
-    TRANSPORT(-57), // 41.5 degrees
-    DOWN(-160); // 64.7 degrees
+    RETRIEVAL(-50.97), // 58.5 degrees
+    TRANSPORT(-43.0), // 44.7 degrees
+    DOWN(-115.2); // 64.7 degrees
 
     public final double position;
     AlgaeSetPoints(double setPosition) {

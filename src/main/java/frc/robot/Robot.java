@@ -29,6 +29,7 @@ import frc.robot.robotcontainers.Robot2025Container;
 import frc.robot.robotcontainers.RobotContainer;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.subsystems.PhotonSubsystemLeftReef;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -136,6 +137,7 @@ public class Robot extends TimedRobot {
     {
       SwerveSubsystem.getInstance().setVoltageCompensation(true);
       PhotonSubsystem.getInstance().resetTagAtBootup();
+      PhotonSubsystemLeftReef.getInstance().resetTagAtBootup();
     }
     else if ( Config.getRobotId() == 1)
     {
@@ -171,6 +173,7 @@ public class Robot extends TimedRobot {
     {
       SwerveSubsystem.getInstance().setVoltageCompensation(false);
       PhotonSubsystem.getInstance().resetTagAtBootup();
+      PhotonSubsystemLeftReef.getInstance().resetTagAtBootup();
     }
     else if (Config.getRobotId()==1)
     {
