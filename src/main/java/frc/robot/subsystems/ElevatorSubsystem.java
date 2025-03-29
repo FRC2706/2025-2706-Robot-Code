@@ -65,6 +65,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DoubleEntry m_elevatorDSubs;
     private DoubleEntry m_elevatorIzSubs;
     private DoubleEntry m_elevatorFFSubs;
+    private DoubleEntry elevatorCurrent;
     private DoublePublisher m_targetPositionPub;
     private DoublePublisher m_currentPositionPub;
     private BooleanPublisher m_switchPressedPub;
@@ -105,19 +106,19 @@ public class ElevatorSubsystem extends SubsystemBase {
                         .smartCurrentLimit(Config.ElevatorConfig.CURRENT_LIMIT)
                         .voltageCompensation(12);
 
-        // //Hard limit via limit switch
+        //Hard limit via limit switch
         m_elevator_config.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen)
                  .forwardLimitSwitchEnabled(false);
         m_elevator_config.limitSwitch.reverseLimitSwitchEnabled(true)
                 .reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
         // Soft limit of position
-        //@todo: to determine the value and reverse or forward limit, then enable them
+        // highest height in MVS using manual button is 109.
         //@todo: to set reverse 20 and forward 50 to test. Is this position the same as the encoder reading?
         m_elevator_config.softLimit.reverseSoftLimit(0)
                                    .reverseSoftLimitEnabled(false)
-                                   .forwardSoftLimit(115)
-                                   .forwardSoftLimitEnabled(false);
+                                   .forwardSoftLimit(109) 
+                                   .forwardSoftLimitEnabled(true);
 
         // Get pid values from network tables
         NetworkTable ElevatorTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
@@ -126,14 +127,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevatorDSubs = ElevatorTuningTable.getDoubleTopic("D").getEntry(Config.ElevatorConfig.elevator_kD);
         m_elevatorIzSubs = ElevatorTuningTable.getDoubleTopic("IZone").getEntry(Config.ElevatorConfig.elevator_kIz);
         m_elevatorFFSubs = ElevatorTuningTable.getDoubleTopic("FF").getEntry(Config.ElevatorConfig.elevator_kFF);
+        elevatorCurrent = ElevatorTuningTable.getDoubleTopic("Current(A)").getEntry(0.0);
 
         //@todo: to be tuned
-        m_elevatorFFSubs.setDefault(0);
-        m_elevatorPSubs.setDefault(0.07);//Config.ElevatorConfig.elevator_kP//0.17
-        m_elevatorISubs.setDefault(0);
-        m_elevatorDSubs.setDefault(0.05);//0.05
-        m_elevatorIzSubs.setDefault(0);
+        m_elevatorFFSubs.setDefault(0);//don't use FF
 
+        m_elevatorPSubs.setDefault(0.9);//1.1//0.17
+        m_elevatorDSubs.setDefault(1);//0.01//0.05
+
+        m_elevatorISubs.setDefault(0.0);//0.015//0.0      
+        m_elevatorIzSubs.setDefault(0.0); //1.0//0.0
+
+        elevatorCurrent.setDefault(0.0);
         // Send telemetry thru networktables
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
         m_targetPositionPub = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
@@ -145,21 +150,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.0)
-                .iZone(0.0)
+                .iZone(m_elevatorIzSubs.get())
                 // Set PID gains for velocity control in slot 1
-                .p(0.03, ClosedLoopSlot.kSlot1)//0.07
+                .p(0.6, ClosedLoopSlot.kSlot1)//0.07
                 .i(0.0, ClosedLoopSlot.kSlot1)
-                .d(0.03, ClosedLoopSlot.kSlot1)//0.03
+                .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(6000) //@todo: to tune
-                          .maxVelocity(5000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(7000)
-                          .maxAcceleration(5000, ClosedLoopSlot.kSlot1)
+                .maxMotion.maxVelocity(5600)
+                          .maxVelocity(4000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(18000)//7000
+                         .maxAcceleration(8000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
-
 
         // configure elevator motor
         m_elevator.configure(m_elevator_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -176,6 +180,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_currentPositionPub.accept(m_elevator_encoder.getPosition());
         m_targetPositionPub.accept(elevatorTargetPos);
         m_switchPressedPub.accept(m_elevatorSwitch.isPressed());
+        elevatorCurrent.accept(m_elevator.getOutputCurrent());
         resetEncoderbyLimit();
 
     }
@@ -208,8 +213,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         pidSlot = ClosedLoopSlot.kSlot1; 
       }
 
-      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.5);
-      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.5);
+      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.2);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.0);
 
     }
 
@@ -273,6 +278,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         return true;
       else
         return false;
+    }
+
+    public String hasReachedLevel() {
+        if (isAtTargetPos() && elevatorTargetPos > 0) {
+            if (elevatorTargetPos == Config.ElevatorSetPoints.L1.position) {
+                return "L1";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L2.position) {
+                return "L2";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L3.position) {
+                return "L3";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L4.position) {
+                return "L4";
+            } else {
+                return "None";
+            }
+        } else {
+            return "None";
+        }
     }
 
     public void setServoBrake(boolean bBrakeOn)

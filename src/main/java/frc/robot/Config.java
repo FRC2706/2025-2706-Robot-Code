@@ -383,7 +383,7 @@ public final class Config {
     /* Swerve Profiling Values Changed */
     public static enum TeleopSpeeds {
       SLOW(0.2, 0.2 * Math.PI, 6, 6 * Math.PI),
-      MAX(3.0, 2.5 * Math.PI, 12, 10 * Math.PI),
+      MAX(2.5, 2.0 * Math.PI, 8, 8 * Math.PI),
       DEMO(0.2, 0.2 * Math.PI, 0.3, 0.3 * Math.PI),
       VISION(1.0, 1.0 * Math.PI, 8, 7 * Math.PI);
 
@@ -564,7 +564,7 @@ public final class Config {
     public static final boolean SET_INVERTED = true;
     public static final boolean INVERT_ENCODER = false;
 
-    public static final int CURRENT_LIMIT = 80;
+    public static final int CURRENT_LIMIT = 85;
 
     public static final double MAX_ELEVATOR_EXTENSION = 1000; // Temp value for testing
     public static final double MIN_ELEVATOR_EXTENSION = -2; // Temp value for testing
@@ -608,8 +608,7 @@ public final class Config {
 
     public static final double MOMENT_TO_VOLTAGE = 0.000005;
 
-    public static final double ELEVATOR_POS_TH = 0.8;
-
+    public static final double ELEVATOR_POS_TH = 0.5;
   }
 
   public static enum ElevatorSetPoints {
@@ -617,19 +616,33 @@ public final class Config {
     //RESET(-1), 
     //Note: first movement needs some adjustment
 
-    FEEDER(-0.5),//note: encoder position: 3 to 4.23 good. Current PID value is 1 less.
+    FEEDER(0.0),
     L1(29.23),
     L2(45.83),
-    AUTO_L2(47.83),
+    //AUTO_L2(47.83),
     L3(68.8), 
-    AUTO_L3(70.8),
-    L4(104.07),
-    AUTO_L4(106.07),
+    //AUTO_L3(70.8),
+    L4(103.0),
+    AUTO_L4(104.07),
     NET(90.0); 
   
     public final double position;
   
     ElevatorSetPoints(double setPosition) {
+      position = setPosition;
+    }
+  }
+
+  public static enum AlgaeSetPoints {
+
+    // todo: PLEASE PUT ALGAE MANIPULATOR UPRIGHT BEFORE DEPLOY
+    UP(0), // 0 degrees
+    RETRIEVAL(-80), // 58.5 degrees
+    TRANSPORT(-57), // 41.5 degrees
+    DOWN(-160); // 64.7 degrees
+
+    public final double position;
+    AlgaeSetPoints(double setPosition) {
       position = setPosition;
     }
   }

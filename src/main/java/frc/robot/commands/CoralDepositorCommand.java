@@ -37,9 +37,9 @@ public class CoralDepositorCommand extends Command {
   @Override
   public void execute() {
     if (direction == true) 
-      coralDepositorSubsystem.setVoltage(-0.20);
+      coralDepositorSubsystem.setVoltage(-0.50);
     else 
-      coralDepositorSubsystem.setVoltage(0.2);
+      coralDepositorSubsystem.setVoltage(0.5);
   }
 
   // Called once the command ends or is interrupted.

@@ -51,6 +51,8 @@ public class AutoRoutines extends SubsystemBase {
                     LEFTCenter_R_CD_R,
                     Left_R_CD,
                     Left_R_CD_R,
+                    oneL4Coral_rightBlue,
+                    oneL4Coral_leftBlue,
                     centerMove;
     
 
@@ -66,7 +68,8 @@ public class AutoRoutines extends SubsystemBase {
         LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
         LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
         centerMove = new PathPlannerAuto("centerMove");
-
+        oneL4Coral_rightBlue = new PathPlannerAuto("oneL4Coral-rightBlue");
+        oneL4Coral_leftBlue = new PathPlannerAuto("oneL4Coral-leftBlue"); // blue side, starts on the right of starting line (robot perspective) and goes to right angled side bottom half of reef
          
        
     }
@@ -77,8 +80,11 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("redBling", new BlingCommand(BlingColour.RED));
 
          NamedCommands.registerCommand("elevatorL2",new SetElevator(Config.ElevatorSetPoints.L2));
-         NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.L4));
-         NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
+
+         NamedCommands.registerCommand("elevatorL3",new SetElevator(Config.ElevatorSetPoints.L3));
+         NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.AUTO_L4));
+         NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER).withTimeout(2));
+
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
     }
@@ -91,9 +97,12 @@ public class AutoRoutines extends SubsystemBase {
             case 1:
                 return centerMove;
             case 2:
-                return Left_R_CD_R;
+                // robot start on right corner of starting line (robot perspective) or left from driver perspective
+                return oneL4Coral_rightBlue;
             case 3:
-                return Right_R_CD_R;
+
+                // robot start on left corner of starting line (robot perspective) or right from driver perspective 
+                return oneL4Coral_leftBlue;
             case 4:
                 return RIGHTCenter_R_CD_R;
             case 5:
