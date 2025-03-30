@@ -49,6 +49,7 @@ public class AutoRoutines extends SubsystemBase {
                     twoL4Coral,
                     threeL4Coral,
                     testVisionAuto,
+                    NOVISION_oneL4Coral_leftBlue,
                     centerMove;
     
 
@@ -61,6 +62,8 @@ public class AutoRoutines extends SubsystemBase {
         twoL4Coral= new PathPlannerAuto("twoL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts two coral on L4 reef
         threeL4Coral = new PathPlannerAuto("threeL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts three coral on L4 reef
         testVisionAuto = new PathPlannerAuto(("vision"));
+        NOVISION_oneL4Coral_leftBlue = new PathPlannerAuto("NOVISION-oneL4Coral-leftBlue"); // blue side, starts on the left of starting line (robot perspective) and goes to right angled side of top half of reef
+
     }
 
     public void registerCommandsToPathplanner() {
@@ -94,12 +97,14 @@ public class AutoRoutines extends SubsystemBase {
             case 4:
                 return testVisionAuto;
             case 5:
-                return twoL4Coral;
+                return NOVISION_oneL4Coral_leftBlue;
             case 6:
                 return threeL4Coral;
             case 7:
                 return oneL4Coral_CD;
             case 8:
+                return twoL4Coral;
+            case 9:
                 var alliance = DriverStation.getAlliance();
 
                  // Default to blue alliance

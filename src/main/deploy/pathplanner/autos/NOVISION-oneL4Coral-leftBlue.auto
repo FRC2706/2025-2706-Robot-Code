@@ -17,25 +17,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "reset"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "vision-move"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
                   "name": "elevatorL4"
                 }
               },

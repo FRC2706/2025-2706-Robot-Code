@@ -113,17 +113,17 @@ public class PhotonMoveToTarget extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if (shouldNeverEnd) {
-    //   return false;
-    // }
-    // else
+    if (shouldNeverEnd) {
+      return false;
+    }
+    else
     {
       //if no vision data, stop
       // return (PhotonSubsystem.getInstance().hasTarget()==false 
       // ||  SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos())
       // );
        
-       return false;
+       return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
     
       //two options here:
       //+++SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos());

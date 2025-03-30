@@ -216,7 +216,7 @@ public final class Config {
     public static final double[] APRIL_HEIGHTS = {1.32,1.32,1.22,1.22,1.32,1.32};
     public static final double POS_TOLERANCE = 0.05; // meters //TODO: Change to 0.01
     public static final double ANGLE_TOLERANCE = Math.toRadians(4.0);//Change this to: 1.0
-    public static final double WAYPOINT_POS_TOLERANCE = 0.2; // meters
+    public static final double WAYPOINT_POS_TOLERANCE = 0.05; // meters
     public static final double WAYPOINT_ANGLE_TOLERANCE = Math.toRadians(10.0);
     public static final double VEL_TOLERANCE = 0.1*4;
 
