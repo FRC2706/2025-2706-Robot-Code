@@ -100,9 +100,17 @@ public class PhotonMoveToTargetLeft extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-     {      
-       return false;  
-
+    if (shouldNeverEnd) {
+      return false;
+    }
+    else
+    {
+      //if no vision data, stop
+      // return (PhotonSubsystem.getInstance().hasTarget()==false 
+      // ||  SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos())
+      // );
+       
+       return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
     }
       
   }
