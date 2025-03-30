@@ -131,13 +131,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         //@todo: to be tuned
         m_elevatorFFSubs.setDefault(0);//don't use FF
-        m_elevatorPSubs.setDefault(1.1);
-        m_elevatorISubs.setDefault(0.015);
-        m_elevatorDSubs.setDefault(0.01);
-        m_elevatorIzSubs.setDefault(1.0); 
+
+        m_elevatorPSubs.setDefault(0.9);//1.1//0.17
+        m_elevatorDSubs.setDefault(1);//0.01//0.05
+
+        m_elevatorISubs.setDefault(0.0);//0.015//0.0      
+        m_elevatorIzSubs.setDefault(0.0); //1.0//0.0
 
         elevatorCurrent.setDefault(0.0);
-
         // Send telemetry thru networktables
         NetworkTable ElevatorDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
         m_targetPositionPub = ElevatorDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
@@ -149,18 +150,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_elevator_config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
                 .pid(m_elevatorPSubs.get(), m_elevatorISubs.get(), m_elevatorDSubs.get())
                 .velocityFF(0.0)
-                .iZone(0.0)
+                .iZone(m_elevatorIzSubs.get())
                 // Set PID gains for velocity control in slot 1
-                .p(0.07, ClosedLoopSlot.kSlot1)
+                .p(0.6, ClosedLoopSlot.kSlot1)//0.07
                 .i(0.0, ClosedLoopSlot.kSlot1)
                 .d(0.03, ClosedLoopSlot.kSlot1)
                 .velocityFF(0.0, ClosedLoopSlot.kSlot1)
                 .iZone(0, ClosedLoopSlot.kSlot1)
                 .outputRange(-1,1)
-                .maxMotion.maxVelocity(4000) 
-                          .maxVelocity(3000, ClosedLoopSlot.kSlot1)
-                          .maxAcceleration(7000)
-                         .maxAcceleration(4000, ClosedLoopSlot.kSlot1)
+                .maxMotion.maxVelocity(5600)
+                          .maxVelocity(4000, ClosedLoopSlot.kSlot1)
+                          .maxAcceleration(18000)//7000
+                         .maxAcceleration(8000, ClosedLoopSlot.kSlot1)
                 .allowedClosedLoopError(0.25)
                 .allowedClosedLoopError(0.25, ClosedLoopSlot.kSlot1);
 
@@ -212,8 +213,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         pidSlot = ClosedLoopSlot.kSlot1; 
       }
 
-      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.5);
-      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.2);
+      //m_pidControllerElevator.setReference(height, ControlType.kPosition, pidSlot, 1.2);
+      m_pidControllerElevator.setReference(height, ControlType.kMAXMotionPositionControl, pidSlot, 1.0);
 
     }
 
@@ -277,6 +278,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         return true;
       else
         return false;
+    }
+
+    public String hasReachedLevel() {
+        if (isAtTargetPos() && elevatorTargetPos > 0) {
+            if (elevatorTargetPos == Config.ElevatorSetPoints.L1.position) {
+                return "L1";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L2.position) {
+                return "L2";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L3.position) {
+                return "L3";
+            } else if (elevatorTargetPos == Config.ElevatorSetPoints.L4.position) {
+                return "L4";
+            } else {
+                return "None";
+            }
+        } else {
+            return "None";
+        }
     }
 
     public void setServoBrake(boolean bBrakeOn)

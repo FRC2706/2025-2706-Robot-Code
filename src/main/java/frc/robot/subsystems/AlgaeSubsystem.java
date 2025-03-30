@@ -6,15 +6,13 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.lib2706.SubsystemChecker;
 import frc.lib.lib2706.SubsystemChecker.SubsystemType;
@@ -31,9 +29,19 @@ public class AlgaeSubsystem extends SubsystemBase {
     //algae motor configuration
     private SparkMaxConfig m_algaeMotor_config;
     private RelativeEncoder m_algae_encoder;
+    private final SparkClosedLoopController m_pidController;
 
-    private final String m_dataTable = "Algae";
-     private DoublePublisher m_currentPositionPub;
+    // network table entry
+    private final String m_tuningTable = "Algae/AlgaeTuning";
+    private final String m_dataTable = "Algae/AlgaeData";
+
+    private DoublePublisher m_targetPositionPub;
+    private DoublePublisher m_currentPositionPub;
+
+    private double m_AlgaeP;
+    private double m_AlgaeI;
+    private double m_AlgaeD;
+
 
     public static AlgaeSubsystem getInstance() {
         if (instance == null) {
@@ -49,6 +57,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         m_algaeMotor_config = new SparkMaxConfig(); //create configuration of the algae motor controller
 
         m_algae_encoder = m_algaeMotor.getEncoder();
+        m_pidController = m_algaeMotor.getClosedLoopController();
 
         //configure the algae motor controller  
         //m_algaeMotor.setCANTimeout(Config.CANTIMEOUT_MS);
@@ -59,17 +68,30 @@ public class AlgaeSubsystem extends SubsystemBase {
         m_algaeMotor_config.voltageCompensation(10);
 
         //@todo: tune the limits
-        m_algaeMotor_config.softLimit.reverseSoftLimit(-160)
+        m_algaeMotor_config.softLimit.reverseSoftLimit(-120)
                                    .reverseSoftLimitEnabled(true)
                                    .forwardSoftLimit(0) 
                                    .forwardSoftLimitEnabled(true);
 
+        // Get pid values from network tables
+        NetworkTable AlgaeTuningTable = NetworkTableInstance.getDefault().getTable(m_tuningTable);
+        m_AlgaeP = 0.2;
+        m_AlgaeI = 0.0;
+        m_AlgaeD = 0.0;
+
+        // Send telemetry thru networktables
+        NetworkTable AlgaeDataTable = NetworkTableInstance.getDefault().getTable(m_dataTable);
+        m_targetPositionPub = AlgaeDataTable.getDoubleTopic("TargetPosition").publish(PubSubOption.periodic(0.02));
+        m_currentPositionPub = AlgaeDataTable.getDoubleTopic("CurrentPosition").publish(PubSubOption.periodic(0.02));
+
+
+        m_algaeMotor_config.closedLoop
+                        .pid(m_AlgaeP, m_AlgaeI, m_AlgaeD);
 
         m_algaeMotor.configure(m_algaeMotor_config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
         //reset encoder
         m_algae_encoder.setPosition(0);
-        //@todo: to add encoder and PIDs
 
         ErrorTrackingSubsystem.getInstance().register(m_algaeMotor);
 
@@ -81,6 +103,9 @@ public class AlgaeSubsystem extends SubsystemBase {
         m_algaeMotor.set(percentOutput);
     }
 
+    public void setPosition(double targetPos) {
+        m_pidController.setReference(targetPos, SparkMax.ControlType.kPosition);
+    }
 
     public void stop()
     {

@@ -63,6 +63,8 @@ public class SetElevator extends Command {
         if (elevatorSubsystem.isAtTargetPos() == true 
             || m_timer.hasElapsed(5))
         {
+            System.out.println("===setPos: "+ setPos.position);
+            System.out.println("===currPos: "+elevatorSubsystem.getCurrPosition());
             return true;
         }
         else
