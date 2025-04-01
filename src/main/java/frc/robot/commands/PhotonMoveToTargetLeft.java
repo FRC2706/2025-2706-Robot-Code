@@ -64,29 +64,33 @@ public class PhotonMoveToTargetLeft extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Translation2d setPoint = PhotonSubsystemLeftReef.getInstance().getTargetPos();
+    try {
+      Translation2d setPoint = PhotonSubsystemLeftReef.getInstance().getTargetPos();
 
-    Rotation2d targetRotation = PhotonSubsystemLeftReef.getInstance().getTargetRotation();
-    Rotation2d targetRobotHeading = PhotonSubsystemLeftReef.getInstance().getTargetRobotHeading();
+      Rotation2d targetRotation = PhotonSubsystemLeftReef.getInstance().getTargetRotation();
+      Rotation2d targetRobotHeading = PhotonSubsystemLeftReef.getInstance().getTargetRobotHeading();
 
-    //@todo: 
-    //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
-    //convert to Robot: facing to AprilTag
-    Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
+      //@todo:
+      //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
+      //convert to Robot: facing to AprilTag
+      Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees() + 180);
 
-    Rotation2d desiredRotation;
-    if (centerTarget) {
-      desiredRotation = rotationSetPoint;
-    } else {
-      desiredRotation = targetRobotHeading;
+      Rotation2d desiredRotation;
+      if (centerTarget) {
+        desiredRotation = rotationSetPoint;
+      } else {
+        desiredRotation = targetRobotHeading;
+      }
+
+      // Grab the latest target offset.
+      targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();
+
+      Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
+
+      SwerveSubsystem.getInstance().driveToPose(desiredPose);
+    } catch (Exception e) {
+      System.out.println(e);
     }
-
-    // Grab the latest target offset.
-    targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();
-
-    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
- 
-    SwerveSubsystem.getInstance().driveToPose(desiredPose);
   }
  
 
