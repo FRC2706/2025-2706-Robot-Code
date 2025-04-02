@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftStartLine-reef"
+            "pathName": "rightBlue-Reef"
           }
         },
         {
@@ -17,13 +17,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL2"
+                  "name": "elevatorL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "CoralScore"
+                  "name": "coralScore"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorIntake"
                 }
               }
             ]
@@ -32,19 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftReef-leftCd"
+            "pathName": "reefRightSide-CD"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "coralIntake"
+            "waitTime": 2.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "leftCd-reef"
+            "pathName": "CD-reefLeftSide"
           }
         },
         {
@@ -54,13 +60,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "elevatorL2"
+                  "name": "elevatorL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "CoralScore"
+                  "name": "coralScore"
                 }
               },
               {

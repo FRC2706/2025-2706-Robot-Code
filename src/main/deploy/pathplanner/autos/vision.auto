@@ -7,7 +7,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftBlue-Reef"
+            "pathName": "vision-path"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "reset"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "vision-move"
+                }
+              }
+            ]
           }
         },
         {
@@ -33,12 +52,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leftReef-CD"
           }
         }
       ]

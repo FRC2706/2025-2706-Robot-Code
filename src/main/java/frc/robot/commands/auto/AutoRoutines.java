@@ -27,12 +27,14 @@ import frc.robot.commands.CoralDepositorCommand;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.MakeIntakeMotorSpin;
 import frc.robot.commands.PhotonMoveToTarget;
+import frc.robot.commands.PhotonMoveToTargetLeft;
 import frc.robot.commands.SetArm;
 import frc.robot.commands.SetElevator;
 import frc.robot.commands.Shooter_PID_Tuner;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.subsystems.PhotonSubsystemLeftReef;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.commands.BlingCommand;
@@ -43,35 +45,27 @@ public class AutoRoutines extends SubsystemBase {
     // PathPlannerPath speakerPath = PathPlannerPath.fromPathFile("Speaker Path");
    
     PathPlannerAuto 
-                    Right_R_CD,
-                    Right_R_CD_R,
-                    RIGHTCenter_R_CD,
-                    RIGHTCenter_R_CD_R,
-                    LEFTCenter_R_CD,
-                    LEFTCenter_R_CD_R,
-                    Left_R_CD,
-                    Left_R_CD_R,
+                    twoL4Coral_leftBlue,
                     oneL4Coral_rightBlue,
-                    oneL4Coral_leftBlue,
+                    oneL4Coral_CD,
+                    twoL4Coral,
+                    threeL4Coral,
+                    centerMoveVision,
+                    NOVISION_oneL4Coral_leftBlue,
                     centerMove;
     
 
     public AutoRoutines() {
         registerCommandsToPathplanner();
+        centerMove = new PathPlannerAuto("centerMove"); // blue side, starts in center of starting line and goes forward to reef
+        twoL4Coral_leftBlue = new PathPlannerAuto("twoL4Coral-leftBlue"); // blue side, starts on the left of starting line (robot perspective) and goes to right angled side of top half of reef
+        oneL4Coral_rightBlue = new PathPlannerAuto("oneL4Coral-rightBlue"); // blue side, starts on the right of starting line (robot perspective) and goes to right angled side bottom half of reef
+        oneL4Coral_CD = new PathPlannerAuto("oneL4Coral-CD"); // blue side, starts on the left of starting line (robot perspective), goes to right angled side of top half of reef, and then to the coral depot
+        twoL4Coral= new PathPlannerAuto("twoL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts two coral on L4 reef
+        threeL4Coral = new PathPlannerAuto("threeL4Coral"); // blue side, starts on the left of starting line (robot perspective) and puts three coral on L4 reef
+        centerMoveVision = new PathPlannerAuto(("vision"));
+        NOVISION_oneL4Coral_leftBlue = new PathPlannerAuto("NOVISION-oneL4Coral-leftBlue"); // blue side, starts on the left of starting line (robot perspective) and goes to right angled side of top half of reef
 
-        Right_R_CD = new PathPlannerAuto("rightReefCd");
-        Right_R_CD_R = new PathPlannerAuto("rightReefCdReef");
-        Left_R_CD = new PathPlannerAuto("leftReefCd");
-        Left_R_CD_R = new PathPlannerAuto("leftReefCdReef");
-        RIGHTCenter_R_CD = new PathPlannerAuto("rightCenterReefCd");
-        RIGHTCenter_R_CD_R = new PathPlannerAuto("rightCenterReefCdReef");
-        LEFTCenter_R_CD_R = new PathPlannerAuto("leftCenterReefCd");
-        LEFTCenter_R_CD = new PathPlannerAuto("leftCenterReefCdReef");
-        centerMove = new PathPlannerAuto("centerMove");
-        oneL4Coral_rightBlue = new PathPlannerAuto("oneL4Coral-rightBlue");
-        oneL4Coral_leftBlue = new PathPlannerAuto("oneL4Coral-leftBlue"); // blue side, starts on the right of starting line (robot perspective) and goes to right angled side bottom half of reef
-         
-       
     }
 
     public void registerCommandsToPathplanner() {
@@ -83,10 +77,12 @@ public class AutoRoutines extends SubsystemBase {
 
          NamedCommands.registerCommand("elevatorL3",new SetElevator(Config.ElevatorSetPoints.L3));
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.AUTO_L4));
-         NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER).withTimeout(2));
+         NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
 
         // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
-         NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(2));
+         NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(1));
+         NamedCommands.registerCommand("reset", PhotonSubsystemLeftReef.getInstance().getResetCommand());
+         NamedCommands.registerCommand("vision-move",new PhotonMoveToTargetLeft(false, false, false));
     }
 
     public Command getAutonomousCommand(int selectAuto) {
@@ -95,28 +91,31 @@ public class AutoRoutines extends SubsystemBase {
             default: 
                 return null;
             case 1:
-                return centerMove;
+                return centerMove; /*  no vision, moves straight, starts in the center of starting
+                                       line with back of the robot on front of black tape*/
             case 2:
-                // robot start on right corner of starting line (robot perspective) or left from driver perspective
-                return oneL4Coral_rightBlue;
+                return centerMoveVision; /*  WITH vision, moves straight, starts in the center of starting
+                                             line with back of the robot little bit behind starting line */
             case 3:
-
-                // robot start on left corner of starting line (robot perspective) or right from driver perspective 
-                return oneL4Coral_leftBlue;
+                return NOVISION_oneL4Coral_leftBlue; /*  no vision, curved path, starts on left side 
+                                                         (robot perspective) 
+                                                         of starting line with robot aligned to 
+                                                         starting line/field gate corner*/
+                                                         
             case 4:
-                return RIGHTCenter_R_CD_R;
+                return twoL4Coral_leftBlue; /*  WITH vision, curved path, will go to CD, starts on left side 
+                                                (robot perspective) 
+                                                of starting line with robot aligned to 
+                                                starting line/field gate corner*/
             case 5:
-                return LEFTCenter_R_CD;
+                return oneL4Coral_rightBlue;
             case 6:
-                return LEFTCenter_R_CD_R;
+                return threeL4Coral;
             case 7:
-                return Right_R_CD_R;
+                return oneL4Coral_CD;
             case 8:
-                return Left_R_CD_R;
-            case 9: 
-                return Right_R_CD;
-            case 10: 
-            case 11:
+                return twoL4Coral;
+            case 9:
                 var alliance = DriverStation.getAlliance();
 
                  // Default to blue alliance

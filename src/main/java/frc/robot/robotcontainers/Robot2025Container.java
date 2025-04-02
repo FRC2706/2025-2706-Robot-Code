@@ -179,7 +179,7 @@ public class Robot2025Container extends RobotContainer {
     driver.rightTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystem.getInstance().reset())); // Re-acquire target every time button is pressed
     driver.rightTrigger().and(() -> PhotonSubsystem.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
         .whileTrue(Commands.parallel(
-            new PhotonMoveToTarget(false, false, false),
+            new PhotonMoveToTarget(false, false, true),
             new BlingCommand(BlingColour.BLUESTROBE),
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
             new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
@@ -191,7 +191,7 @@ public class Robot2025Container extends RobotContainer {
     driver.leftTrigger().onTrue(Commands.runOnce(() -> PhotonSubsystemLeftReef.getInstance().reset())); // Re-acquire target every time button is pressed
     driver.leftTrigger().and(() -> PhotonSubsystemLeftReef.getInstance().hasData()) // Run vision command while button is pressed down AND a target is found
         .whileTrue(Commands.parallel(
-            new PhotonMoveToTargetLeft(false, false, false),
+            new PhotonMoveToTargetLeft(false, false, true),
             new BlingCommand(BlingColour.REDSTROBE),
             new RumbleJoystick(driver, RumbleType.kBothRumble, 0.75, 0.4, false),
             new RumbleJoystick(operator, RumbleType.kBothRumble, 0.75, 0.4, false)));
