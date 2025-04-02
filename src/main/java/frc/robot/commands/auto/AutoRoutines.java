@@ -79,7 +79,7 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("elevatorL4",new SetElevator(Config.ElevatorSetPoints.AUTO_L4));
          NamedCommands.registerCommand("elevatorIntake",new SetElevator(Config.ElevatorSetPoints.FEEDER));
 
-        // NamedCommands.registerCommand("coralIntake", new CoralIntake(-0.3,  0.3).withTimeout(1.5));
+         NamedCommands.registerCommand("coralIntake", new CoralDepositorCommand(true, true));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(1));
          NamedCommands.registerCommand("reset", PhotonSubsystemLeftReef.getInstance().getResetCommand());
          NamedCommands.registerCommand("vision-move",new PhotonMoveToTargetLeft(false, false, false));
