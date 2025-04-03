@@ -82,7 +82,8 @@ public class AutoRoutines extends SubsystemBase {
          NamedCommands.registerCommand("coralIntake", new CoralDepositorCommand(true, true));
          NamedCommands.registerCommand("CoralScore", new CoralDepositorCommand(true, false).withTimeout(1));
          NamedCommands.registerCommand("reset", PhotonSubsystemLeftReef.getInstance().getResetCommand());
-         NamedCommands.registerCommand("vision-move",new PhotonMoveToTargetLeft(false, false, false));
+         NamedCommands.registerCommand("vision-move",CombinedCommands.autoVisionMove());
+
     }
 
     public Command getAutonomousCommand(int selectAuto) {

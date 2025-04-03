@@ -148,6 +148,15 @@ public class CombinedCommands {
                     );
     }
 
+    //auto vision move
+    public static Command autoVisionMove()
+    {
+        if (PhotonSubsystemLeftReef.getInstance().hasData())
+            return new WaitCommand(2);
+        else
+           return new PhotonMoveToTargetLeft(false, false, false);                   
+    }
+
     /**
      * Score in the amp or speaker using vision and the given parameters.
      * Uses simple programming for the intake and shooter.
