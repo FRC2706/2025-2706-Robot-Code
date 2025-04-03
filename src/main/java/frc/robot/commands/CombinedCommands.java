@@ -152,9 +152,9 @@ public class CombinedCommands {
     public static Command autoVisionMove()
     {
         if (PhotonSubsystemLeftReef.getInstance().hasData())
-            return new WaitCommand(2);
-        else
-           return new PhotonMoveToTargetLeft(false, false, false);                   
+            return new PhotonMoveToTargetLeft(false, false, false);  
+        else          
+           return new WaitCommand(2);                
     }
 
     /**
