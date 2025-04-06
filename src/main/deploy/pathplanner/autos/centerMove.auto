@@ -40,12 +40,6 @@
               }
             ]
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "disableBLING"
-          }
         }
       ]
     }

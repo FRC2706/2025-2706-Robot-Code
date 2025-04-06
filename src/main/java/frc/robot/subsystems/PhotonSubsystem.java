@@ -271,6 +271,9 @@ public class PhotonSubsystem extends SubsystemBase {
 
       bestTagId = target.getFiducialId();
       targetOffset = Config.PhotonConfig.targetOffsetMap.get(bestTagId);
+      if(targetOffset == null) {
+        return;
+      }
       pubBestTagId.accept(bestTagId);
       pubTargetOffset.accept(new double[]{targetOffset.getX(), targetOffset.getY()});
       
