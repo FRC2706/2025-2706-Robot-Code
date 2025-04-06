@@ -264,6 +264,9 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
 
       bestTagId = target.getFiducialId();
       targetOffset = Config.PhotonConfig.targetOffsetMapLeft.get(bestTagId);
+      if(targetOffset == null) {
+        return;
+      }
       pubBestTagId.accept(bestTagId);
       pubTargetOffset.accept(new double[]{targetOffset.getX(), targetOffset.getY()});
       

@@ -22,6 +22,7 @@ public class PhotonMoveToTargetLeft extends Command {
   boolean centerTarget;
   boolean isWaypoint;
   boolean shouldNeverEnd;
+  boolean bnullPointer = false;
 
 /**
  * Command for moving to the target currently selected in the PhotonSubsystem. Without a desired heading, the robot turns so that the camera faces the target.
@@ -59,6 +60,7 @@ public class PhotonMoveToTargetLeft extends Command {
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
     targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();  
+    bnullPointer = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -83,10 +85,13 @@ public class PhotonMoveToTargetLeft extends Command {
 
     // Grab the latest target offset.
     targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();
-
-    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
+    if (setPoint == null || targetOffset == null || desiredRotation == null) {
+      bnullPointer = true;
+    } else {
+      Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
  
-    SwerveSubsystem.getInstance().driveToPose(desiredPose);
+      SwerveSubsystem.getInstance().driveToPose(desiredPose);
+    }
   }
  
 
@@ -100,6 +105,9 @@ public class PhotonMoveToTargetLeft extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (bnullPointer) {
+      return true;
+    }
     if (shouldNeverEnd) {
       return false;
     }
