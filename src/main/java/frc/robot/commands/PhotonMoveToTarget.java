@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.PhotonSubsystemLeftReef;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Config.PhotonConfig;
 import frc.robot.subsystems.PhotonSubsystem;
@@ -22,6 +23,7 @@ public class PhotonMoveToTarget extends Command {
   boolean centerTarget;
   boolean isWaypoint;
   boolean shouldNeverEnd;
+  boolean bnullPointer = false;
 
   //private Timer m_timer = new Timer();
 
@@ -62,7 +64,7 @@ public class PhotonMoveToTarget extends Command {
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
     targetOffset = PhotonSubsystem.getInstance().getTargetOffset();
-
+    bnullPointer = false;
     //m_timer.restart();
 
     // m_timer.start();
@@ -94,9 +96,13 @@ public class PhotonMoveToTarget extends Command {
     // Grab the latest target offset.
     targetOffset = PhotonSubsystem.getInstance().getTargetOffset();
 
-    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
- 
-    SwerveSubsystem.getInstance().driveToPose(desiredPose);
+    if (setPoint == null || targetOffset == null || desiredRotation == null) {
+      bnullPointer = true;
+    } else {
+      Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
+
+      SwerveSubsystem.getInstance().driveToPose(desiredPose);
+    }
   }
  
 
@@ -113,6 +119,9 @@ public class PhotonMoveToTarget extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (bnullPointer) {
+      return true;
+    }
     if (shouldNeverEnd) {
       return false;
     }

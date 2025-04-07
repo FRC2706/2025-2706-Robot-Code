@@ -65,7 +65,7 @@ import frc.robot.commands.RumbleJoystick;
 public class PhotonSubsystemLeftReef extends SubsystemBase {
 
   //constants
-  
+
   //declarations
   private static PhotonSubsystemLeftReef instance;
   private DoubleArrayPublisher pubSetPoint;
@@ -92,7 +92,7 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
   private boolean isCameraConnected = false;
 
   private AprilTagFieldLayout aprilTagFieldLayout;
- 
+
   public static PhotonSubsystemLeftReef getInstance(){
     if (instance == null){
       SubsystemChecker.subsystemConstructed(SubsystemType.PhotonSubsystemLeftReef);
@@ -105,7 +105,7 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
   private PhotonSubsystemLeftReef() {
     //name of camera, change if using multiple cameras
     camera1 = new PhotonCamera(PhotonConfig.leftReefCameraName);
-    
+
     //networktable publishers
     NetworkTable photonTable = NetworkTableInstance.getDefault().getTable(PhotonConfig.networkTableNameLeft);
     pubBestTagId = photonTable.getIntegerTopic("BestTagId").publish(PubSubOption.periodic(0.02));
@@ -128,7 +128,7 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
       aprilTagFieldLayout = null;
       DriverStation.reportError("Merge's PhotonSubsystem failed to create the apriltag layout. ", false);
     }
-  
+
   }
 
   public void reset() {
@@ -156,7 +156,7 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
   public Command getResetCommand(){
     return runOnce(() -> reset());
   }
-  
+
   //publishes yaw
   public Rotation2d getYaw (){
     return targetRotation;
@@ -214,7 +214,7 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
   public void periodic() {
 
     Pose2d fieldToTarget = null;
-    
+
     List<PhotonPipelineResult> listResult;
 
     try {
@@ -245,14 +245,14 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
     recentTimeStamp = result.getTimestampSeconds();
 
     if(result.hasTargets()==false)
-    { 
-     // System.out.println("result does not have any target");
+    {
+      // System.out.println("result does not have any target");
       return;
     }
 
     //if (PhotonConfig.USE_3D_TAGS) 
     //====================
-    {     
+    {
       //Get the best target
       PhotonTrackedTarget target = result.getBestTarget();
 
@@ -264,9 +264,12 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
 
       bestTagId = target.getFiducialId();
       targetOffset = Config.PhotonConfig.targetOffsetMapLeft.get(bestTagId);
+      if(targetOffset == null) {
+        return;
+      }
       pubBestTagId.accept(bestTagId);
       pubTargetOffset.accept(new double[]{targetOffset.getX(), targetOffset.getY()});
-      
+
       //@todo: validate bestTagId based on red or blue. May not need to check red or blue
       //if not valid tagId, return
       Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(bestTagId);
@@ -282,47 +285,47 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
       {
         tagIdPose = tagPose.get();
         bestTagHeading = tagIdPose.getRotation().toRotation2d();
-  
+
         //due to the camera is at the back
         targetRobotHeading = bestTagHeading;
 
         pubBestTagHeading.accept(bestTagHeading.getDegrees());
         pubTargetRobotHeading.accept(targetRobotHeading.getDegrees());
-       
+
       }
 
       ////New option
       /// ===========================================================
-     {
-      //get the swerve pose at the time that the result was gotten
-      Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
-      //for security reasons
-      if (optPose.isEmpty()){
-        //System.out.println("the odometryPose is empty");
-        return;
-      }
-      else
       {
-        Pose2d odometryPose = optPose.get();
+        //get the swerve pose at the time that the result was gotten
+        Optional<Pose2d> optPose= SwerveSubsystem.getInstance().getPoseAtTimestamp(result.getTimestampSeconds());
+        //for security reasons
+        if (optPose.isEmpty()){
+          //System.out.println("the odometryPose is empty");
+          return;
+        }
+        else
+        {
+          Pose2d odometryPose = optPose.get();
 
-        //@todo: need to update cameraTransform for the new camera location
-        Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
-        Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
+          //@todo: need to update cameraTransform for the new camera location
+          Transform3d robotToTarget3d = PhotonConfig.leftReefCameraTransform.plus(target.getBestCameraToTarget());
+          Transform2d robotToTarget = new Transform2d(robotToTarget3d.getTranslation().toTranslation2d(), robotToTarget3d.getRotation().toRotation2d());
 
-        // Map the position of the tag relative to the current odometry pose with latency compensation
-        fieldToTarget = odometryPose.plus(robotToTarget);
+          // Map the position of the tag relative to the current odometry pose with latency compensation
+          fieldToTarget = odometryPose.plus(robotToTarget);
 
-        pub3DTagsDebugMsg.accept("Transform2d from robot to tag: " + robotToTarget.toString());
-      } 
+          pub3DTagsDebugMsg.accept("Transform2d from robot to tag: " + robotToTarget.toString());
+        }
+      }
+
     }
 
-    } 
- 
     if (fieldToTarget != null) {
       //update rolling averages
       targetPos = new Translation2d(
-          filterX.calculate(fieldToTarget.getX()),
-          filterY.calculate(fieldToTarget.getY()));
+              filterX.calculate(fieldToTarget.getX()),
+              filterY.calculate(fieldToTarget.getY()));
       targetRotation = Rotation2d.fromDegrees(filteryaw.calculate(fieldToTarget.getRotation().getDegrees()));
       numSamples++;
 
@@ -336,10 +339,9 @@ public class PhotonSubsystemLeftReef extends SubsystemBase {
       //publish to networktables
       pubSetPoint.accept(new double[]{targetPos.getX(), targetPos.getY(), targetRotation.getRadians()});
       pubNewSetPoint.accept(new double[]{newTargetPos.getX(), newTargetPos.getY(), -1.0});
-    
-  }
-  
-  pubHasData.accept(hasData());
-}
-}
 
+    }
+
+    pubHasData.accept(hasData());
+  }
+}
