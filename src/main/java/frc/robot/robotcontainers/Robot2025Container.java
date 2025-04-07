@@ -98,8 +98,8 @@ public class Robot2025Container extends RobotContainer {
                                               .onFalse(new BlingCommand(BlingColour.DISABLED));
 
 
-    new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.RAINBOW))
-                                                .onFalse(new BlingCommand(BlingColour.DISABLED));
+    /*new Trigger(() -> TeleopSwerve.isSlowMode()).onTrue(new BlingCommand(BlingColour.RAINBOW))
+                                                .onFalse(new BlingCommand(BlingColour.DISABLED));*/
     //Driver
     //=========================================================================
     /**
@@ -111,8 +111,8 @@ public class Robot2025Container extends RobotContainer {
     driver.back().onTrue(SwerveSubsystem.getInstance().setHeadingCommand(new Rotation2d(0)));
 
     //slow mode
-    driver.leftBumper().whileTrue(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)))
-                       .onFalse(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)));
+    driver.leftBumper().whileTrue(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.SLOW)), new BlingCommand(BlingColour.RAINBOW)))
+                       .onFalse(Commands.parallel(Commands.runOnce(() -> TeleopSwerve.setSpeeds(TeleopSpeeds.MAX)), new BlingCommand(BlingColour.DISABLED)));
 
     //disable and reenable field oriented drive
     /*driver.rightBumper().onTrue(Commands.runOnce(() -> TeleopSwerve.setFieldRelative(false)))

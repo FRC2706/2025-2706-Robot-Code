@@ -11,25 +11,19 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "redBling"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "vision-move"
+                  "name": "reset"
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 3.0
+                  "name": "vision-move"
                 }
               }
             ]
