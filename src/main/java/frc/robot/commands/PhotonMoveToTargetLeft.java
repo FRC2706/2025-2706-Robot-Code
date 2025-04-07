@@ -22,14 +22,15 @@ public class PhotonMoveToTargetLeft extends Command {
   boolean centerTarget;
   boolean isWaypoint;
   boolean shouldNeverEnd;
+  boolean bnullPointer = false;
 
-/**
- * Command for moving to the target currently selected in the PhotonSubsystem. Without a desired heading, the robot turns so that the camera faces the target.
- * @param _targetOffset
- * the field oriented offset from the aprilTag to move towards
- * @param _isWaypoint
- * whether or not to use the larger tolerences meant for stop-and-go waypoints
- */
+  /**
+   * Command for moving to the target currently selected in the PhotonSubsystem. Without a desired heading, the robot turns so that the camera faces the target.
+   * @param _targetOffset
+   * the field oriented offset from the aprilTag to move towards
+   * @param _isWaypoint
+   * whether or not to use the larger tolerences meant for stop-and-go waypoints
+   */
   public PhotonMoveToTargetLeft(boolean _isWaypoint, boolean neverEnd) {
     addRequirements(SwerveSubsystem.getInstance());
     addRequirements(PhotonSubsystemLeftReef.getInstance());
@@ -38,14 +39,14 @@ public class PhotonMoveToTargetLeft extends Command {
     shouldNeverEnd = neverEnd;
   }
 
-/**
- * Command for moving to the target currently selected in the PhotonSubsystem
- * @param _targetOffset
- * the field oriented offset from the aprilTag to move towards
+  /**
+   * Command for moving to the target currently selected in the PhotonSubsystem
+   * @param _targetOffset
+   * the field oriented offset from the aprilTag to move towards
 
- * @param _isWaypoint
- * whether or not to use the larger tolerences meant for stop-and-go waypoints
- */
+   * @param _isWaypoint
+   * whether or not to use the larger tolerences meant for stop-and-go waypoints
+   */
   public PhotonMoveToTargetLeft(boolean _centerTarget, boolean _isWaypoint, boolean neverEnd) {
     addRequirements(SwerveSubsystem.getInstance());
     addRequirements(PhotonSubsystemLeftReef.getInstance());
@@ -58,7 +59,8 @@ public class PhotonMoveToTargetLeft extends Command {
   @Override
   public void initialize() {
     SwerveSubsystem.getInstance().resetDriveToPose();
-    targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();  
+    targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();
+    bnullPointer = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -69,10 +71,10 @@ public class PhotonMoveToTargetLeft extends Command {
     Rotation2d targetRotation = PhotonSubsystemLeftReef.getInstance().getTargetRotation();
     Rotation2d targetRobotHeading = PhotonSubsystemLeftReef.getInstance().getTargetRobotHeading();
 
-    //@todo: 
+    //@todo:
     //rotationSetPoint = current robot heading + yaw. Note yaw needs to keep updating
     //convert to Robot: facing to AprilTag
-    Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);     
+    Rotation2d rotationSetPoint = Rotation2d.fromDegrees(targetRotation.getDegrees()+180);
 
     Rotation2d desiredRotation;
     if (centerTarget) {
@@ -83,12 +85,15 @@ public class PhotonMoveToTargetLeft extends Command {
 
     // Grab the latest target offset.
     targetOffset = PhotonSubsystemLeftReef.getInstance().getTargetOffset();
+    if (setPoint == null || targetOffset == null || desiredRotation == null) {
+      bnullPointer = true;
+    } else {
+      Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
 
-    Pose2d desiredPose = new Pose2d(setPoint.plus(targetOffset), desiredRotation);
- 
-    SwerveSubsystem.getInstance().driveToPose(desiredPose);
+      SwerveSubsystem.getInstance().driveToPose(desiredPose);
+    }
   }
- 
+
 
   // Called once the command ends or is interrupted.
   @Override
@@ -96,22 +101,25 @@ public class PhotonMoveToTargetLeft extends Command {
 
   }
 
-  
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (bnullPointer) {
+      return true;
+    }
     if (shouldNeverEnd) {
       return false;
     }
     else
     {
       //if no vision data, stop
-      // return (PhotonSubsystem.getInstance().hasTarget()==false 
+      // return (PhotonSubsystem.getInstance().hasTarget()==false
       // ||  SwerveSubsystem.getInstance().isAtTargetPose(PhotonSubsystem.getInstance().getNewTargetPos())
       // );
-       
-       return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
+
+      return SwerveSubsystem.getInstance().isAtPose(PhotonConfig.WAYPOINT_POS_TOLERANCE, PhotonConfig.WAYPOINT_ANGLE_TOLERANCE);
     }
-      
+
   }
 }

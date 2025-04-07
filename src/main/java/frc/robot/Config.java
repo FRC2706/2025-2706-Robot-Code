@@ -194,7 +194,7 @@ public final class Config {
       //-(0.865/2 - 0.095) = 0.3375
     //@todo: new 148 deg camera, measured for Apollo
     public static final Transform3d  leftReefCameraTransform = new Transform3d(
-        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
+        -0.18, 0.3, 0.76, new Rotation3d(0, Math.toRadians(45.4), Math.toRadians(180)));
 
     public static final Transform3d  rightReefCameraTransform = new Transform3d(
           -0.18, -0.3, 0.76, new Rotation3d(0, Math.toRadians(43.5), Math.toRadians(180)));
