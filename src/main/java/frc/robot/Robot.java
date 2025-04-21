@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.Map;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -51,7 +53,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Record both DS control and joystick data
     //DriverStation.startDataLog(DataLogManager.getLog());
-
+    SignalLogger.enableAutoLogging(false);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     createRobotContainer();
