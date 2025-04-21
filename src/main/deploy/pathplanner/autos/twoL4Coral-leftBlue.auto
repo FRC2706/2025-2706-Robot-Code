@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "leftBlue-Reef"
+            "pathName": "leftBlue-Reef-vision"
           }
         },
         {
@@ -67,15 +67,9 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "CoralScore"
+            "name": "coralIntake"
           }
         },
         {
